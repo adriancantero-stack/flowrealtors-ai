@@ -69,7 +69,7 @@ export default function WhatsAppSettingsPage() {
                 data = JSON.parse(text);
             } catch (e) {
                 console.error('JSON Parse Error:', text);
-                throw new Error(`Invalid Server Response: ${text.substring(0, 100)}...`);
+                throw new Error(`Invalid Server Response (${res.status} ${res.statusText}): ${text.substring(0, 100)}...`);
             }
 
             if (res.ok) {
