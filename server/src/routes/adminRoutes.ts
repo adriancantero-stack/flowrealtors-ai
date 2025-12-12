@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { getDashboardStats, getUsers, getUserDetails, getSystemLeads, adminAction } from '../controllers/adminController';
 
+import { exec } from 'child_process';
+
 const router = Router();
 
 // Middleware to check admin role (mocked for now, assuming all requests to /api/admin are authorized in dev)
@@ -12,7 +14,6 @@ router.get('/users/:id', getUserDetails);
 router.get('/leads', getSystemLeads);
 router.post('/action', adminAction);
 router.post('/run-migrations', async (req, res) => {
-    const { exec } = require('child_process');
     console.log('Manual migration triggered...');
     exec('npx prisma db push --accept-data-loss', (error: any, stdout: any, stderr: any) => {
         if (error) {
