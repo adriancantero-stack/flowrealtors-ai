@@ -1,5 +1,6 @@
 import express from 'express';
 import { WhatsAppService } from '../services/whatsappService';
+import { AIService } from '../services/aiService';
 
 const router = express.Router();
 
@@ -50,13 +51,41 @@ router.post('/webhooks/inbound', async (req, res) => {
     const body = req.body;
     console.log('WhatsApp Webhook:', JSON.stringify(body, null, 2));
 
-    // Basic structure check for Cloud API
-    if (body.object) {
-        // TODO: Implement Inbound Pipeline (Language -> Gemini -> Automation)
-        // For now, verify receipt
-        res.status(200).send('EVENT_RECEIVED');
-    } else {
-        res.sendStatus(404);
+    try {
+        if (body.object) {
+            if (
+                body.entry &&
+                body.entry[0].changes &&
+                body.entry[0].changes[0] &&
+                body.entry[0].changes[0].value.messages &&
+                body.entry[0].changes[0].value.messages[0]
+            ) {
+                const change = body.entry[0].changes[0].value;
+                const message = change.messages[0];
+                const from = message.from; // Phone number
+                const msgBody = message.text?.body;
+
+                if (msgBody) {
+                    console.log(`Received message from ${from}: ${msgBody}`);
+
+                    // 1. Generate AI Response
+                    // Since we don't have a Lead model fully hydrated here, we pass a partial/mock one or fetch it
+                    // For MVP, we treat it as a new interaction
+                    const mockLead: any = { status: 'new' };
+                    const aiResponse = await AIService.generateResponse(mockLead, msgBody);
+
+                    // 2. Send Response
+                    await WhatsAppService.sendMessage(from, aiResponse);
+                    console.log(`Sent AI response to ${from}`);
+                }
+            }
+            res.status(200).send('EVENT_RECEIVED');
+        } else {
+            res.sendStatus(404);
+        }
+    } catch (error) {
+        console.error('Error processing inbound webhook:', error);
+        res.status(500).send('Internal Server Error');
     }
 });
 
