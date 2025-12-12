@@ -84,33 +84,32 @@ export class AISettingsService {
     }
 
     static async logInteraction(log: Omit<AILog, 'id' | 'created_at'>): Promise<void> {
-        await ensureDataDir();
-        let logs: AILog[] = [];
         try {
-            const data = await fs.readFile(LOGS_FILE, 'utf-8');
-            logs = JSON.parse(data);
-        } catch {
-            logs = [];
+            await prisma.aILog.create({
+                data: {
+                    model: log.model,
+                    prompt_preview: log.prompt_preview,
+                    response_preview: log.response_preview
+                }
+            });
+        } catch (error) {
+            console.error('Failed to log AI interaction:', error);
         }
-
-        const newLog: AILog = {
-            ...log,
-            id: Math.random().toString(36).substr(2, 9),
-            created_at: new Date()
-        };
-
-        logs.unshift(newLog); // Prepend
-        // Keep last 100 logs
-        if (logs.length > 100) logs = logs.slice(0, 100);
-
-        await fs.writeFile(LOGS_FILE, JSON.stringify(logs, null, 2));
     }
 
     static async getLogs(): Promise<AILog[]> {
-        await ensureDataDir();
         try {
-            const data = await fs.readFile(LOGS_FILE, 'utf-8');
-            return JSON.parse(data);
+            const logs = await prisma.aILog.findMany({
+                orderBy: { createdAt: 'desc' },
+                take: 100
+            });
+            return logs.map(l => ({
+                id: l.id.toString(),
+                model: l.model,
+                prompt_preview: l.prompt_preview,
+                response_preview: l.response_preview,
+                created_at: l.createdAt
+            }));
         } catch {
             return [];
         }

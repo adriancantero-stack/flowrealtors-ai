@@ -53,3 +53,11 @@ model LeadMessage {
   content   String
   timestamp DateTime @default(now())
 }
+
+model AILog {
+  id              Int      @id @default(autoincrement())
+  model           String
+  prompt_preview  String
+  response_preview String
+  createdAt       DateTime @default(now())
+}
