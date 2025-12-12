@@ -44,14 +44,20 @@ export default function WhatsAppSettingsPage() {
     const saveSettings = async () => {
         setStatus('saving');
         try {
-            await fetch(`${API_BASE}/settings`, {
+            const res = await fetch(`${API_BASE}/settings`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(settings)
             });
+
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(`Failed to save (${res.status}): ${text}`);
+            }
+
             alert(t('admin.whatsapp.saved'));
-        } catch (e) {
-            alert('Error saving settings');
+        } catch (e: any) {
+            alert('Error saving settings: ' + e.message);
         } finally {
             setStatus('idle');
         }
