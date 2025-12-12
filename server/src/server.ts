@@ -44,7 +44,7 @@ app.get('/', (req: Request, res: Response) => {
     res.send('FlowRealtor API is running');
 });
 
-app.listen(PORT, () => {
+app.listen(Number(PORT), '0.0.0.0', () => {
     console.log(`Server is running on port ${PORT}`);
 
     // Auto-run migrations in production
