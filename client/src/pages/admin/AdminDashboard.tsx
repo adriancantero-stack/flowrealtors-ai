@@ -14,7 +14,10 @@ export default function AdminDashboard() {
             automations: { executed: 1240, pending: 5 }
         };
 
-        const ENV_API = import.meta.env.VITE_API_URL;
+        let ENV_API = import.meta.env.VITE_API_URL;
+        if (ENV_API && !ENV_API.startsWith('http')) {
+            ENV_API = `https://${ENV_API}`;
+        }
         const API_URL = (ENV_API && ENV_API !== '') ? ENV_API : 'https://flowrealtors-ai-production.up.railway.app';
         fetch(`${API_URL}/api/admin/dashboard`)
             .then(res => {

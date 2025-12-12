@@ -19,7 +19,10 @@ interface AILog {
 }
 
 // Ensure we fallback to production if VITE_API_URL is missing OR empty string
-const ENV_API = import.meta.env.VITE_API_URL;
+let ENV_API = import.meta.env.VITE_API_URL;
+if (ENV_API && !ENV_API.startsWith('http')) {
+    ENV_API = `https://${ENV_API}`;
+}
 const API_BASE = `${(ENV_API && ENV_API !== '') ? ENV_API : 'https://flowrealtors-ai-production.up.railway.app'}/api/ai`;
 
 export default function GeminiSettingsPage() {
