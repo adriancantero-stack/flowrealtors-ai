@@ -17,6 +17,6 @@ export interface AILog {
     model: string;
     prompt_preview: string;
     response_preview: string;
-    cost_estimated: number;
+    cost_estimated?: number;
     created_at: Date;
 }
