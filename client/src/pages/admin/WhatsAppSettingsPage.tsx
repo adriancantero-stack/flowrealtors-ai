@@ -31,6 +31,8 @@ export default function WhatsAppSettingsPage() {
     const [status, setStatus] = useState<'idle' | 'saving' | 'testing'>('idle');
 
     useEffect(() => {
+        // DEBUG: Verify correct API URL
+        alert(`DEBUG: API_BASE is: ${API_BASE}`);
         fetchSettings();
     }, []);
 
