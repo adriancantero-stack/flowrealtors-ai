@@ -1,0 +1,10 @@
+{
+    "provider": "cloud-api",
+    "api_token": "",
+    "phone_number_id": "",
+    "business_account_id": "",
+    "verify_token": "flowrealtors_verify_token",
+    "webhook_url": "",
+    "enabled": false,
+    "created_at": "2024-05-20T10:00:00Z"
+}

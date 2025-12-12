@@ -1,0 +1,37 @@
+/* ===========================================================
+   FLOW UI - DARK MODE (PLACEHOLDER)
+   =========================================================== */
+
+/* 
+To enable dark mode later, load this file or use a media query. 
+It overrides the root tokens.
+*/
+
+[data-theme='dark'] {
+    /* Colors - Dark Shift */
+    --gray-50: #1C1C1E;
+    --gray-100: #2C2C2E;
+    --gray-200: #3A3A3C;
+    --gray-300: #48484A;
+    --gray-400: #636366;
+    --gray-500: #8E8E93;
+    --gray-600: #AEAEB2;
+    --gray-700: #D1D1D6;
+    --gray-800: #E5E5EA;
+    --gray-900: #F2F2F7;
+
+    --text-primary: #FFFFFF;
+    --text-secondary: #EBEBF5;
+    /* Apple uses semi-transparent white usually, but hex here ensures solid contrast */
+    --text-muted: #8E8E93;
+    --text-inverse: #000000;
+
+    --border-light: #38383A;
+
+    --shadow-soft: 0px 8px 24px rgba(0, 0, 0, 0.4);
+    --shadow-popup: 0px 12px 32px rgba(0, 0, 0, 0.6);
+
+    /* Background override */
+    background-color: #000000;
+    color: white;
+}
