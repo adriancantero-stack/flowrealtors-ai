@@ -14,7 +14,8 @@ export default function AdminDashboard() {
             automations: { executed: 1240, pending: 5 }
         };
 
-        const API_URL = import.meta.env.VITE_API_URL || 'https://flowrealtors-ai-production.up.railway.app';
+        const ENV_API = import.meta.env.VITE_API_URL;
+        const API_URL = (ENV_API && ENV_API !== '') ? ENV_API : 'https://flowrealtors-ai-production.up.railway.app';
         fetch(`${API_URL}/api/admin/dashboard`)
             .then(res => {
                 if (!res.ok) throw new Error('API Failed');
