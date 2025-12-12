@@ -69,8 +69,8 @@ export default function WhatsAppSettingsPage() {
             } else {
                 alert('Failed to send: ' + data.error);
             }
-        } catch (e) {
-            alert('Error sending test message');
+        } catch (e: any) {
+            alert('Error sending test message: ' + (e.message || e));
         } finally {
             setStatus('idle');
         }
