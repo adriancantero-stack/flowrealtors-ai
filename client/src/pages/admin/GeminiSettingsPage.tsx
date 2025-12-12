@@ -18,7 +18,7 @@ interface AILog {
     created_at: string;
 }
 
-const API_BASE = `${import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/ai`;
+const API_BASE = `${import.meta.env.VITE_API_URL || 'https://flowrealtors-ai-production.up.railway.app'}/api/ai`;
 
 export default function GeminiSettingsPage() {
     const { t } = useTranslation();
