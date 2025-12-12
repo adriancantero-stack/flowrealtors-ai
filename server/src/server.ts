@@ -1,3 +1,4 @@
+console.log(`[${new Date().toISOString()}] STARTING SERVER PROCESS...`);
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';

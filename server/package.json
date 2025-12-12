@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node dist/server.js",
+    "start": "npx ts-node src/server.ts",
     "dev": "nodemon src/server.ts",
     "build": "npx prisma generate && tsc",
     "postinstall": "echo \"Postinstall skipped\"",
