@@ -14,8 +14,9 @@ router.post('/settings', async (req, res) => {
     try {
         await WhatsAppService.saveSettings(req.body);
         res.json({ success: true });
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to save settings' });
+    } catch (error: any) {
+        console.error('Save Settings Error:', error);
+        res.status(500).json({ error: `Failed to save settings: ${error.message || error}` });
     }
 });
 
