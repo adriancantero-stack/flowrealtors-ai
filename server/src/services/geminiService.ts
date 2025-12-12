@@ -1,7 +1,8 @@
 import { AISettingsService } from './aiSettingsService';
 
 interface GeminiRequest {
-    contents: { parts: { text: string }[] }[];
+    system_instruction?: { parts: { text: string }[] };
+    contents: { role?: string; parts: { text: string }[] }[];
     generationConfig: {
         temperature: number;
         maxOutputTokens: number;
@@ -24,14 +25,19 @@ export class GeminiService {
 
         const payload: GeminiRequest = {
             contents: [
-                { parts: [{ text: settings.system_prompt }] }, // System prompt as first turn
-                { parts: [{ text: prompt }] }
+                { role: "user", parts: [{ text: prompt }] }
             ],
             generationConfig: {
                 temperature: temperature,
                 maxOutputTokens: settings.max_tokens
             }
         };
+
+        if (settings.system_prompt) {
+            payload.system_instruction = {
+                parts: [{ text: settings.system_prompt }]
+            };
+        }
 
         try {
             const startTime = Date.now();
