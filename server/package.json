@@ -22,12 +22,12 @@
     "pg": "^8.16.3",
     "prisma": "^5.22.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
-  },
-  "devDependencies": {
+    "typescript": "^5.9.3",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
-    "@types/node": "^25.0.0",
+    "@types/node": "^25.0.0"
+  },
+  "devDependencies": {
     "nodemon": "^3.1.11"
   }
 }
