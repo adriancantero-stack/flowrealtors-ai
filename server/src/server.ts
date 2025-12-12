@@ -43,6 +43,22 @@ app.get('/', (req: Request, res: Response) => {
     res.send('FlowRealtor API is running');
 });
 
+import { exec } from 'child_process';
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
+
+    // Auto-run migrations in production
+    if (process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT) {
+        console.log('Running database migrations...');
+        exec('npx prisma db push --accept-data-loss', (error, stdout, stderr) => {
+            if (error) {
+                console.error(`Migration Error: ${error.message}`);
+                return;
+            }
+            if (stderr) console.error(`Migration Stderr: ${stderr}`);
+            console.log(`Migration Stdout: ${stdout}`);
+            console.log('Database migration completed successfully.');
+        });
+    }
 });
