@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model WhatsAppSettings {
+  id                  Int      @id @default(autoincrement())
+  provider            String   @default("cloud-api") // "cloud-api" | "360dialog"
+  api_token           String
+  phone_number_id     String
+  business_account_id String?
+  verify_token        String
+  enabled             Boolean  @default(false)
+  updatedAt           DateTime @updatedAt
+  createdAt           DateTime @default(now())
+}
+
+model AISettings {
+  id            Int      @id @default(autoincrement())
+  api_key       String
+  default_model String   @default("gemini-flash-latest")
+  strong_model  String   @default("gemini-pro-latest")
+  temperature   Float    @default(0.7)
+  max_tokens    Int      @default(1000)
+  system_prompt String?
+  updatedAt     DateTime @updatedAt
+}
+
+model Lead {
+  id          Int      @id @default(autoincrement())
+  name        String?
+  email       String? 
+  phone       String   @unique
+  status      String   @default("new") // new, qualified, contacted, scheduled
+  language    String   @default("en")
+  intent      String?
+  source      String?  @default("whatsapp")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  messages    LeadMessage[]
+}
+
+model LeadMessage {
+  id        Int      @id @default(autoincrement())
+  leadId    Int
+  lead      Lead     @relation(fields: [leadId], references: [id])
+  role      String   // "user" | "assistant" | "system"
+  content   String
+  timestamp DateTime @default(now())
+}

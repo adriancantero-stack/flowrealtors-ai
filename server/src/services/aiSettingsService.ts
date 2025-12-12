@@ -1,38 +1,44 @@
-import fs from 'fs/promises';
-import path from 'path';
+import { PrismaClient } from '@prisma/client';
 import { AISettings, AILog } from '../models/aiTypes';
 
-const DATA_DIR = path.join(__dirname, '../data');
-const SETTINGS_FILE = path.join(DATA_DIR, 'ai_settings.json');
-const LOGS_FILE = path.join(DATA_DIR, 'ai_logs.json');
-
-// Ensure data directory exists
-async function ensureDataDir() {
-    try {
-        await fs.access(DATA_DIR);
-    } catch {
-        await fs.mkdir(DATA_DIR, { recursive: true });
-    }
-}
+const prisma = new PrismaClient();
 
 export class AISettingsService {
     static async getSettings(): Promise<AISettings> {
-        await ensureDataDir();
         try {
-            const data = await fs.readFile(SETTINGS_FILE, 'utf-8');
-            const settings = JSON.parse(data);
-            return settings[0];
-        } catch (error) {
-            // Return default structure if file missing
+            const settings = await prisma.aISettings.findFirst();
+            if (settings) {
+                return {
+                    ...settings,
+                    id: settings.id.toString(), // Convert Int to String to match interface
+                    provider: 'gemini', // Hardcoded or add to schema if needed
+                    created_at: new Date(), // Schema doesn't have it or not selected? Schema has updatedAt
+                    updated_at: settings.updatedAt
+                } as unknown as AISettings;
+            }
+            // Return default
             return {
                 id: 'default',
                 provider: 'gemini',
                 api_key: '',
                 default_model: 'gemini-flash-latest',
                 strong_model: 'gemini-pro-latest',
-                temperature: 0.2,
-                max_tokens: 600,
+                temperature: 0.7,
+                max_tokens: 1000,
                 system_prompt: "You are FlowRealtors AI...",
+                created_at: new Date(),
+                updated_at: new Date()
+            };
+        } catch (error) {
+            return {
+                id: 'default',
+                provider: 'gemini',
+                api_key: '',
+                default_model: 'gemini-flash-latest',
+                strong_model: 'gemini-pro-latest',
+                temperature: 0.7,
+                max_tokens: 1000,
+                system_prompt: "",
                 created_at: new Date(),
                 updated_at: new Date()
             };
@@ -40,16 +46,41 @@ export class AISettingsService {
     }
 
     static async updateSettings(newSettings: Partial<AISettings>): Promise<AISettings> {
-        await ensureDataDir();
-        const current = await this.getSettings();
-        const updated = {
-            ...current,
-            ...newSettings,
-            updated_at: new Date()
-        };
+        const existing = await prisma.aISettings.findFirst();
 
-        await fs.writeFile(SETTINGS_FILE, JSON.stringify([updated], null, 2));
-        return updated;
+        let updated;
+        if (existing) {
+            updated = await prisma.aISettings.update({
+                where: { id: existing.id },
+                data: {
+                    api_key: newSettings.api_key,
+                    default_model: newSettings.default_model,
+                    strong_model: newSettings.strong_model,
+                    temperature: newSettings.temperature,
+                    max_tokens: newSettings.max_tokens,
+                    system_prompt: newSettings.system_prompt
+                }
+            });
+        } else {
+            updated = await prisma.aISettings.create({
+                data: {
+                    api_key: newSettings.api_key || '',
+                    default_model: newSettings.default_model || 'gemini-flash-latest',
+                    strong_model: newSettings.strong_model || 'gemini-pro-latest',
+                    temperature: newSettings.temperature || 0.7,
+                    max_tokens: newSettings.max_tokens || 1000,
+                    system_prompt: newSettings.system_prompt || ''
+                }
+            });
+        }
+
+        return {
+            ...updated,
+            id: updated.id.toString(),
+            provider: 'gemini',
+            created_at: new Date(),
+            updated_at: updated.updatedAt
+        } as unknown as AISettings;
     }
 
     static async logInteraction(log: Omit<AILog, 'id' | 'created_at'>): Promise<void> {

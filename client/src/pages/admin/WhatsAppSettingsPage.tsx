@@ -12,7 +12,7 @@ interface WhatsAppSettings {
     enabled: boolean;
 }
 
-const API_BASE = 'http://localhost:5001/api/whatsapp';
+const API_BASE = `${import.meta.env.VITE_API_URL || 'http://localhost:5001'}/api/whatsapp`;
 
 export default function WhatsAppSettingsPage() {
     const { t } = useTranslation();

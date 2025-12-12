@@ -1,24 +1,39 @@
-import fs from 'fs';
-import path from 'path';
+import { PrismaClient } from '@prisma/client';
 
-const SETTINGS_PATH = path.join(__dirname, '../data/whatsappSettings.json');
+const prisma = new PrismaClient();
 
 export interface WhatsAppSettings {
-    provider: 'cloud-api' | '360dialog';
+    id?: number;
+    provider: string;
     api_token: string;
     phone_number_id: string;
-    business_account_id: string;
+    business_account_id?: string | null;
     verify_token: string;
-    webhook_url: string;
+    webhook_url?: string;
     enabled: boolean;
 }
 
 export class WhatsAppService {
     static async getSettings(): Promise<WhatsAppSettings> {
         try {
-            const data = fs.readFileSync(SETTINGS_PATH, 'utf-8');
-            return JSON.parse(data);
+            const settings = await prisma.whatsAppSettings.findFirst();
+            if (settings) {
+                return {
+                    ...settings,
+                    provider: settings.provider as 'cloud-api' | '360dialog'
+                };
+            }
+            return {
+                provider: 'cloud-api',
+                api_token: '',
+                phone_number_id: '',
+                business_account_id: '',
+                verify_token: 'flowrealtors_verify_token',
+                webhook_url: '',
+                enabled: false
+            };
         } catch (error) {
+            console.error('Error fetching WhatsApp settings:', error);
             return {
                 provider: 'cloud-api',
                 api_token: '',
@@ -32,7 +47,35 @@ export class WhatsAppService {
     }
 
     static async saveSettings(settings: WhatsAppSettings): Promise<void> {
-        fs.writeFileSync(SETTINGS_PATH, JSON.stringify(settings, null, 2));
+        // Upsert logic: update if exists, create if not
+        // Since we don't have a guaranteed singleton ID, used findFirst to check or just assume ID 1?
+        // Better: findFirst, if exists use that ID.
+        const existing = await prisma.whatsAppSettings.findFirst();
+
+        if (existing) {
+            await prisma.whatsAppSettings.update({
+                where: { id: existing.id },
+                data: {
+                    provider: settings.provider,
+                    api_token: settings.api_token,
+                    phone_number_id: settings.phone_number_id,
+                    business_account_id: settings.business_account_id || '',
+                    verify_token: settings.verify_token,
+                    enabled: settings.enabled
+                }
+            });
+        } else {
+            await prisma.whatsAppSettings.create({
+                data: {
+                    provider: settings.provider,
+                    api_token: settings.api_token,
+                    phone_number_id: settings.phone_number_id,
+                    business_account_id: settings.business_account_id || '',
+                    verify_token: settings.verify_token,
+                    enabled: settings.enabled
+                }
+            });
+        }
     }
 
     static async sendMessage(to: string, text: string): Promise<any> {

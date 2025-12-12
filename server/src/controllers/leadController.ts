@@ -1,71 +1,62 @@
 import { Request, Response } from 'express';
-import { Lead } from '../models/types';
+import { PrismaClient } from '@prisma/client';
 
-// Mock data
-export let leads: Lead[] = [
-    {
-        id: '1',
-        user_id: '1',
-        name: 'John Doe',
-        phone: '+15551234567',
-        email: 'john@example.com',
-        source: 'instagram',
-        status: 'new',
-        qualification_score: 40,
-        tags: ['first-time-buyer'],
-        conversation_history: ['Hi!', 'Hello, interested in buying?'],
-        created_at: new Date()
-    },
-    {
-        id: '2',
-        user_id: '1',
-        name: 'Jane Smith',
-        phone: '+15559876543',
-        source: 'whatsapp',
-        status: 'qualified',
-        qualification_score: 85,
-        tags: ['investor', 'cash-buyer'],
-        conversation_history: ['Price?', '500k'],
-        created_at: new Date(Date.now() - 86400000)
-    }
-];
+const prisma = new PrismaClient();
 
 export const getLeads = async (req: Request, res: Response): Promise<void> => {
-    // In real app, filter by req.user.id
-    res.json(leads);
+    try {
+        const leads = await prisma.lead.findMany({
+            orderBy: { createdAt: 'desc' }
+        });
+        // Map Int ID to String ID if necessary for frontend
+        const mappedLeads = leads.map(l => ({ ...l, id: l.id.toString() }));
+        res.json(mappedLeads);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch leads' });
+    }
 };
 
 export const createLead = async (req: Request, res: Response): Promise<void> => {
-    const { name, phone, source } = req.body;
-    const newLead: Lead = {
-        id: Math.random().toString(36).substr(2, 9),
-        user_id: '1', // Mock user
-        name,
-        phone,
-        source,
-        status: 'new',
-        qualification_score: 0,
-        tags: [],
-        conversation_history: [],
-        created_at: new Date()
-    };
-    leads.push(newLead);
-    res.status(201).json(newLead);
+    try {
+        const { name, phone, source } = req.body;
+        const newLead = await prisma.lead.create({
+            data: {
+                name,
+                phone,
+                source,
+                status: 'new',
+                language: 'en'
+            }
+        });
+        res.status(201).json({ ...newLead, id: newLead.id.toString() });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to create lead' });
+    }
 };
 
 export const updateLead = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
-    const index = leads.findIndex(l => l.id === id);
-    if (index === -1) {
-        res.status(404).json({ message: 'Lead not found' });
-        return;
+    try {
+        const leadId = parseInt(id);
+        const updated = await prisma.lead.update({
+            where: { id: leadId },
+            data: req.body
+        });
+        res.json({ ...updated, id: updated.id.toString() });
+    } catch (error) {
+        res.status(404).json({ message: 'Lead not found or update failed' });
     }
-    leads[index] = { ...leads[index], ...req.body };
-    res.json(leads[index]);
 };
 
 export const deleteLead = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
-    leads = leads.filter(l => l.id !== id);
-    res.status(204).send();
+    try {
+        const leadId = parseInt(id);
+        await prisma.lead.delete({
+            where: { id: leadId }
+        });
+        res.status(204).send();
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to delete lead' });
+    }
 };

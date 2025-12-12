@@ -14,7 +14,8 @@ export default function AdminDashboard() {
             automations: { executed: 1240, pending: 5 }
         };
 
-        fetch('http://localhost:5001/api/admin/dashboard')
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+        fetch(`${API_URL}/api/admin/dashboard`)
             .then(res => {
                 if (!res.ok) throw new Error('API Failed');
                 return res.json();
