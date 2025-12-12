@@ -243,6 +243,10 @@ export default function WhatsAppSettingsPage() {
                     </div>
                 </div>
             </div>
+            {/* Debug Info */}
+            <div className="text-xs text-gray-300 font-mono text-center mt-8">
+                Backend: {API_BASE}
+            </div>
         </div>
     );
 }
