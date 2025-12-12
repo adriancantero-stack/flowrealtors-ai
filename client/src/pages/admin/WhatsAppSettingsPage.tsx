@@ -63,11 +63,19 @@ export default function WhatsAppSettingsPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ to: testPhone, message: 'FlowRealtors WhatsApp Test: Connection verified! 🚀' })
             });
-            const data = await res.json();
+            const text = await res.text();
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (e) {
+                console.error('JSON Parse Error:', text);
+                throw new Error(`Invalid Server Response: ${text.substring(0, 100)}...`);
+            }
+
             if (res.ok) {
                 alert('Test message sent successfully!');
             } else {
-                alert('Failed to send: ' + data.error);
+                alert('Failed to send: ' + (data.error || text));
             }
         } catch (e: any) {
             alert('Error sending test message: ' + (e.message || e));
