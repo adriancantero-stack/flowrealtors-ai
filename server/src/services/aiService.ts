@@ -77,6 +77,15 @@ Return:
     static async generateResponse(lead: Lead, message: string): Promise<string> {
         const language = this.detectLanguage(message);
 
+        const settings = await AISettingsService.getSettings();
+
+        // If user has a custom system prompt, we trust it and send a simpler user message
+        // The GeminiService will attach the system prompt automatically
+        if (settings.system_prompt && settings.system_prompt.trim().length > 10) {
+            const prompt = `Lead message: "${message}"\nLead known data: ${JSON.stringify(lead)}`;
+            return await GeminiService.runGemini(prompt);
+        }
+
         const prompt = `
 You are FlowRealtors AI. 
 Write a helpful message for a homebuyer.
