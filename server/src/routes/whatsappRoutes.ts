@@ -19,7 +19,7 @@ router.post('/settings', async (req, res) => {
     }
 });
 
-router.post('/test', async (req, res) => {
+router.post('/debug-test', async (req, res) => {
     try {
         const { to, message } = req.body;
         const result = await WhatsAppService.sendMessage(to, message);

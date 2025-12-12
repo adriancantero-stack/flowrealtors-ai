@@ -58,7 +58,8 @@ export default function WhatsAppSettingsPage() {
     const sendTestMessage = async () => {
         setStatus('testing');
         try {
-            const res = await fetch(`${API_BASE}/test`, {
+            // Using /debug-test to avoid adblockers/filters on 'test'
+            const res = await fetch(`${API_BASE}/debug-test`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ to: testPhone, message: 'FlowRealtors WhatsApp Test: Connection verified! 🚀' })
