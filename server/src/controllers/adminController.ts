@@ -6,56 +6,28 @@ const prisma = new PrismaClient();
 // Admin Dashboard Stats
 export const getDashboardStats = async (req: Request, res: Response) => {
     try {
-        // Users (Realtors) - Still mock or from DB if User model existed, but let's assume Mock for now or check if we want to migrate Users too.
-        // User model wasn't in list of migrated items, assuming usage of mock `users` from authController is still valid OR we need to migrate it.
-        // Checking authController... it exports `users`.
-        // BUT wait, users are in authController, checking if that one was refactored? No specific instruction.
-        // Let's assume users are still in memory for Auth in MVP or migrate them too?
-        // Task said "Refactor Services to use Database". Auth usually implies DB.
-        // Let's keep `users` import for now if file exists, but fix the `leads` import.
-
-        // Fetch Leads from DB
         const totalLeads = await prisma.lead.count();
-
         const now = new Date();
         const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
         const leadsToday = await prisma.lead.count({
-            where: {
-                createdAt: {
-                    gte: startOfDay
-                }
-            }
+            where: { createdAt: { gte: startOfDay } }
         });
 
         const qualifiedLeads = await prisma.lead.count({
-            where: {
-                status: { in: ['qualified', 'appointment_set'] }
-            }
+            where: { status: { in: ['qualified', 'appointment_set'] } }
         });
 
-        // Mock automation stats for now
-        const automationStats = {
-            executed: 1240,
-            pending: 35,
-            failed: 2
-        };
-
-        // Mock realtors for now until auth is migrated
-        const totalRealtors = 12;
-        const activeRealtors = 8;
+        const totalBrokers = await prisma.user.count({ where: { role: 'broker' } });
+        const activeBrokers = await prisma.user.count({ where: { role: 'broker', status: 'active' } });
 
         res.json({
-            realtors: {
-                total: totalRealtors,
-                active: activeRealtors
-            },
+            realtors: { total: totalBrokers, active: activeBrokers },
             leads: {
                 total: totalLeads,
                 today: leadsToday,
                 conversion_rate: totalLeads > 0 ? ((qualifiedLeads / totalLeads) * 100).toFixed(1) : 0
             },
-            automations: automationStats,
             system_health: 'healthy'
         });
     } catch (error) {
@@ -73,16 +45,63 @@ export const getUserDetails = async (req: Request, res: Response) => {
     res.status(404).json({ error: 'User not found' });
 };
 
-// System Monitoring
+// Leads Management (Filtered)
 export const getSystemLeads = async (req: Request, res: Response) => {
     try {
+        const { status, brokerId, dateFrom, dateTo } = req.query;
+
+        const where: any = {};
+        if (status) where.status = status;
+        if (brokerId) where.brokerId = parseInt(brokerId as string);
+        if (dateFrom || dateTo) {
+            where.createdAt = {};
+            if (dateFrom) where.createdAt.gte = new Date(dateFrom as string);
+            if (dateTo) where.createdAt.lte = new Date(dateTo as string);
+        }
+
         const leads = await prisma.lead.findMany({
+            where,
             orderBy: { createdAt: 'desc' },
-            take: 50
+            include: { broker: true }, // Include assigned broker details
+            take: 100
         });
         res.json(leads);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch leads' });
+    }
+};
+
+// Global Settings
+export const getGlobalSettings = async (req: Request, res: Response) => {
+    try {
+        const settings = await prisma.saaSSettings.findFirst();
+        res.json(settings || {});
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch settings' });
+    }
+};
+
+export const saveGlobalSettings = async (req: Request, res: Response) => {
+    try {
+        const { platform_name, base_domain, logo_url, active_languages } = req.body;
+
+        // Update first record or create
+        const first = await prisma.saaSSettings.findFirst();
+
+        let settings;
+        if (first) {
+            settings = await prisma.saaSSettings.update({
+                where: { id: first.id },
+                data: { platform_name, base_domain, logo_url, active_languages }
+            });
+        } else {
+            settings = await prisma.saaSSettings.create({
+                data: { platform_name, base_domain, logo_url, active_languages }
+            });
+        }
+        res.json(settings);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to save settings' });
     }
 };
 

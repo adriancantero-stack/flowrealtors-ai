@@ -14,11 +14,13 @@ import FunnelSettingsPage from './pages/dashboard/FunnelSettingsPage';
 import OnboardingPage from './pages/onboarding/OnboardingPage';
 
 // Admin Pages
+// Admin Pages
 import AdminLayout from './layouts/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
-import AdminUsersPage from './pages/admin/AdminUsersPage';
-import GeminiSettingsPage from './pages/admin/GeminiSettingsPage';
-import WhatsAppSettingsPage from './pages/admin/WhatsAppSettingsPage';
+import AdminBrokersPage from './pages/admin/BrokersPage';
+import AdminLeadsPage from './pages/admin/LeadsPage';
+import AdminSettingsPage from './pages/admin/SettingsPage';
+import AdminLogsPage from './pages/admin/LogsPage';
 
 // Funnel Pages
 import PublicFunnelLayout from './layouts/PublicFunnelLayout';
@@ -56,13 +58,16 @@ function App() {
             <Route path="admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="dashboard" element={<AdminDashboard />} />
-              <Route path="users" element={<AdminUsersPage />} />
-              <Route path="leads" element={<div className="p-8">Leads Monitor Placeholder</div>} />
-              <Route path="monitoring" element={<div className="p-8">System Monitor Placeholder</div>} />
-              <Route path="billing" element={<div className="p-8">Billing Placeholder</div>} />
-              <Route path="gemini" element={<GeminiSettingsPage />} />
-              <Route path="whatsapp" element={<WhatsAppSettingsPage />} />
-              <Route path="settings" element={<div className="p-8">Settings Placeholder</div>} />
+              <Route path="brokers" element={<AdminBrokersPage />} />
+              <Route path="leads" element={<AdminLeadsPage />} />
+              <Route path="settings" element={<AdminSettingsPage />} />
+              <Route path="logs" element={<AdminLogsPage />} />
+
+              {/* Legacy Redirects */}
+              <Route path="users" element={<Navigate to="brokers" replace />} />
+              <Route path="monitoring" element={<Navigate to="logs" replace />} />
+              <Route path="gemini" element={<Navigate to="settings" replace />} />
+              <Route path="whatsapp" element={<Navigate to="settings" replace />} />
             </Route>
           </Route>
 

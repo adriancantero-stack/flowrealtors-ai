@@ -1,18 +1,40 @@
 import { Router } from 'express';
-import { getDashboardStats, getUsers, getUserDetails, getSystemLeads, adminAction } from '../controllers/adminController';
+import { getDashboardStats, getUsers, getUserDetails, getSystemLeads, adminAction, getGlobalSettings, saveGlobalSettings } from '../controllers/adminController';
+import { listBrokers, createBroker, updateBroker, deleteBroker } from '../controllers/brokerController';
+import { getLogs, getSystemStatus } from '../controllers/logsController';
 
 import { exec } from 'child_process';
 
 const router = Router();
 
 // Middleware to check admin role (mocked for now, assuming all requests to /api/admin are authorized in dev)
-// In prod, this would verify req.user.role === 'admin'
 
+// Dashboard
 router.get('/dashboard', getDashboardStats);
-router.get('/users', getUsers);
-router.get('/users/:id', getUserDetails);
+
+// Leads
 router.get('/leads', getSystemLeads);
+
+// Brokers (Users)
+router.get('/brokers', listBrokers);
+router.post('/brokers', createBroker);
+router.put('/brokers/:id', updateBroker);
+router.delete('/brokers/:id', deleteBroker);
+
+// Global Settings
+router.get('/settings', getGlobalSettings);
+router.post('/settings', saveGlobalSettings);
+
+// Logs & Monitoring
+router.get('/logs', getLogs);
+router.get('/status', getSystemStatus);
+
+
+// Legacy / Generic Actions
+router.get('/users', getUsers); // Keep for compatibility if needed
+router.get('/users/:id', getUserDetails);
 router.post('/action', adminAction);
+
 router.post('/run-migrations', async (req, res) => {
     console.log('Manual migration triggered...');
     exec('npx prisma db push --accept-data-loss', (error: any, stdout: any, stderr: any) => {

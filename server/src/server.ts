@@ -40,8 +40,23 @@ app.use('/api/funnel', funnelRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/whatsapp', whatsappRoutes);
 
-app.get('/', (req: Request, res: Response) => {
+import path from 'path';
+
+// Serve frontend static files
+app.use(express.static(path.join(__dirname, '../public')));
+
+// API Routes
+app.get('/api/health', (req: Request, res: Response) => {
     res.send('FlowRealtor API is running');
+});
+
+// Handle React Routing (Catch-all)
+app.get('*', (req: Request, res: Response) => {
+    // If request is for API, return 404 (don't serve HTML)
+    if (req.url.startsWith('/api')) {
+        return res.status(404).json({ error: 'API endpoint not found' });
+    }
+    res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 app.listen(Number(PORT), '0.0.0.0', () => {

@@ -31,18 +31,24 @@ model AISettings {
 }
 
 model Lead {
-  id          Int      @id @default(autoincrement())
-  name        String?
-  email       String? 
-  phone       String   @unique
-  status      String   @default("new") // new, qualified, contacted, scheduled
-  language    String   @default("en")
-  intent      String?
-  source      String?  @default("whatsapp")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           Int      @id @default(autoincrement())
+  name         String?
+  email        String?
+  phone        String   @unique
+  status       String   @default("new") // new, qualified, contacted, scheduled
+  language     String   @default("en")
+  intent       String?
+  source       String?  @default("whatsapp")
+  budget       String?
+  desired_city String?
   
-  messages    LeadMessage[]
+  brokerId     Int?
+  broker       User?    @relation(fields: [brokerId], references: [id])
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  messages     LeadMessage[]
 }
 
 model LeadMessage {
@@ -52,6 +58,41 @@ model LeadMessage {
   role      String   // "user" | "assistant" | "system"
   content   String
   timestamp DateTime @default(now())
+}
+
+model User {
+  id            Int      @id @default(autoincrement())
+  name          String
+  email         String   @unique
+  phone         String?
+  city          String?
+  photo_url     String?
+  calendly_link String?
+  default_lang  String   @default("pt") // en, es, pt
+  role          String   @default("broker") // broker, admin
+  status        String   @default("active") // active, inactive
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  leads         Lead[]
+}
+
+model SaaSSettings {
+  id               Int      @id @default(autoincrement())
+  platform_name    String   @default("FlowRealtors")
+  base_domain      String?
+  logo_url         String?
+  active_languages String[]
+  updatedAt        DateTime @updatedAt
+}
+
+model SystemLog {
+  id        Int      @id @default(autoincrement())
+  type      String   // AI, ERROR, WHATSAPP, SYSTEM
+  action    String
+  details   String?  // JSON or text
+  status    String   // success, failure
+  createdAt DateTime @default(now())
 }
 
 model AILog {

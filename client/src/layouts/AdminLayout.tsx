@@ -1,7 +1,7 @@
 import { Outlet, NavLink, Link, useParams } from 'react-router-dom';
 import {
     LayoutDashboard, Users, MessageSquare, Activity,
-    Settings, Shield, LogOut, CreditCard, Zap
+    Settings, Shield, LogOut
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useTranslation } from '../i18n';
@@ -13,13 +13,10 @@ export default function AdminLayout() {
 
     const navItems = [
         { href: `${prefix}/admin/dashboard`, label: t('admin.nav.overview'), icon: LayoutDashboard },
-        { href: `${prefix}/admin/users`, label: t('admin.nav.realtors'), icon: Users },
+        { href: `${prefix}/admin/brokers`, label: 'Corretores', icon: Users },
         { href: `${prefix}/admin/leads`, label: t('admin.nav.leads'), icon: MessageSquare },
-        { href: `${prefix}/admin/monitoring`, label: t('admin.nav.monitor'), icon: Activity },
-        { href: `${prefix}/admin/billing`, label: t('admin.nav.billing'), icon: CreditCard },
-        { href: `${prefix}/admin/whatsapp`, label: t('admin.nav.whatsapp'), icon: MessageSquare }, // Reusing MessageSquare temporarily or importing separate
-        { href: `${prefix}/admin/gemini`, label: t('admin.nav.gemini'), icon: Zap },
-        { href: `${prefix}/admin/settings`, label: t('admin.nav.settings'), icon: Settings },
+        { href: `${prefix}/admin/settings`, label: 'Configurações', icon: Settings },
+        { href: `${prefix}/admin/logs`, label: 'Logs & Monitor', icon: Activity },
     ];
 
     return (
