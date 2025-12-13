@@ -1,4 +1,4 @@
-console.log(`[${new Date().toISOString()}] STARTING SERVER PROCESS... v2.10 (DIRECT MIGRATION FIX)`);
+console.log(`[${new Date().toISOString()}] STARTING SERVER PROCESS... v2.11 (SYSTEM BYPASS)`);
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -9,27 +9,22 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Global Request Logger
+// Global Request Logger with detail
 app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl || req.url}`);
     next();
 });
 
-// Emergency Migration Endpoint (Direct in server.ts) - MOVED TO TOP
-const runMigrationHandler = async (req: Request, res: Response) => {
-    console.log('[SERVER_DIRECT] Migration triggered via ' + req.method);
+// Root Ping
+app.get('/ping', (req, res) => res.send('pong'));
 
-    // Explicit CORS implementation for safety
+// System Fix (Bypassing /api prefix to rule out prefix issues)
+const systemFixHandler = async (req: Request, res: Response) => {
+    console.log('[SYSTEM_FIX] Triggered');
     res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-    if (req.method === 'OPTIONS') {
-        return res.sendStatus(200);
-    }
-
+    // Check Env
     const env = { ...process.env };
-    // Force PgBouncer compatibility
     if (env.DATABASE_URL && !env.DATABASE_URL.includes('pgbouncer=true')) {
         env.DATABASE_URL += (env.DATABASE_URL.includes('?') ? '&' : '?') + 'pgbouncer=true';
     }
@@ -40,16 +35,17 @@ const runMigrationHandler = async (req: Request, res: Response) => {
         const execPromise = util.promisify(exec);
 
         const { stdout, stderr } = await execPromise('npx prisma db push --accept-data-loss', { env });
-        console.log('[SERVER_DIRECT] STDOUT:', stdout);
-
+        console.log('[SYSTEM_FIX] Success:', stdout);
         res.json({ success: true, output: stdout });
     } catch (error: any) {
-        console.error('[SERVER_DIRECT] Error:', error);
+        console.error('[SYSTEM_FIX] Error:', error);
         res.status(500).json({ success: false, error: error.message });
     }
 };
 
-app.all('/api/run-migrations', runMigrationHandler);
+app.all('/_system/fix-db', systemFixHandler);
+// Keep old one too just in case
+app.all('/api/run-migrations', systemFixHandler);
 
 app.use(cors({
     origin: true, // Reflect request origin
@@ -98,8 +94,10 @@ app.all('/api/run-migrations', runMigrationHandler);
 // Using RegExp to avoid Express 5 string path parser issues
 app.get(/.*/, (req: Request, res: Response) => {
     // If request is for API, return 404 (don't serve HTML)
-    if (req.url.startsWith('/api')) {
-        return res.status(404).json({ error: 'API endpoint not found' });
+    // Log this catch!
+    if (req.url.startsWith('/api') || req.url.startsWith('/_system')) {
+        console.log(`[CATCH-ALL] 404 for API request: ${req.url}`);
+        return res.status(404).json({ error: 'API endpoint not found', path: req.url });
     }
     res.sendFile(path.join(__dirname, '../public/index.html'));
 });

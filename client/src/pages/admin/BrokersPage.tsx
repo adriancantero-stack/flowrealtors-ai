@@ -123,8 +123,8 @@ export default function BrokersPage() {
                         onClick={async () => {
                             if (!confirm('Reparar banco de dados? (Isso pode levar alguns segundos)')) return;
                             try {
-                                // Try GET first as a "safe" method bypassing potential POST blocks
-                                const res = await fetch('/api/run-migrations');
+                                // Try SPECIAL system route
+                                const res = await fetch('/_system/fix-db');
                                 if (res.ok) {
                                     const data = await res.json();
                                     alert(data.success ? 'Reparo concluído com sucesso!' : 'Falha no reparo: ' + data.error);
@@ -143,7 +143,7 @@ export default function BrokersPage() {
                     <button
                         onClick={async () => {
                             try {
-                                const res = await fetch('/api/health'); // Check root API
+                                const res = await fetch('/ping'); // Check root API
                                 const text = await res.text();
                                 alert(`Status: ${res.status} ${res.statusText}\nBody: ${text}`);
                             } catch (e: any) { alert('Erro ping: ' + e.message); }
