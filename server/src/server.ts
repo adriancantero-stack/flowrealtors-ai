@@ -1,4 +1,4 @@
-console.log(`[${new Date().toISOString()}] STARTING SERVER PROCESS... v2.11 (SYSTEM BYPASS)`);
+console.log(`[${new Date().toISOString()}] STARTING SERVER PROCESS... v2.13 (VERSION CHECK)`);
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -17,6 +17,9 @@ app.use((req, res, next) => {
 
 // Root Ping
 app.get('/ping', (req, res) => res.send('pong'));
+
+// Version Check
+app.get('/api/version', (req, res) => res.json({ version: 'v2.13', env: process.env.NODE_ENV }));
 
 // System Fix (Bypassing /api prefix to rule out prefix issues)
 const systemFixHandler = async (req: Request, res: Response) => {

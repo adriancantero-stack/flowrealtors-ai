@@ -143,9 +143,14 @@ export default function BrokersPage() {
                     <button
                         onClick={async () => {
                             try {
-                                const res = await fetch('/ping'); // Check root API
-                                const text = await res.text();
-                                alert(`Status: ${res.status} ${res.statusText}\nBody: ${text}`);
+                                const res = await fetch('/api/version');
+                                if (res.ok) {
+                                    const data = await res.json();
+                                    alert(`Conectado! Versão do Servidor: ${data.version}\nAmbiente: ${data.env}`);
+                                } else {
+                                    const text = await res.text();
+                                    alert(`Erro versão: ${res.status}\n${text}`);
+                                }
                             } catch (e: any) { alert('Erro ping: ' + e.message); }
                         }}
                         className="flex items-center gap-2 bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition shadow-sm font-medium text-sm"
