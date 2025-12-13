@@ -87,7 +87,7 @@ app.get('/api/health', (req: Request, res: Response) => {
 // Using require to avoid top-level import issues if not needed
 // Old location removed
 
-app.all('/api/run-migrations', runMigrationHandler);
+// Duplicate removed
 
 // Handle React Routing (Catch-all)
 // Handle React Routing (Catch-all)
