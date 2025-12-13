@@ -1,4 +1,4 @@
-console.log(`[${new Date().toISOString()}] STARTING SERVER PROCESS... v2.13 (VERSION CHECK)`);
+console.log(`[${new Date().toISOString()}] STARTING SERVER PROCESS... v2.14 (NO CATCH-ALL)`);
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -19,7 +19,7 @@ app.use((req, res, next) => {
 app.get('/ping', (req, res) => res.send('pong'));
 
 // Version Check
-app.get('/api/version', (req, res) => res.json({ version: 'v2.13', env: process.env.NODE_ENV }));
+app.get('/api/version', (req, res) => res.json({ version: 'v2.14', timestamp: new Date().toISOString() }));
 
 // System Fix (Bypassing /api prefix to rule out prefix issues)
 const systemFixHandler = async (req: Request, res: Response) => {
@@ -95,15 +95,7 @@ app.get('/api/health', (req: Request, res: Response) => {
 // Handle React Routing (Catch-all)
 // Handle React Routing (Catch-all)
 // Using RegExp to avoid Express 5 string path parser issues
-app.get(/.*/, (req: Request, res: Response) => {
-    // If request is for API, return 404 (don't serve HTML)
-    // Log this catch!
-    if (req.url.startsWith('/api') || req.url.startsWith('/_system')) {
-        console.log(`[CATCH-ALL] 404 for API request: ${req.url}`);
-        return res.status(404).json({ error: 'API endpoint not found', path: req.url });
-    }
-    res.sendFile(path.join(__dirname, '../public/index.html'));
-});
+// React Catch-all REMOVED for debugging v2.14
 
 app.listen(Number(PORT), '0.0.0.0', () => {
     console.log(`Server is running on port ${PORT}`);
