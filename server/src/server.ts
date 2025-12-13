@@ -1,4 +1,4 @@
-console.log(`[${new Date().toISOString()}] STARTING SERVER PROCESS...`);
+console.log(`[${new Date().toISOString()}] STARTING SERVER PROCESS... v2.5 (NO-MIGRATE)`);
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -66,6 +66,8 @@ app.listen(Number(PORT), '0.0.0.0', () => {
     console.log(`Server is running on port ${PORT}`);
 
     // Auto-run migrations in production
+    // TEMPORARILY DISABLED TO PREVENT CRASH LOOP
+    /*
     if (process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT) {
         console.log('Running database migrations...');
 
@@ -88,4 +90,5 @@ app.listen(Number(PORT), '0.0.0.0', () => {
             console.log('Database migration completed successfully.');
         });
     }
+    */
 });
