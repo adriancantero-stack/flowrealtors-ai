@@ -55,9 +55,13 @@ export default function BrokersPage() {
                 setEditingBroker(null);
                 setFormData({ name: '', email: '', phone: '', city: '', status: 'active', default_lang: 'pt' });
                 fetchBrokers();
+            } else {
+                const data = await res.json();
+                alert(data.error || 'Erro ao salvar corretor');
             }
         } catch (error) {
             console.error('Failed to save broker', error);
+            alert('Erro de conexão ao salvar corretor');
         }
     };
 
