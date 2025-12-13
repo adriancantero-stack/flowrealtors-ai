@@ -49,8 +49,10 @@ router.get('/users', getUsers); // Keep for compatibility if needed
 router.get('/users/:id', getUserDetails);
 router.post('/action', adminAction);
 
-router.post('/run-migrations', async (req, res) => {
-    console.log('Manual migration triggered...');
+// Manual Migration - Explicit CORS
+router.options('/run-migrations', cors());
+router.post('/run-migrations', cors(), async (req, res) => {
+    console.log('[ADMIN_DEBUG] /run-migrations called');
 
     // Fix for PgBouncer
     const env = { ...process.env };
@@ -59,15 +61,38 @@ router.post('/run-migrations', async (req, res) => {
         env.DATABASE_URL += (env.DATABASE_URL.includes('?') ? '&' : '?') + 'pgbouncer=true';
     }
 
-    exec('npx prisma db push --accept-data-loss', { env }, (error: any, stdout: any, stderr: any) => {
-        if (error) {
-            console.error(`Migration Error: ${error.message}`);
-            return res.status(500).json({ success: false, error: error.message });
-        }
-        if (stderr) console.error(`Migration Stderr: ${stderr}`);
-        console.log(`Migration Stdout: ${stdout}`);
+    try {
+        /*
+        exec('npx prisma db push --accept-data-loss', { env }, (error: any, stdout: any, stderr: any) => {
+            console.log('[ADMIN_DEBUG] Exec finished');
+            if (error) {
+                console.error(`Migration Error: ${error.message}`);
+                // Ensure we haven't sent headers yet
+                if (!res.headersSent) return res.status(500).json({ success: false, error: error.message });
+            }
+            if (stderr) console.error(`Migration Stderr: ${stderr}`);
+            console.log(`Migration Stdout: ${stdout}`);
+            
+            if (!res.headersSent) res.json({ success: true, output: stdout || 'No output' });
+        });
+        */
+        // Use spawn for better reliability? Or just wrap in Promise
+        const { exec } = require('child_process');
+        const util = require('util');
+        const execPromise = util.promisify(exec);
+
+        console.log('[ADMIN_DEBUG] Starting execPromise...');
+        const { stdout, stderr } = await execPromise('npx prisma db push --accept-data-loss', { env });
+        console.log('[ADMIN_DEBUG] execPromise completed.');
+        console.log('STDOUT:', stdout);
+        if (stderr) console.log('STDERR:', stderr);
+
         res.json({ success: true, output: stdout });
-    });
+
+    } catch (error: any) {
+        console.error('[ADMIN_DEBUG] Migration Exception:', error);
+        res.status(500).json({ success: false, error: error.message || String(error) });
+    }
 });
 
 export default router;

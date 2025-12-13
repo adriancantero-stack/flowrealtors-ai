@@ -140,6 +140,18 @@ export default function BrokersPage() {
                         Reparar Banco
                     </button>
                     <button
+                        onClick={async () => {
+                            try {
+                                const res = await fetch('/api/admin/status');
+                                const text = await res.text();
+                                alert(`Status: ${res.status} ${res.statusText}\nBody: ${text}`);
+                            } catch (e: any) { alert('Erro ping: ' + e.message); }
+                        }}
+                        className="flex items-center gap-2 bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition shadow-sm font-medium text-sm"
+                    >
+                        Testar Conexão
+                    </button>
+                    <button
                         onClick={openNew}
                         className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm font-medium text-sm"
                     >
