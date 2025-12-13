@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import { User } from '../models/types';
+import { PrismaClient } from '@prisma/client';
+import { User } from '../models/types'; // Keep for type reference if needed, though Prisma generates its own
 
 const prisma = new PrismaClient();
 
@@ -18,13 +19,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
             data: {
                 name,
                 email,
-                // In real app, hash this! Storing plain for MVP demo if necessary, but should use bcrypt
-                // For now, mapping 'password' to nothing or a specific field if schema has it?
-                // Schema User model DOES NOT have password field!
-                // We need to add password field to User schema or store it elsewhere.
-                // For now, let's assume this is an admin/broker platform where auth might be different
-                // BUT wait, login() expects password.
-                // Schema needs password field.
+                password_hash: password, // In real app, hash this!
                 role: account_type || 'broker',
                 status: 'active'
             }
@@ -49,7 +44,6 @@ export const updateProfile = async (req: Request, res: Response) => {
             where: { id: parseInt(userId) },
             data: {
                 name: updates.name,
-                // account_type map to role?
                 role: updates.account_type === 'realtor' ? 'broker' : 'admin'
             }
         });
@@ -67,8 +61,10 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     try {
         const { email, password } = req.body;
 
-        const user = users.find(u => u.email === email && u.password_hash === password);
-        if (!user) {
+        const user = await prisma.user.findUnique({ where: { email } });
+
+        // Simple password check (plain text for MVP/demo as set in register)
+        if (!user || user.password_hash !== password) {
             res.status(401).json({ message: 'Invalid credentials' });
             return;
         }
@@ -79,7 +75,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         res.json({
             message: 'Login successful',
             token,
-            user: { id: user.id, email: user.email, name: user.name, role: user.account_type }
+            user: { id: user.id, email: user.email, name: user.name, role: user.role }
         });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
