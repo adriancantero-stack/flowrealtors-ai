@@ -19,7 +19,7 @@ app.use((req, res, next) => {
 app.get('/ping', (req, res) => res.send('pong'));
 
 // Version Check
-app.get('/api/version', (req, res) => res.json({ version: 'v2.21', type: 'FULL_RESTORE', env: process.env.NODE_ENV }));
+app.get('/api/version', (req, res) => res.json({ version: 'v2.24', type: 'MONOREPO_FINAL', env: process.env.NODE_ENV }));
 
 // System Fix (Bypassing /api prefix to rule out prefix issues)
 const systemFixHandler = async (req: Request, res: Response) => {
