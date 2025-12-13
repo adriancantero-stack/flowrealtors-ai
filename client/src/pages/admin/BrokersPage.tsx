@@ -118,13 +118,30 @@ export default function BrokersPage() {
                     <h1 className="text-2xl font-semibold text-gray-900">Corretores</h1>
                     <p className="text-sm text-gray-500 mt-1">Gerencie sua equipe de vendas.</p>
                 </div>
-                <button
-                    onClick={openNew}
-                    className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm font-medium text-sm"
-                >
-                    <Plus size={18} />
-                    Novo Corretor
-                </button>
+                <div className="flex gap-2">
+                    <button
+                        onClick={async () => {
+                            if (!confirm('Reparar banco de dados? (Isso pode levar alguns segundos)')) return;
+                            try {
+                                const res = await fetch('/api/admin/run-migrations', { method: 'POST' });
+                                const data = await res.json();
+                                alert(data.success ? 'Reparo concluído com sucesso!' : 'Falha no reparo: ' + data.error);
+                            } catch (e: any) {
+                                alert('Erro ao tentar reparar: ' + e.message);
+                            }
+                        }}
+                        className="flex items-center gap-2 bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition shadow-sm font-medium text-sm"
+                    >
+                        Reparar Banco
+                    </button>
+                    <button
+                        onClick={openNew}
+                        className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm font-medium text-sm"
+                    >
+                        <Plus size={18} />
+                        Novo Corretor
+                    </button>
+                </div>
             </div>
 
             {/* List */}
