@@ -1,4 +1,4 @@
-console.log(`[${new Date().toISOString()}] STARTING SERVER PROCESS... v2.16 (CLEAN DIST)`);
+console.log(`[${new Date().toISOString()}] STARTING SERVER PROCESS... v2.17 (SAFE BUILD)`);
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -79,7 +79,7 @@ app.use('/api/whatsapp', whatsappRoutes);
 import path from 'path';
 
 // Serve frontend static files
-// app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, '../public')));
 
 // API Routes
 app.get('/api/health', (req: Request, res: Response) => {
