@@ -1,7 +1,7 @@
 import { Outlet, NavLink, Link, useParams } from 'react-router-dom';
 import {
     LayoutDashboard, Users, MessageSquare, Activity,
-    Settings, Shield, LogOut
+    Settings, LogOut
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useTranslation } from '../i18n';
@@ -24,10 +24,9 @@ export default function AdminLayout() {
             {/* Admin Sidebar - Darker/Technical look */}
             <aside className="w-64 bg-slate-900 text-white flex flex-col fixed h-full z-10">
                 <div className="h-16 flex items-center px-6 border-b border-slate-800">
-                    <span className="text-lg font-bold flex items-center gap-2">
-                        <Shield className="w-5 h-5 text-[#1786ff]" />
-                        FlowAdmin
-                    </span>
+                    <div className="flex items-center gap-2">
+                        <img src="/logo-full.png" alt="FlowRealtors" className="h-8 w-auto" />
+                    </div>
                 </div>
 
                 <nav className="flex-1 px-3 py-6 space-y-1">
