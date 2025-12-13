@@ -23,9 +23,9 @@ export default function AdminLayout() {
         <div className="min-h-screen bg-gray-100 flex font-sans">
             {/* Admin Sidebar - Darker/Technical look */}
             <aside className="w-64 bg-slate-900 text-white flex flex-col fixed h-full z-10">
-                <div className="h-16 flex items-center px-6 border-b border-slate-800">
+                <div className="h-20 flex items-center px-6 border-b border-slate-800">
                     <div className="flex items-center gap-2">
-                        <img src="/logo-white.png" alt="FlowRealtors" className="h-8 w-auto" />
+                        <img src="/logo-white.png" alt="FlowRealtors" className="h-14 w-auto" />
                     </div>
                 </div>
 
