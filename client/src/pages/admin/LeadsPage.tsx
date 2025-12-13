@@ -18,6 +18,13 @@ export default function LeadsPage() {
     const [loading, setLoading] = useState(true);
     const [filterStatus, setFilterStatus] = useState('');
 
+    // FIXED: Use the same fallback URL logic as GeminiSettingsPage/BrokersPage
+    let ENV_API = import.meta.env.VITE_API_URL;
+    if (ENV_API && !ENV_API.startsWith('http')) {
+        ENV_API = `https://${ENV_API}`;
+    }
+    const API_BASE = (ENV_API && ENV_API !== '') ? ENV_API : 'https://flowrealtors-ai-production.up.railway.app';
+
     useEffect(() => {
         fetchLeads();
     }, [filterStatus]);
@@ -27,7 +34,7 @@ export default function LeadsPage() {
             const query = new URLSearchParams();
             if (filterStatus) query.append('status', filterStatus);
 
-            const res = await fetch(`/api/admin/leads?${query.toString()}`);
+            const res = await fetch(`${API_BASE}/api/admin/leads?${query.toString()}`);
             const data = await res.json();
             setLeads(data);
         } catch (error) {
