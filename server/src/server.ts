@@ -1,4 +1,4 @@
-console.log(`[${new Date().toISOString()}] STARTING SERVER PROCESS... v2.5 (NO-MIGRATE)`);
+console.log(`[${new Date().toISOString()}] STARTING SERVER PROCESS... v2.10 (DIRECT MIGRATION FIX)`);
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -14,6 +14,42 @@ app.use((req, res, next) => {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
     next();
 });
+
+// Emergency Migration Endpoint (Direct in server.ts) - MOVED TO TOP
+const runMigrationHandler = async (req: Request, res: Response) => {
+    console.log('[SERVER_DIRECT] Migration triggered via ' + req.method);
+
+    // Explicit CORS implementation for safety
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(200);
+    }
+
+    const env = { ...process.env };
+    // Force PgBouncer compatibility
+    if (env.DATABASE_URL && !env.DATABASE_URL.includes('pgbouncer=true')) {
+        env.DATABASE_URL += (env.DATABASE_URL.includes('?') ? '&' : '?') + 'pgbouncer=true';
+    }
+
+    try {
+        const { exec } = require('child_process');
+        const util = require('util');
+        const execPromise = util.promisify(exec);
+
+        const { stdout, stderr } = await execPromise('npx prisma db push --accept-data-loss', { env });
+        console.log('[SERVER_DIRECT] STDOUT:', stdout);
+
+        res.json({ success: true, output: stdout });
+    } catch (error: any) {
+        console.error('[SERVER_DIRECT] Error:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+app.all('/api/run-migrations', runMigrationHandler);
 
 app.use(cors({
     origin: true, // Reflect request origin
@@ -53,29 +89,7 @@ app.get('/api/health', (req: Request, res: Response) => {
 
 // Emergency Migration Endpoint (Direct in server.ts)
 // Using require to avoid top-level import issues if not needed
-const runMigrationHandler = async (req: Request, res: Response) => {
-    console.log('[SERVER_DIRECT] Migration triggered via ' + req.method);
-
-    const env = { ...process.env };
-    // Force PgBouncer compatibility
-    if (env.DATABASE_URL && !env.DATABASE_URL.includes('pgbouncer=true')) {
-        env.DATABASE_URL += (env.DATABASE_URL.includes('?') ? '&' : '?') + 'pgbouncer=true';
-    }
-
-    try {
-        const { exec } = require('child_process');
-        const util = require('util');
-        const execPromise = util.promisify(exec);
-
-        const { stdout, stderr } = await execPromise('npx prisma db push --accept-data-loss', { env });
-        console.log('[SERVER_DIRECT] STDOUT:', stdout);
-
-        res.json({ success: true, output: stdout });
-    } catch (error: any) {
-        console.error('[SERVER_DIRECT] Error:', error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-};
+// Old location removed
 
 app.all('/api/run-migrations', runMigrationHandler);
 
