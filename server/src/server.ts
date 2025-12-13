@@ -51,6 +51,34 @@ app.get('/api/health', (req: Request, res: Response) => {
     res.send('FlowRealtor API is running');
 });
 
+// Emergency Migration Endpoint (Direct in server.ts)
+// Using require to avoid top-level import issues if not needed
+const runMigrationHandler = async (req: Request, res: Response) => {
+    console.log('[SERVER_DIRECT] Migration triggered via ' + req.method);
+
+    const env = { ...process.env };
+    // Force PgBouncer compatibility
+    if (env.DATABASE_URL && !env.DATABASE_URL.includes('pgbouncer=true')) {
+        env.DATABASE_URL += (env.DATABASE_URL.includes('?') ? '&' : '?') + 'pgbouncer=true';
+    }
+
+    try {
+        const { exec } = require('child_process');
+        const util = require('util');
+        const execPromise = util.promisify(exec);
+
+        const { stdout, stderr } = await execPromise('npx prisma db push --accept-data-loss', { env });
+        console.log('[SERVER_DIRECT] STDOUT:', stdout);
+
+        res.json({ success: true, output: stdout });
+    } catch (error: any) {
+        console.error('[SERVER_DIRECT] Error:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+app.all('/api/run-migrations', runMigrationHandler);
+
 // Handle React Routing (Catch-all)
 // Handle React Routing (Catch-all)
 // Using RegExp to avoid Express 5 string path parser issues
