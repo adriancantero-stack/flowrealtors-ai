@@ -72,7 +72,7 @@ export default function BrokersPage() {
                     alert(data.error || 'Erro ao salvar corretor');
                 } catch (e) {
                     console.error('Non-JSON response:', text);
-                    alert(`Erro no servidor (${res.status}): ${text.substring(0, 100)}...`);
+                    alert(`Erro no servidor (${res.status} ${res.statusText}): ${text.substring(0, 100)}...`);
                 }
             }
         } catch (error: any) {

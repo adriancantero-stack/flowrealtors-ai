@@ -16,10 +16,10 @@ router.get('/dashboard', getDashboardStats);
 router.get('/leads', getSystemLeads);
 
 // Brokers (Users)
-router.get('/brokers', listBrokers);
-router.post('/brokers', createBroker);
-router.put('/brokers/:id', updateBroker);
-router.delete('/brokers/:id', deleteBroker);
+router.get(['/brokers', '/brokers/'], listBrokers);
+router.post(['/brokers', '/brokers/'], createBroker);
+router.put(['/brokers/:id', '/brokers/:id/'], updateBroker);
+router.delete(['/brokers/:id', '/brokers/:id/'], deleteBroker);
 
 // Global Settings
 router.get('/settings', getGlobalSettings);
