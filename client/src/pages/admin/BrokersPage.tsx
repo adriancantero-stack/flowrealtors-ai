@@ -167,7 +167,7 @@ export default function BrokersPage() {
                         }}
                         className="flex items-center gap-2 bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition shadow-sm font-medium text-sm"
                     >
-                        Testar Conexão
+                        TESTAR (v2.22)
                     </button>
                     <button
                         onClick={openNew}
