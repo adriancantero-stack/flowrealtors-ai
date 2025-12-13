@@ -2,8 +2,8 @@
     "name": "flowrealtors-monorepo",
     "version": "1.0.0",
     "scripts": {
-        "install-all": "npm install && cd client && npm install && cd ../server && npm install",
-        "build": "cd client && npm run build && rm -rf ../server/public/* && cp -r dist/* ../server/public/ && cd ../server && npm run build",
+        "postinstall": "cd client && npm install && cd ../server && npm install",
+        "build": "cd client && npm run build && mkdir -p ../server/public && rm -rf ../server/public/* && cp -r dist/* ../server/public/ && cd ../server && npm run build",
         "start": "cd server && node index.js"
     },
     "engines": {
