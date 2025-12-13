@@ -20,7 +20,7 @@ app.use(cors({
     credentials: true,
     // Let CORS default to allowing all standard methods/headers to avoid 405 issues
 }));
-app.options('*', cors()); // Enable pre-flight across-the-board
+app.options(/.*/, cors()); // Enable pre-flight with RegExp for Express 5 compatibility
 app.use(express.json());
 
 import authRoutes from './routes/authRoutes';
