@@ -7,10 +7,19 @@ interface Broker {
     email: string;
     phone: string;
     city: string;
+    state?: string;
     status: string;
     role: string;
     _count?: { leads: number };
 }
+
+const US_STATES = [
+    'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
+    'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
+    'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
+    'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
+    'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
+];
 
 export default function BrokersPage() {
     const [brokers, setBrokers] = useState<Broker[]>([]);
@@ -20,7 +29,7 @@ export default function BrokersPage() {
 
     // Form Stats
     const [formData, setFormData] = useState({
-        name: '', email: '', phone: '', city: '', status: 'active', default_lang: 'pt'
+        name: '', email: '', phone: '', city: '', state: '', status: 'active', default_lang: 'pt'
     });
 
     useEffect(() => {
@@ -54,7 +63,7 @@ export default function BrokersPage() {
             if (res.ok) {
                 setIsModalOpen(false);
                 setEditingBroker(null);
-                setFormData({ name: '', email: '', phone: '', city: '', status: 'active', default_lang: 'pt' });
+                setFormData({ name: '', email: '', phone: '', city: '', state: '', status: 'active', default_lang: 'pt' });
                 fetchBrokers();
             } else {
                 const text = await res.text();
@@ -89,6 +98,7 @@ export default function BrokersPage() {
             email: broker.email,
             phone: broker.phone || '',
             city: broker.city || '',
+            state: broker.state || '',
             status: broker.status,
             default_lang: 'pt' // Assuming default or fetch from correct type if extended
         });
@@ -97,7 +107,7 @@ export default function BrokersPage() {
 
     const openNew = () => {
         setEditingBroker(null);
-        setFormData({ name: '', email: '', phone: '', city: '', status: 'active', default_lang: 'pt' });
+        setFormData({ name: '', email: '', phone: '', city: '', state: '', status: 'active', default_lang: 'pt' });
         setIsModalOpen(true);
     };
 
@@ -239,13 +249,27 @@ export default function BrokersPage() {
                                         placeholder="+55 11..."
                                     />
                                 </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-wide">Cidade</label>
                                     <input
                                         className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition"
                                         value={formData.city} onChange={e => setFormData({ ...formData, city: e.target.value })}
-                                        placeholder="São Paulo via..."
+                                        placeholder="Ocala"
                                     />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-wide">Estado</label>
+                                    <select
+                                        className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition"
+                                        value={formData.state} onChange={e => setFormData({ ...formData, state: e.target.value })}
+                                    >
+                                        <option value="">UF</option>
+                                        {US_STATES.map(uf => (
+                                            <option key={uf} value={uf}>{uf}</option>
+                                        ))}
+                                    </select>
                                 </div>
                             </div>
                             <div>
@@ -265,8 +289,9 @@ export default function BrokersPage() {
                             </div>
                         </form>
                     </div>
-                </div>
-            )}
-        </div>
+                </div >
+            )
+            }
+        </div >
     );
 }

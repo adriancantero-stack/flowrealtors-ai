@@ -25,7 +25,7 @@ export const listBrokers = async (req: Request, res: Response) => {
 // Create a new broker
 export const createBroker = async (req: Request, res: Response) => {
     try {
-        const { name, email, phone, city, photo_url, calendly_link, default_lang } = req.body;
+        const { name, email, phone, city, state, photo_url, calendly_link, default_lang } = req.body;
 
         if (!name || !email) {
             return res.status(400).json({ error: 'Name and Email are required' });
@@ -42,6 +42,7 @@ export const createBroker = async (req: Request, res: Response) => {
                 email,
                 phone,
                 city,
+                state,
                 photo_url,
                 calendly_link,
                 default_lang: default_lang || 'pt',
@@ -61,7 +62,7 @@ export const createBroker = async (req: Request, res: Response) => {
 export const updateBroker = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const { name, email, phone, city, photo_url, calendly_link, default_lang, status } = req.body;
+        const { name, email, phone, city, state, photo_url, calendly_link, default_lang, status } = req.body;
 
         const broker = await prisma.user.update({
             where: { id: parseInt(id) },
@@ -70,6 +71,7 @@ export const updateBroker = async (req: Request, res: Response) => {
                 email,
                 phone,
                 city,
+                state,
                 photo_url,
                 calendly_link,
                 default_lang,

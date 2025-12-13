@@ -66,6 +66,7 @@ model User {
   email         String   @unique
   phone         String?
   city          String?
+  state         String?
   photo_url     String?
   calendly_link String?
   default_lang  String   @default("pt") // en, es, pt
