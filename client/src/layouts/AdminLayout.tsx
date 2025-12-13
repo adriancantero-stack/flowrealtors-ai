@@ -25,7 +25,7 @@ export default function AdminLayout() {
             <aside className="w-64 bg-slate-900 text-white flex flex-col fixed h-full z-10">
                 <div className="h-16 flex items-center px-6 border-b border-slate-800">
                     <div className="flex items-center gap-2">
-                        <img src="/logo-full.png" alt="FlowRealtors" className="h-8 w-auto" />
+                        <img src="/logo-white.png" alt="FlowRealtors" className="h-8 w-auto" />
                     </div>
                 </div>
 
