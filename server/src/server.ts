@@ -52,7 +52,8 @@ app.get('/api/health', (req: Request, res: Response) => {
 
 // Handle React Routing (Catch-all)
 // Handle React Routing (Catch-all)
-app.get('/:catchall(.*)', (req: Request, res: Response) => {
+// Using RegExp to avoid Express 5 string path parser issues
+app.get(/.*/, (req: Request, res: Response) => {
     // If request is for API, return 404 (don't serve HTML)
     if (req.url.startsWith('/api')) {
         return res.status(404).json({ error: 'API endpoint not found' });
