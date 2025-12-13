@@ -1,4 +1,4 @@
-console.log(`[${new Date().toISOString()}] STARTING SERVER PROCESS... v2.15 (COMPILED JS)`);
+console.log(`[${new Date().toISOString()}] STARTING SERVER PROCESS... v2.16 (CLEAN DIST)`);
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -19,7 +19,7 @@ app.use((req, res, next) => {
 app.get('/ping', (req, res) => res.send('pong'));
 
 // Version Check
-app.get('/api/version', (req, res) => res.json({ version: 'v2.15', timestamp: new Date().toISOString() }));
+app.get('/api/version', (req, res) => res.json({ version: 'v2.16', timestamp: new Date().toISOString() }));
 
 // System Fix (Bypassing /api prefix to rule out prefix issues)
 const systemFixHandler = async (req: Request, res: Response) => {
@@ -79,7 +79,7 @@ app.use('/api/whatsapp', whatsappRoutes);
 import path from 'path';
 
 // Serve frontend static files
-app.use(express.static(path.join(__dirname, '../public')));
+// app.use(express.static(path.join(__dirname, '../public')));
 
 // API Routes
 app.get('/api/health', (req: Request, res: Response) => {
