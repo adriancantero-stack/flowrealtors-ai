@@ -1,4 +1,4 @@
-console.log(`[${new Date().toISOString()}] STARTING SERVER PROCESS... v2.18 (SAFE MODE - NO ROUTES)`);
+console.log(`[${new Date().toISOString()}] STARTING SERVER PROCESS... v2.21 (FULL RESTORE)`);
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -19,7 +19,7 @@ app.use((req, res, next) => {
 app.get('/ping', (req, res) => res.send('pong'));
 
 // Version Check
-app.get('/api/version', (req, res) => res.json({ version: 'v2.18', timestamp: new Date().toISOString() }));
+app.get('/api/version', (req, res) => res.json({ version: 'v2.21', type: 'FULL_RESTORE', env: process.env.NODE_ENV }));
 
 // System Fix (Bypassing /api prefix to rule out prefix issues)
 const systemFixHandler = async (req: Request, res: Response) => {
@@ -58,7 +58,6 @@ app.use(cors({
 app.options(/.*/, cors()); // Enable pre-flight with RegExp for Express 5 compatibility
 app.use(express.json());
 
-/*
 import authRoutes from './routes/authRoutes';
 import leadRoutes from './routes/leadRoutes';
 import aiRoutes from './routes/aiRoutes';
@@ -76,7 +75,6 @@ app.use('/api/automation', automationRoutes);
 app.use('/api/funnel', funnelRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/whatsapp', whatsappRoutes);
-*/
 
 import path from 'path';
 

@@ -26,11 +26,19 @@ export default function BrokersPage() {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingBroker, setEditingBroker] = useState<Broker | null>(null);
+    const [selectedBroker, setSelectedBroker] = useState<any>(null);
 
     // Form Stats
     const [formData, setFormData] = useState({
         name: '', email: '', phone: '', city: '', state: '', status: 'active', default_lang: 'pt'
     });
+
+    // FIXED: Use the same fallback URL logic as GeminiSettingsPage
+    let ENV_API = import.meta.env.VITE_API_URL;
+    if (ENV_API && !ENV_API.startsWith('http')) {
+        ENV_API = `https://${ENV_API}`;
+    }
+    const API_BASE = (ENV_API && ENV_API !== '') ? ENV_API : 'https://flowrealtors-ai-production.up.railway.app';
 
     useEffect(() => {
         fetchBrokers();
@@ -38,11 +46,14 @@ export default function BrokersPage() {
 
     const fetchBrokers = async () => {
         try {
-            const res = await fetch('/api/admin/brokers');
-            const data = await res.json();
-            setBrokers(data);
+            // Use API_BASE
+            const res = await fetch(`${API_BASE}/api/admin/brokers`);
+            if (res.ok) {
+                const data = await res.json();
+                setBrokers(data);
+            }
         } catch (error) {
-            console.error('Failed to load brokers', error);
+            console.error('Error fetching brokers:', error);
         } finally {
             setLoading(false);
         }
@@ -124,7 +135,7 @@ export default function BrokersPage() {
                             if (!confirm('Reparar banco de dados? (Isso pode levar alguns segundos)')) return;
                             try {
                                 // Try SPECIAL system route
-                                const res = await fetch('/_system/fix-db');
+                                const res = await fetch(`${API_BASE}/_system/fix-db`);
                                 if (res.ok) {
                                     const data = await res.json();
                                     alert(data.success ? 'Reparo concluído com sucesso!' : 'Falha no reparo: ' + data.error);
@@ -136,20 +147,21 @@ export default function BrokersPage() {
                                 alert('Erro de rede: ' + e.message);
                             }
                         }}
-                        className="flex items-center gap-2 bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition shadow-sm font-medium text-sm"
+                        className="flex items-center gap-2 bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition shadow-sm font-medium text-sm"
                     >
                         Reparar Banco
                     </button>
                     <button
                         onClick={async () => {
                             try {
-                                const res = await fetch('/api/version');
+                                const res = await fetch(`${API_BASE}/api/version`);
                                 if (res.ok) {
                                     const data = await res.json();
                                     alert(`Conectado! Versão do Servidor: ${data.version}\nAmbiente: ${data.env}`);
                                 } else {
+                                    // Try fallback text if json fails
                                     const text = await res.text();
-                                    alert(`Erro versão: ${res.status}\n${text}`);
+                                    alert(`Erro versão: ${res.status}\n${text.substring(0, 100)}...`);
                                 }
                             } catch (e: any) { alert('Erro ping: ' + e.message); }
                         }}
