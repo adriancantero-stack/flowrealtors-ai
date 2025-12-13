@@ -27,7 +27,11 @@ export const createBroker = async (req: Request, res: Response) => {
     try {
         const { name, email, phone, city, state, photo_url, calendly_link, default_lang } = req.body;
 
+        console.log('[CREATE BROKER] Request received for:', email);
+        console.log('[CREATE BROKER] Payload:', JSON.stringify(req.body));
+
         if (!name || !email) {
+            console.log('[CREATE BROKER] Validation failed: missing name or email');
             return res.status(400).json({ error: 'Name and Email are required' });
         }
 
@@ -52,9 +56,13 @@ export const createBroker = async (req: Request, res: Response) => {
         });
 
         res.status(201).json(broker);
-    } catch (error) {
-        console.error('Error creating broker:', error);
-        res.status(500).json({ error: 'Failed to create broker' });
+    } catch (error: any) {
+        console.error('[CREATE BROKER] Critical Error:', error);
+        // Return specifics if possible (e.g. unique constraint)
+        if (error.code === 'P2002') {
+            return res.status(400).json({ error: 'Este e-mail já está em uso.' });
+        }
+        res.status(500).json({ error: `Failed to create broker: ${error.message}` });
     }
 };
 
