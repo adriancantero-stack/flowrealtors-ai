@@ -8,18 +8,22 @@ import { exec } from 'child_process';
 const router = Router();
 
 // Middleware to check admin role (mocked for now, assuming all requests to /api/admin are authorized in dev)
+router.use((req, res, next) => {
+    console.log(`[ADMIN ROUTER] ${req.method} ${req.url}`);
+    next();
+});
 
-// Dashboard
+// Admin Stats
 router.get('/dashboard', getDashboardStats);
 
 // Leads
 router.get('/leads', getSystemLeads);
 
 // Brokers (Users)
-router.get(['/brokers', '/brokers/'], listBrokers);
-router.post(['/brokers', '/brokers/'], createBroker);
-router.put(['/brokers/:id', '/brokers/:id/'], updateBroker);
-router.delete(['/brokers/:id', '/brokers/:id/'], deleteBroker);
+router.get('/brokers', listBrokers);
+router.post('/brokers', createBroker);
+router.put('/brokers/:id', updateBroker);
+router.delete('/brokers/:id', deleteBroker);
 
 // Global Settings
 router.get('/settings', getGlobalSettings);
