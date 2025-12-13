@@ -66,12 +66,19 @@ app.listen(Number(PORT), '0.0.0.0', () => {
     console.log(`Server is running on port ${PORT}`);
 
     // Auto-run migrations in production
-    // Auto-run migrations in production
     if (process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT) {
         console.log('Running database migrations...');
+
+        // Fix for "prepared statement s0 already exists" with PgBouncer
+        const env = { ...process.env };
+        if (env.DATABASE_URL && !env.DATABASE_URL.includes('pgbouncer=true')) {
+            console.log('Appending pgbouncer=true to DATABASE_URL for migration...');
+            env.DATABASE_URL += (env.DATABASE_URL.includes('?') ? '&' : '?') + 'pgbouncer=true';
+        }
+
         // Using exec to run the command
         const { exec } = require('child_process');
-        exec('npx prisma db push --accept-data-loss', (error: any, stdout: any, stderr: any) => {
+        exec('npx prisma db push --accept-data-loss', { env }, (error: any, stdout: any, stderr: any) => {
             if (error) {
                 console.error(`Migration Error: ${error.message}`);
                 return;
