@@ -50,18 +50,25 @@ export default function BrokersPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
             });
+
             if (res.ok) {
                 setIsModalOpen(false);
                 setEditingBroker(null);
                 setFormData({ name: '', email: '', phone: '', city: '', status: 'active', default_lang: 'pt' });
                 fetchBrokers();
             } else {
-                const data = await res.json();
-                alert(data.error || 'Erro ao salvar corretor');
+                const text = await res.text();
+                try {
+                    const data = JSON.parse(text);
+                    alert(data.error || 'Erro ao salvar corretor');
+                } catch (e) {
+                    console.error('Non-JSON response:', text);
+                    alert(`Erro no servidor (${res.status}): ${text.substring(0, 100)}...`);
+                }
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to save broker', error);
-            alert('Erro de conexão ao salvar corretor');
+            alert('Erro de conexão: ' + (error.message || 'Falha ao contatar servidor'));
         }
     };
 

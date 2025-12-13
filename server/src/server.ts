@@ -65,16 +65,19 @@ app.listen(Number(PORT), '0.0.0.0', () => {
     console.log(`Server is running on port ${PORT}`);
 
     // Auto-run migrations in production
-    // if (process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT) {
-    //     console.log('Running database migrations...');
-    //     exec('npx prisma db push --accept-data-loss', (error, stdout, stderr) => {
-    //         if (error) {
-    //             console.error(`Migration Error: ${error.message}`);
-    //             return;
-    //         }
-    //         if (stderr) console.error(`Migration Stderr: ${stderr}`);
-    //         console.log(`Migration Stdout: ${stdout}`);
-    //         console.log('Database migration completed successfully.');
-    //     });
-    // }
+    // Auto-run migrations in production
+    if (process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT) {
+        console.log('Running database migrations...');
+        // Using exec to run the command
+        const { exec } = require('child_process');
+        exec('npx prisma db push --accept-data-loss', (error: any, stdout: any, stderr: any) => {
+            if (error) {
+                console.error(`Migration Error: ${error.message}`);
+                return;
+            }
+            if (stderr) console.error(`Migration Stderr: ${stderr}`);
+            console.log(`Migration Stdout: ${stdout}`);
+            console.log('Database migration completed successfully.');
+        });
+    }
 });
