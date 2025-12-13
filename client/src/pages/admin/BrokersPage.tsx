@@ -124,10 +124,15 @@ export default function BrokersPage() {
                             if (!confirm('Reparar banco de dados? (Isso pode levar alguns segundos)')) return;
                             try {
                                 const res = await fetch('/api/admin/run-migrations', { method: 'POST' });
-                                const data = await res.json();
-                                alert(data.success ? 'Reparo concluído com sucesso!' : 'Falha no reparo: ' + data.error);
+                                if (res.ok) {
+                                    const data = await res.json();
+                                    alert(data.success ? 'Reparo concluído com sucesso!' : 'Falha no reparo: ' + data.error);
+                                } else {
+                                    const text = await res.text();
+                                    alert(`Erro no reparo (${res.status} ${res.statusText}): ${text}`);
+                                }
                             } catch (e: any) {
-                                alert('Erro ao tentar reparar: ' + e.message);
+                                alert('Erro de rede/parse: ' + e.message);
                             }
                         }}
                         className="flex items-center gap-2 bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition shadow-sm font-medium text-sm"

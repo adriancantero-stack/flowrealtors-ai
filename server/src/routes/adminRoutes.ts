@@ -20,8 +20,18 @@ router.get('/dashboard', getDashboardStats);
 router.get('/leads', getSystemLeads);
 
 // Brokers (Users)
-router.get('/brokers', listBrokers);
-router.post('/brokers', createBroker);
+// Brokers (Users) - Explicit CORS and Logging
+import cors from 'cors';
+
+router.all('/brokers', (req, res, next) => {
+    console.log(`[ADMIN_DEBUG] /brokers matched. Method: ${req.method}`);
+    next();
+});
+
+router.options('/brokers', cors()); // Force pre-flight handling
+router.get('/brokers', cors(), listBrokers);
+router.post('/brokers', cors(), createBroker);
+
 router.put('/brokers/:id', updateBroker);
 router.delete('/brokers/:id', deleteBroker);
 
