@@ -19,8 +19,9 @@ import AdminLayout from './layouts/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminBrokersPage from './pages/admin/BrokersPage';
 import AdminLeadsPage from './pages/admin/LeadsPage';
-import AdminSettingsPage from './pages/admin/SettingsPage';
 import AdminLogsPage from './pages/admin/LogsPage';
+import AdminGeminiPage from './pages/admin/GeminiSettingsPage';
+import AdminWhatsAppPage from './pages/admin/WhatsAppSettingsPage';
 
 // Funnel Pages
 import PublicFunnelLayout from './layouts/PublicFunnelLayout';
@@ -60,14 +61,15 @@ function App() {
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="brokers" element={<AdminBrokersPage />} />
               <Route path="leads" element={<AdminLeadsPage />} />
-              <Route path="settings" element={<AdminSettingsPage />} />
+              <Route path="leads" element={<AdminLeadsPage />} />
               <Route path="logs" element={<AdminLogsPage />} />
+              <Route path="gemini" element={<AdminGeminiPage />} />
+              <Route path="whatsapp" element={<AdminWhatsAppPage />} />
 
               {/* Legacy Redirects */}
               <Route path="users" element={<Navigate to="brokers" replace />} />
               <Route path="monitoring" element={<Navigate to="logs" replace />} />
-              <Route path="gemini" element={<Navigate to="settings" replace />} />
-              <Route path="whatsapp" element={<Navigate to="settings" replace />} />
+              <Route path="settings" element={<Navigate to="gemini" replace />} />
             </Route>
           </Route>
 

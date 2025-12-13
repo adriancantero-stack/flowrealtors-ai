@@ -1,7 +1,7 @@
 import { Outlet, NavLink, Link, useParams } from 'react-router-dom';
 import {
     LayoutDashboard, Users, MessageSquare, Activity,
-    Settings, LogOut
+    Bot, MessageCircle, LogOut
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useTranslation } from '../i18n';
@@ -15,7 +15,8 @@ export default function AdminLayout() {
         { href: `${prefix}/admin/dashboard`, label: t('admin.nav.overview'), icon: LayoutDashboard },
         { href: `${prefix}/admin/brokers`, label: 'Corretores', icon: Users },
         { href: `${prefix}/admin/leads`, label: t('admin.nav.leads'), icon: MessageSquare },
-        { href: `${prefix}/admin/settings`, label: 'Configurações', icon: Settings },
+        { href: `${prefix}/admin/gemini`, label: 'AI Global (Gemini)', icon: Bot },
+        { href: `${prefix}/admin/whatsapp`, label: 'WhatsApp API', icon: MessageCircle },
         { href: `${prefix}/admin/logs`, label: 'Logs & Monitor', icon: Activity },
     ];
 
