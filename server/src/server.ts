@@ -19,7 +19,7 @@ app.use((req, res, next) => {
 app.get('/ping', (req, res) => res.send('pong'));
 
 // Version Check
-app.get('/api/version', (req, res) => res.json({ version: 'v2.29', type: 'CORS_STRICT_FIX', env: process.env.NODE_ENV }));
+app.get('/api/version', (req, res) => res.json({ version: 'v2.30', type: 'EXPRESS_5_FIX', env: process.env.NODE_ENV }));
 
 // System Fix (Bypassing /api prefix to rule out prefix issues)
 const systemFixHandler = async (req: Request, res: Response) => {
@@ -50,27 +50,7 @@ app.all('/_system/fix-db', systemFixHandler);
 // Keep old one too just in case
 app.all('/api/run-migrations', systemFixHandler);
 
-app.use(cors({
-    origin: true, // Reflect request origin
-    credentials: true,
-    // Let CORS default to allowing all standard methods/headers to avoid 405 issues
-}));
-app.get('/api/health', (req, res) => res.status(200).send('OK')); // Health check for Railway
-
-// Robust CORS Configuration
-app.use(cors({
-    origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps or curl requests)
-        if (!origin) return callback(null, true);
-        // Allow ANY origin dynamically to support Credentials=true
-        return callback(null, true);
-    },
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
-    credentials: true
-}));
-
-app.options('*', cors()); // Enable pre-flight for all routes
+app.options(/.*/, cors()); // Enable pre-flight for all routes - RegExp is safer for Express 5
 
 app.use(express.json());
 
