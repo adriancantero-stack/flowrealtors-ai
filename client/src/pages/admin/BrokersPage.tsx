@@ -164,9 +164,9 @@ export default function BrokersPage() {
                                 }
                             } catch (e: any) { alert('Erro ping: ' + e.message); }
                         }}
-                        className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition shadow-sm font-medium text-sm"
+                        className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm font-medium text-sm"
                     >
-                        TESTAR (v2.26)
+                        TESTAR (v2.27)
                     </button>
                     <button
                         onClick={openNew}

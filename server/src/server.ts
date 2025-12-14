@@ -19,7 +19,7 @@ app.use((req, res, next) => {
 app.get('/ping', (req, res) => res.send('pong'));
 
 // Version Check
-app.get('/api/version', (req, res) => res.json({ version: 'v2.25', type: 'FACTORY_RESET', env: process.env.NODE_ENV }));
+app.get('/api/version', (req, res) => res.json({ version: 'v2.27', type: 'CORS_UNLOCKED', env: process.env.NODE_ENV }));
 
 // System Fix (Bypassing /api prefix to rule out prefix issues)
 const systemFixHandler = async (req: Request, res: Response) => {
@@ -55,7 +55,18 @@ app.use(cors({
     credentials: true,
     // Let CORS default to allowing all standard methods/headers to avoid 405 issues
 }));
-app.options(/.*/, cors()); // Enable pre-flight with RegExp for Express 5 compatibility
+app.get('/api/health', (req, res) => res.status(200).send('OK')); // Health check for Railway
+
+// Robust CORS Configuration
+app.use(cors({
+    origin: '*', // Allow all origins for now to unblock
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+    credentials: true
+}));
+
+app.options('*', cors()); // Enable pre-flight for all routes
+
 app.use(express.json());
 
 import authRoutes from './routes/authRoutes';
