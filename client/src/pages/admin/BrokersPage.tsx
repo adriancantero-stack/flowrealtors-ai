@@ -60,7 +60,10 @@ export default function BrokersPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const url = editingBroker ? `/api/admin/brokers/${editingBroker.id}` : '/api/admin/brokers';
+        // FIXED: Use API_BASE for cross-domain requests
+        const url = editingBroker
+            ? `${API_BASE}/api/admin/brokers/${editingBroker.id}`
+            : `${API_BASE}/api/admin/brokers`;
         const method = editingBroker ? 'PUT' : 'POST';
 
         try {
@@ -75,6 +78,7 @@ export default function BrokersPage() {
                 setEditingBroker(null);
                 setFormData({ name: '', email: '', phone: '', city: '', state: '', status: 'active', default_lang: 'pt' });
                 fetchBrokers();
+                alert('Salvo com sucesso!');
             } else {
                 const text = await res.text();
                 try {
@@ -94,7 +98,8 @@ export default function BrokersPage() {
     const handleDelete = async (id: number) => {
         if (!confirm('Are you sure you want to delete this broker?')) return;
         try {
-            await fetch(`/api/admin/brokers/${id}`, { method: 'DELETE' });
+            // FIXED: Use API_BASE
+            await fetch(`${API_BASE}/api/admin/brokers/${id}`, { method: 'DELETE' });
             fetchBrokers();
         } catch (error) {
             console.error('Delete failed', error);
@@ -186,7 +191,7 @@ export default function BrokersPage() {
                         }}
                         className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition shadow-sm font-medium text-sm"
                     >
-                        TESTAR (v2.35)
+                        TESTAR (v2.36)
                     </button>
                     <button
                         onClick={openNew}
