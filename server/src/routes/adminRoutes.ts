@@ -20,17 +20,14 @@ router.get('/dashboard', getDashboardStats);
 router.get('/leads', getSystemLeads);
 
 // Brokers (Users)
-// Brokers (Users) - Explicit CORS and Logging
-import cors from 'cors';
-
+// Brokers (Users)
 router.all('/brokers', (req, res, next) => {
     console.log(`[ADMIN_DEBUG] /brokers matched. Method: ${req.method}`);
     next();
 });
 
-router.options('/brokers', cors()); // Force pre-flight handling
-router.get('/brokers', cors(), listBrokers);
-router.post('/brokers', cors(), createBroker);
+router.get('/brokers', listBrokers);
+router.post('/brokers', createBroker);
 
 router.put('/brokers/:id', updateBroker);
 router.delete('/brokers/:id', deleteBroker);
@@ -49,9 +46,8 @@ router.get('/users', getUsers); // Keep for compatibility if needed
 router.get('/users/:id', getUserDetails);
 router.post('/action', adminAction);
 
-// Manual Migration - Explicit CORS
-router.options('/run-migrations', cors());
-router.post('/run-migrations', cors(), async (req, res) => {
+// Manual Migration
+router.post('/run-migrations', async (req, res) => {
     console.log('[ADMIN_DEBUG] /run-migrations called');
 
     // Fix for PgBouncer
