@@ -132,15 +132,23 @@ export default function BrokersPage() {
                     <button
                         onClick={async () => {
                             if (!confirm('Reparar banco de dados? (Isso pode levar alguns segundos)')) return;
+
+                            // Aligning with the working TESTAR button strategy
+                            const TARGET_URL = 'https://flowrealtors-ai-production.up.railway.app/_system/fix-db';
+
                             try {
-                                // Try SPECIAL system route
-                                const res = await fetch(`${API_BASE}/_system/fix-db`);
+                                const res = await fetch(TARGET_URL, {
+                                    method: 'POST', // Semantic correctness
+                                    mode: 'cors',   // Explicit CORS
+                                    headers: { 'Accept': 'application/json' }
+                                });
+
                                 if (res.ok) {
                                     const data = await res.json();
                                     alert(data.success ? 'Reparo concluído com sucesso!' : 'Falha no reparo: ' + data.error);
                                 } else {
                                     const text = await res.text();
-                                    alert(`Erro no reparo (${res.status} ${res.statusText}): ${text}`);
+                                    alert(`Erro no reparo (${res.status}): ${text}`);
                                 }
                             } catch (e: any) {
                                 alert('Erro de rede: ' + e.message);
@@ -178,7 +186,7 @@ export default function BrokersPage() {
                         }}
                         className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition shadow-sm font-medium text-sm"
                     >
-                        TESTAR (v2.32 FINAL)
+                        TESTAR (v2.33)
                     </button>
                     <button
                         onClick={openNew}
