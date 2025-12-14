@@ -135,65 +135,6 @@ export default function BrokersPage() {
                 </div>
                 <div className="flex gap-2">
                     <button
-                        onClick={async () => {
-                            if (!confirm('Reparar banco de dados? (Isso pode levar alguns segundos)')) return;
-
-                            // Aligning with the working TESTAR button strategy
-                            const TARGET_URL = 'https://flowrealtors-ai-production.up.railway.app/_system/fix-db';
-
-                            try {
-                                const res = await fetch(TARGET_URL, {
-                                    method: 'POST', // Semantic correctness
-                                    mode: 'cors',   // Explicit CORS
-                                    headers: { 'Accept': 'application/json' }
-                                });
-
-                                if (res.ok) {
-                                    const data = await res.json();
-                                    alert(data.success ? 'Reparo concluído com sucesso!' : 'Falha no reparo: ' + data.error);
-                                } else {
-                                    const text = await res.text();
-                                    alert(`Erro no reparo (${res.status}): ${text}`);
-                                }
-                            } catch (e: any) {
-                                alert('Erro de rede: ' + e.message);
-                            }
-                        }}
-                        className="flex items-center gap-2 bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition shadow-sm font-medium text-sm"
-                    >
-                        Reparar Banco
-                    </button>
-                    <button
-                        onClick={async () => {
-                            const TARGET_URL = 'https://flowrealtors-ai-production.up.railway.app/api/version';
-                            const startTime = Date.now();
-                            try {
-                                alert(`Tentando conectar em:\n${TARGET_URL}\n\nAguarde...`);
-                                const res = await fetch(TARGET_URL, {
-                                    method: 'GET',
-                                    mode: 'cors',
-                                    headers: { 'Accept': 'application/json' }
-                                });
-
-                                const duration = Date.now() - startTime;
-
-                                if (res.ok) {
-                                    const data = await res.json();
-                                    alert(`SUCESSO (${duration}ms)!\nVersão: ${data.version}\nType: ${data.type}`);
-                                } else {
-                                    const text = await res.text();
-                                    alert(`FALHA HTTP ${res.status} (${duration}ms):\n${text.substring(0, 100)}`);
-                                }
-                            } catch (e: any) {
-                                const duration = Date.now() - startTime;
-                                alert(`ERRO DE REDE (${duration}ms):\n${e.message}\n\nPossíveis causas:\n1. Site bloqueado (AdBlock/VPN)\n2. Servidor fora do ar\n3. Erro de SSL`);
-                            }
-                        }}
-                        className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition shadow-sm font-medium text-sm"
-                    >
-                        TESTAR (v2.36)
-                    </button>
-                    <button
                         onClick={openNew}
                         className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm font-medium text-sm"
                     >
