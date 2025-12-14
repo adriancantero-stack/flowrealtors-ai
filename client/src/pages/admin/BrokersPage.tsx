@@ -176,9 +176,9 @@ export default function BrokersPage() {
                                 alert(`ERRO DE REDE (${duration}ms):\n${e.message}\n\nPossíveis causas:\n1. Site bloqueado (AdBlock/VPN)\n2. Servidor fora do ar\n3. Erro de SSL`);
                             }
                         }}
-                        className="flex items-center gap-2 bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition shadow-sm font-medium text-sm"
+                        className="flex items-center gap-2 bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition shadow-sm font-medium text-sm"
                     >
-                        TESTAR (v2.30)
+                        TESTAR (v2.31 SAFE)
                     </button>
                     <button
                         onClick={openNew}
