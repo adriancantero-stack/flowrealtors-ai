@@ -152,21 +152,33 @@ export default function BrokersPage() {
                     </button>
                     <button
                         onClick={async () => {
+                            const TARGET_URL = 'https://flowrealtors-ai-production.up.railway.app/api/version';
+                            const startTime = Date.now();
                             try {
-                                const res = await fetch(`${API_BASE}/api/version`);
+                                alert(`Tentando conectar em:\n${TARGET_URL}\n\nAguarde...`);
+                                const res = await fetch(TARGET_URL, {
+                                    method: 'GET',
+                                    mode: 'cors',
+                                    headers: { 'Accept': 'application/json' }
+                                });
+
+                                const duration = Date.now() - startTime;
+
                                 if (res.ok) {
                                     const data = await res.json();
-                                    alert(`Conectado! Versão do Servidor: ${data.version}\nAmbiente: ${data.env}`);
+                                    alert(`SUCESSO (${duration}ms)!\nVersão: ${data.version}\nType: ${data.type}`);
                                 } else {
-                                    // Try fallback text if json fails
                                     const text = await res.text();
-                                    alert(`Erro versão: ${res.status}\n${text.substring(0, 100)}...`);
+                                    alert(`FALHA HTTP ${res.status} (${duration}ms):\n${text.substring(0, 100)}`);
                                 }
-                            } catch (e: any) { alert('Erro ping: ' + e.message); }
+                            } catch (e: any) {
+                                const duration = Date.now() - startTime;
+                                alert(`ERRO DE REDE (${duration}ms):\n${e.message}\n\nPossíveis causas:\n1. Site bloqueado (AdBlock/VPN)\n2. Servidor fora do ar\n3. Erro de SSL`);
+                            }
                         }}
-                        className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm font-medium text-sm"
+                        className="flex items-center gap-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition shadow-sm font-medium text-sm"
                     >
-                        TESTAR (v2.27)
+                        TESTAR (v2.28 DEBUG)
                     </button>
                     <button
                         onClick={openNew}
