@@ -15,11 +15,28 @@ app.use((req, res, next) => {
     next();
 });
 
+// MANUAL CORS SAFE MODE (v2.32) - MOVED TO TOP
+// Must be before any routes!
+app.use((req, res, next) => {
+    // Allow everyone
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
+
+    // Handle Preflight immediately
+    if (req.method === 'OPTIONS') {
+        res.sendStatus(200);
+        return;
+    }
+
+    next();
+});
+
 // Root Ping
 app.get('/ping', (req, res) => res.send('pong'));
 
 // Version Check
-app.get('/api/version', (req, res) => res.json({ version: 'v2.31', type: 'MANUAL_CORS_SAFE', env: process.env.NODE_ENV }));
+app.get('/api/version', (req, res) => res.json({ version: 'v2.32', type: 'CORS_ORDER_FIX', env: process.env.NODE_ENV }));
 
 // System Fix (Bypassing /api prefix to rule out prefix issues)
 const systemFixHandler = async (req: Request, res: Response) => {
@@ -49,23 +66,6 @@ const systemFixHandler = async (req: Request, res: Response) => {
 app.all('/_system/fix-db', systemFixHandler);
 // Keep old one too just in case
 app.all('/api/run-migrations', systemFixHandler);
-
-// MANUAL CORS SAFE MODE (v2.31)
-// Bypassing cors library issues and Express 5 router incompatibility
-app.use((req, res, next) => {
-    // Allow everyone
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
-
-    // Handle Preflight immediately
-    if (req.method === 'OPTIONS') {
-        res.sendStatus(200);
-        return;
-    }
-
-    next();
-});
 
 // app.options(/.*/, cors()); // REMOVED caused crash/timeout
 
