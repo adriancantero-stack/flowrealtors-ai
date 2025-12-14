@@ -36,7 +36,7 @@ app.use((req, res, next) => {
 app.get('/ping', (req, res) => res.send('pong'));
 
 // Version Check
-app.get('/api/version', (req, res) => res.json({ version: 'v2.33', type: 'REPAIR_BTN_FIX', env: process.env.NODE_ENV }));
+app.get('/api/version', (req, res) => res.json({ version: 'v2.34', type: 'PGBOUNCER_FIX', env: process.env.NODE_ENV }));
 
 // System Fix (Bypassing /api prefix to rule out prefix issues)
 const systemFixHandler = async (req: Request, res: Response) => {
@@ -45,8 +45,15 @@ const systemFixHandler = async (req: Request, res: Response) => {
 
     // Check Env
     const env = { ...process.env };
-    if (env.DATABASE_URL && !env.DATABASE_URL.includes('pgbouncer=true')) {
-        env.DATABASE_URL += (env.DATABASE_URL.includes('?') ? '&' : '?') + 'pgbouncer=true';
+
+    // FIX: Force PgBouncer mode + Disable Statement Cache
+    // This resolves "prepared statement s1 already exists" error
+    if (env.DATABASE_URL) {
+        const urlObj = new URL(env.DATABASE_URL);
+        urlObj.searchParams.set('pgbouncer', 'true');
+        urlObj.searchParams.set('statement_cache_size', '0'); // CRITICAL for Railway PgBouncer
+        env.DATABASE_URL = urlObj.toString();
+        console.log('[SYSTEM_FIX] Modified DB URL for Migration (Params only):', urlObj.search);
     }
 
     try {
