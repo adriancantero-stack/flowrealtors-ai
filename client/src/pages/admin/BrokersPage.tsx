@@ -26,7 +26,6 @@ export default function BrokersPage() {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingBroker, setEditingBroker] = useState<Broker | null>(null);
-    const [selectedBroker, setSelectedBroker] = useState<any>(null);
 
     // Form Stats
     const [formData, setFormData] = useState({
@@ -165,9 +164,9 @@ export default function BrokersPage() {
                                 }
                             } catch (e: any) { alert('Erro ping: ' + e.message); }
                         }}
-                        className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition shadow-sm font-medium text-sm"
+                        className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition shadow-sm font-medium text-sm"
                     >
-                        REINICIADO (v2.25)
+                        TESTAR (v2.26)
                     </button>
                     <button
                         onClick={openNew}
