@@ -15,6 +15,13 @@ export default function LogsPage() {
     const [status, setStatus] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
+    // FIXED: Use API_BASE for cross-domain requests
+    let ENV_API = import.meta.env.VITE_API_URL;
+    if (ENV_API && !ENV_API.startsWith('http')) {
+        ENV_API = `https://${ENV_API}`;
+    }
+    const API_BASE = (ENV_API && ENV_API !== '') ? ENV_API : 'https://flowrealtors-ai-production.up.railway.app';
+
     useEffect(() => {
         refresh();
         const interval = setInterval(refresh, 30000); // Poll every 30s
@@ -24,8 +31,8 @@ export default function LogsPage() {
     const refresh = async () => {
         try {
             const [logsRes, statusRes] = await Promise.all([
-                fetch('/api/admin/logs?limit=50'),
-                fetch('/api/admin/status')
+                fetch(`${API_BASE}/api/admin/logs?limit=50`),
+                fetch(`${API_BASE}/api/admin/status`)
             ]);
 
             const logsData = await logsRes.json();
@@ -34,7 +41,8 @@ export default function LogsPage() {
             setLogs(logsData);
             setStatus(statusData);
         } catch (error) {
-            console.error(error);
+            console.error('Fetch error:', error);
+            setStatus({ server: 'online', db: 'error' }); // Fallback UI
         } finally {
             setLoading(false);
         }
