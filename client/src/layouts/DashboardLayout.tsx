@@ -99,7 +99,10 @@ export default function DashboardLayout() {
 
                     {/* Center: Date Only */}
                     <div className="text-sm font-medium text-gray-500 absolute left-1/2 transform -translate-x-1/2 text-center">
-                        {new Date().toLocaleDateString(lang === 'pt' ? 'pt-BR' : lang === 'es' ? 'es-ES' : 'en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+                        {(() => {
+                            const dateStr = new Date().toLocaleDateString(lang === 'pt' ? 'pt-BR' : lang === 'es' ? 'es-ES' : 'en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+                            return dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+                        })()}
                     </div>
 
                     {/* Right: User Avatar */}
