@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Users, TrendingUp, Activity, MessageSquare } from 'lucide-react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
 
 // Simple helper component for status badges
@@ -22,6 +22,7 @@ function StatusBadge({ status }: { status: string }) {
 export default function DashboardHome() {
     const { t } = useTranslation();
     const { slug, lang } = useParams();
+    const navigate = useNavigate();
     const [stats, setStats] = useState<any>(null);
     const [leads, setLeads] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -136,7 +137,11 @@ export default function DashboardHome() {
                                 </tr>
                             )}
                             {leads.map((lead) => (
-                                <tr key={lead.id} className="group cursor-pointer hover:bg-gray-50/50 transition-colors">
+                                <tr
+                                    key={lead.id}
+                                    className="group cursor-pointer hover:bg-gray-50/50 transition-colors"
+                                    onClick={() => navigate(`/${lang}/${slug}/leads/${lead.id}`)}
+                                >
                                     <td>
                                         <div className="flex items-center">
                                             <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500 mr-3 border border-gray-200">
@@ -175,15 +180,23 @@ export default function DashboardHome() {
                                     </td>
                                     <td className="text-right">
                                         <button className="text-primary font-medium text-sm hover:underline opacity-0 group-hover:opacity-100 transition-opacity">
-                                            View
-                                        </button>
-                                    </td>
-                                </tr>
+                                            <td className="text-right">
+                                                <button
+                                                    className="text-primary font-medium text-sm hover:underline opacity-0 group-hover:opacity-100 transition-opacity"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        navigate(`/${lang}/${slug}/leads/${lead.id}`);
+                                                    }}
+                                                >
+                                                    View
+                                                </button>
+                                            </td>
+                                        </tr>
                             ))}
-                        </tbody>
-                    </table>
+                                    </tbody>
+                                </table>
+                </div>
                 </div>
             </div>
-        </div>
-    );
+            );
 }

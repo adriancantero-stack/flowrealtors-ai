@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Search, Filter, MoreHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
 
 // Helper for status badges (reused)
@@ -22,7 +22,8 @@ function StatusBadge({ status }: { status: string }) {
 
 export default function LeadsPage() {
     const { t } = useTranslation();
-    const { slug } = useParams();
+    const { slug, lang } = useParams();
+    const navigate = useNavigate();
 
     // State
     const [leads, setLeads] = useState<any[]>([]);
@@ -145,7 +146,11 @@ export default function LeadsPage() {
                                 </tr>
                             )}
                             {leads.map((lead) => (
-                                <tr key={lead.id} className="hover:bg-gray-50 transition-colors cursor-pointer group">
+                                <tr
+                                    key={lead.id}
+                                    className="hover:bg-gray-50 transition-colors cursor-pointer group"
+                                    onClick={() => navigate(`/${lang}/${slug}/leads/${lead.id}`)}
+                                >
                                     <td className="font-medium text-gray-900">
                                         <div className="flex items-center">
                                             <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500 mr-3 border border-gray-200">
@@ -170,8 +175,15 @@ export default function LeadsPage() {
                                     </td>
                                     <td className="text-right">
                                         <button className="text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100">
-                                            <MoreHorizontal className="h-5 w-5" />
-                                        </button>
+                                            <button
+                                                className="text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    // Dropdown logic later
+                                                }}
+                                            >
+                                                <MoreHorizontal className="h-5 w-5" />
+                                            </button>
                                     </td>
                                 </tr>
                             ))}
