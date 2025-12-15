@@ -64,7 +64,7 @@ export default function DashboardHome() {
 
             <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-gray-900">{t('dashboard.title')}</h2>
-                <button className="btn btn-secondary text-sm">Download Report</button>
+                <button className="btn btn-secondary text-sm">{t('dashboard.download_report')}</button>
             </div>
 
             {/* Stats Cards */}
@@ -93,10 +93,10 @@ export default function DashboardHome() {
             {/* Lead Inbox Table */}
             <div className="card !p-0 overflow-hidden">
                 <div className="px-6 py-4 border-b flex justify-between items-center bg-gray-50/30">
-                    <h2 className="text-lg font-bold text-gray-900">Lead Inbox</h2>
+                    <h2 className="text-lg font-bold text-gray-900">{t('dashboard.lead_inbox')}</h2>
                     <input
                         type="text"
-                        placeholder="Search leads..."
+                        placeholder={t('dashboard.search_placeholder')}
                         className="input w-64 !py-2 !text-sm"
                     />
                 </div>

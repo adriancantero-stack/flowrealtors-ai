@@ -99,7 +99,7 @@ export default function DashboardLayout() {
 
                     {/* Center: Date Only */}
                     <div className="text-sm font-medium text-gray-500 absolute left-1/2 transform -translate-x-1/2 text-center">
-                        {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}
+                        {new Date().toLocaleDateString(lang === 'pt' ? 'pt-BR' : lang === 'es' ? 'es-ES' : 'en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
                     </div>
 
                     {/* Right: User Avatar */}

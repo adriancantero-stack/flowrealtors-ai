@@ -49,7 +49,7 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="card">
-                    <Section title="Integrations" description="Connect your external platforms.">
+                    <Section title={t('settings.integrations')} description={t('settings.integrations_desc')}>
                         <form onSubmit={handleSave} className="space-y-4">
                             <Input label="WhatsApp API Key (360dialog/Gupshup)" placeholder="wa_..." />
                             <Input label="Meta Access Token (Facebook/Instagram)" type="password" placeholder="EAA..." />
@@ -59,42 +59,42 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="card">
-                    <Section title="AI Configuration" description="Customize your AI agent persona.">
+                    <Section title={t('settings.ai_config')} description={t('settings.ai_config_desc')}>
                         <div className="space-y-4">
                             <div>
-                                <label className="label">Agent Tone</label>
+                                <label className="label">{t('settings.agent_tone')}</label>
                                 <select className="select">
                                     <option>Professional & Formal</option>
                                     <option>Friendly & Casual</option>
                                     <option>Aggressive Sales</option>
                                 </select>
                             </div>
-                            <Input label="Business Name for AI" placeholder="e.g. Dream Homes Realty" />
+                            <Input label={t('settings.business_name')} placeholder="e.g. Dream Homes Realty" />
                         </div>
                     </Section>
                 </div>
 
                 <div className="card">
-                    <Section title="Profile & Billing" description="Manage your subscription.">
+                    <Section title={t('settings.profile')} description={t('settings.profile_desc')}>
                         <div className="space-y-4">
                             <div className="bg-blue-50 p-4 rounded-xl flex justify-between items-center border border-blue-100">
                                 <div>
-                                    <p className="font-bold text-blue-900">Pro Plan</p>
+                                    <p className="font-bold text-blue-900">{t('settings.pro_plan')}</p>
                                     <p className="text-sm text-blue-700">$99/month</p>
                                 </div>
-                                <button className="text-sm font-medium text-blue-700 hover:text-blue-900 underline">Manage</button>
+                                <button className="text-sm font-medium text-blue-700 hover:text-blue-900 underline">{t('settings.manage')}</button>
                             </div>
-                            <Input label="Account Email" defaultValue="realtor@example.com" disabled />
+                            <Input label={t('settings.account_email')} defaultValue="realtor@example.com" disabled />
                         </div>
                     </Section>
                 </div>
 
                 <div className="card">
-                    <Section title="Onboarding & Setup" description="Configure your initial settings.">
+                    <Section title={t('settings.onboarding_setup')} description={t('settings.onboarding_desc')}>
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="font-medium text-gray-900">Setup Wizard</p>
-                                <p className="text-sm text-gray-500">Run the initial setup to configure your profile and funnels.</p>
+                                <p className="font-medium text-gray-900">{t('settings.setup_wizard')}</p>
+                                <p className="text-sm text-gray-500">{t('settings.setup_wizard_desc')}</p>
                             </div>
                             <a
                                 href="/onboarding"
