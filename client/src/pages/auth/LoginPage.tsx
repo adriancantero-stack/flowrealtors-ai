@@ -45,6 +45,7 @@ export default function LoginPage() {
                 // Debug Alert
                 const targetSlug = data.user.slug || 'no-slug';
                 const targetUrl = `/${lang}/${targetSlug}/dashboard`;
+                console.log(`Redirecting to: ${targetUrl}`); // Use variable to satisfy TS
                 // alert(`Login Success!\nSlug: ${targetSlug}\nRedirecting to: ${targetUrl}`);
 
                 // Direct Redirect to Slug URL

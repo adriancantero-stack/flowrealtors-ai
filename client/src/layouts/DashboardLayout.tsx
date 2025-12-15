@@ -94,8 +94,7 @@ export default function DashboardLayout() {
                 {/* Navbar (Flow UI .navbar) */}
                 <header className="navbar">
                     <div className="text-sm font-medium text-gray-500">
-                        {/* Breadcrumbs or Page Title could go here */}
-                        Wednesday, Oct 24
+                        {realtorName}'s Dashboard
                     </div>
                     <div className="flex items-center gap-4">
                         <div className="w-8 h-8 bg-gray-200 rounded-full overflow-hidden border border-gray-200">
