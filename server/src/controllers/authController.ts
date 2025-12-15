@@ -15,19 +15,25 @@ export const register = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
+        // Generate Slug
+        let slug = name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+        // Append random string to ensure uniqueness locally (in real app, use loop check)
+        slug = `${slug}-${Math.floor(Math.random() * 1000)}`;
+
         const newUser = await prisma.user.create({
             data: {
                 name,
                 email,
                 password_hash: password, // In real app, hash this!
                 role: account_type || 'broker',
-                status: 'active'
+                status: 'active',
+                slug: slug
             }
         });
 
         res.status(201).json({
             message: 'User registered successfully',
-            user: { id: newUser.id, email: newUser.email, name: newUser.name }
+            user: { id: newUser.id, email: newUser.email, name: newUser.name, slug: newUser.slug }
         });
     } catch (error) {
         console.error('Register error:', error);
