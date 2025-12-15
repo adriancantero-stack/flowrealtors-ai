@@ -5,21 +5,28 @@ export default function LoginPage() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
 
-    const handleLogin = async (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
 
-        const email = (e.currentTarget.querySelector('input[type="email"]') as HTMLInputElement).value;
-        const password = (e.currentTarget.querySelector('input[type="password"]') as HTMLInputElement).value;
-        const lang = location.pathname.split('/')[1] || 'en';
-
         try {
-            // FIXED: Real Authentication + Direct Slug Redirect
+            const formData = new FormData(e.currentTarget);
+            const email = formData.get('email') as string;
+            const password = formData.get('password') as string;
+
+            // Get lang from path (e.g. /pt/login -> pt) or default to 'pt'
+            const pathParts = location.pathname.split('/');
+            const lang = (pathParts.length > 1 && pathParts[1].length === 2) ? pathParts[1] : 'pt';
+
+            // Use API_BASE absolute URL logic
             let ENV_API = import.meta.env.VITE_API_URL;
             if (ENV_API && !ENV_API.startsWith('http')) {
                 ENV_API = `https://${ENV_API}`;
             }
             const API_BASE = (ENV_API && ENV_API !== '') ? ENV_API : 'https://flowrealtors-ai-production.up.railway.app';
+
+            // DEBUG: Alert before fetch
+            // alert(`Attempting Login to: ${API_BASE}/api/auth/login\nEmail: ${email}`);
 
             const res = await fetch(`${API_BASE}/api/auth/login`, {
                 method: 'POST',
@@ -38,7 +45,7 @@ export default function LoginPage() {
                 // Debug Alert
                 const targetSlug = data.user.slug || 'no-slug';
                 const targetUrl = `/${lang}/${targetSlug}/dashboard`;
-                alert(`Login Success!\nSlug: ${targetSlug}\nRedirecting to: ${targetUrl}`);
+                // alert(`Login Success!\nSlug: ${targetSlug}\nRedirecting to: ${targetUrl}`);
 
                 // Direct Redirect to Slug URL
                 if (data.user.role === 'admin') {
@@ -46,7 +53,6 @@ export default function LoginPage() {
                 } else if (data.user.slug) {
                     navigate(`/${lang}/${data.user.slug}/dashboard`);
                 } else {
-                    // Fallback if no slug (should rarely happen after backfill)
                     navigate(`/${lang}/dashboard`);
                 }
             } else {
@@ -54,7 +60,7 @@ export default function LoginPage() {
             }
         } catch (error: any) {
             console.error('Login Error:', error);
-            alert('Connection Error: ' + error.message);
+            alert('App Error: ' + error.message);
         } finally {
             setLoading(false);
         }
@@ -72,6 +78,7 @@ export default function LoginPage() {
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                         <input
+                            name="email"
                             type="email"
                             required
                             className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
@@ -82,6 +89,7 @@ export default function LoginPage() {
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
                         <input
+                            name="password"
                             type="password"
                             required
                             className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
@@ -100,6 +108,11 @@ export default function LoginPage() {
 
                 <div className="mt-6 text-center text-sm text-gray-500">
                     Don't have an account? <a href="/register" className="text-blue-600 font-medium hover:underline">Get started</a>
+                </div>
+
+                {/* Debug Version Indicator */}
+                <div className="mt-4 text-center text-xs text-gray-300 font-mono">
+                    v2.40 (LOGIN_FIX)
                 </div>
             </div>
         </div>
