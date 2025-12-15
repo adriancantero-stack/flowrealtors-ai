@@ -77,7 +77,7 @@ export default function LeadsPage() {
             <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-bold text-gray-900">{t('nav.leads')}</h1>
                 <button className="btn btn-primary">
-                    Export CSV
+                    {t('leads.export')}
                 </button>
             </div>
 
@@ -107,7 +107,7 @@ export default function LeadsPage() {
                                 setPage(1);
                             }}
                         >
-                            <option value="">All Status</option>
+                            <option value="">{t('leads.all_status')}</option>
                             <option value="New">New</option>
                             <option value="Qualified">Qualified</option>
                             <option value="Hot">Hot</option>
@@ -140,7 +140,7 @@ export default function LeadsPage() {
                             {leads.length === 0 && !loading && (
                                 <tr>
                                     <td colSpan={6} className="text-center py-8 text-gray-500">
-                                        No leads found matching your criteria.
+                                        {t('leads.no_leads')}
                                     </td>
                                 </tr>
                             )}
@@ -182,7 +182,7 @@ export default function LeadsPage() {
                 {/* Pagination */}
                 <div className="p-4 border-t flex justify-between items-center bg-gray-50">
                     <span className="text-sm text-gray-500">
-                        Page {page} of {totalPages || 1} ({total} leads)
+                        {t('leads.page_info').replace('{page}', page.toString()).replace('{total}', totalPages.toString())} ({total} leads)
                     </span>
                     <div className="flex space-x-2">
                         <button

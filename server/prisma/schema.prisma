@@ -40,7 +40,13 @@ model Lead {
   intent       String?
   source       String?  @default("whatsapp")
   budget       String?
+  budget       String?
   desired_city String?
+  
+  // Lead Details (Step C)
+  notes        String?
+  score        Int?
+  next_action_at DateTime?
   
   brokerId     Int?
   broker       User?    @relation(fields: [brokerId], references: [id])

@@ -103,4 +103,117 @@ router.get('/:slug/leads', async (req, res) => {
     }
 });
 
+// GET /:slug/leads/:id - Get lead details
+router.get('/:slug/leads/:id', async (req, res) => {
+    try {
+        const { slug, id } = req.params;
+        const leadId = parseInt(id);
+
+        // Security Check 1: Verify slug belongs to logged user (or is admin)
+        // @ts-ignore
+        if (req.user.slug !== slug && req.user.role !== 'admin') {
+            return res.status(403).json({ error: 'Unauthorized access to this realtor space' });
+        }
+
+        const lead = await prisma.lead.findUnique({
+            where: { id: leadId },
+            include: {
+                messages: {
+                    take: 1, // Just to check if exist, full history in separate endpoint
+                    orderBy: { timestamp: 'desc' }
+                }
+            }
+        });
+
+        if (!lead) {
+            return res.status(404).json({ error: 'Lead not found' });
+        }
+
+        // Security Check 2: Verify lead belongs to the realtor
+        // @ts-ignore
+        if (lead.brokerId !== req.user.id && req.user.role !== 'admin') {
+            return res.status(403).json({ error: 'Unauthorized access to this lead' });
+        }
+
+        res.json(lead);
+    } catch (error) {
+        console.error('Error fetching lead details:', error);
+        res.status(500).json({ error: 'Failed to fetch lead details' });
+    }
+});
+
+// PATCH /:slug/leads/:id - Update lead details
+router.patch('/:slug/leads/:id', async (req, res) => {
+    try {
+        const { slug, id } = req.params;
+        const leadId = parseInt(id);
+        const { status, notes, score, next_action_at } = req.body;
+
+        // Security Check 1
+        // @ts-ignore
+        if (req.user.slug !== slug && req.user.role !== 'admin') {
+            return res.status(403).json({ error: 'Unauthorized access to this realtor space' });
+        }
+
+        // Check existence and ownership
+        const existingLead = await prisma.lead.findUnique({ where: { id: leadId } });
+
+        if (!existingLead) return res.status(404).json({ error: 'Lead not found' });
+
+        // Security Check 2
+        // @ts-ignore
+        if (existingLead.brokerId !== req.user.id && req.user.role !== 'admin') {
+            return res.status(403).json({ error: 'Unauthorized access to this lead' });
+        }
+
+        const updatedLead = await prisma.lead.update({
+            where: { id: leadId },
+            data: {
+                status: status ?? undefined,
+                notes: notes ?? undefined,
+                score: score ? parseInt(score) : undefined,
+                next_action_at: next_action_at ? new Date(next_action_at) : undefined
+            }
+        });
+
+        res.json(updatedLead);
+    } catch (error) {
+        console.error('Error updating lead:', error);
+        res.status(500).json({ error: 'Failed to update lead' });
+    }
+});
+
+// GET /:slug/leads/:id/messages - Get lead messages history
+router.get('/:slug/leads/:id/messages', async (req, res) => {
+    try {
+        const { slug, id } = req.params;
+        const leadId = parseInt(id);
+
+        // Security Check 1
+        // @ts-ignore
+        if (req.user.slug !== slug && req.user.role !== 'admin') {
+            return res.status(403).json({ error: 'Unauthorized access to this realtor space' });
+        }
+
+        // Verify lead ownership
+        const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+        if (!lead) return res.status(404).json({ error: 'Lead not found' });
+
+        // @ts-ignore
+        if (lead.brokerId !== req.user.id && req.user.role !== 'admin') {
+            return res.status(403).json({ error: 'Unauthorized access to this lead' });
+        }
+
+        const messages = await prisma.leadMessage.findMany({
+            where: { leadId: leadId },
+            orderBy: { timestamp: 'asc' }
+        });
+
+        res.json(messages);
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+        res.status(500).json({ error: 'Failed to fetch messages' });
+    }
+});
+
 export default router;
