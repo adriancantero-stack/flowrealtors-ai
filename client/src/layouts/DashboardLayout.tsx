@@ -92,14 +92,14 @@ export default function DashboardLayout() {
             <div className="flex-1 ml-[260px]">
                 {/* Navbar (Flow UI .navbar) */}
                 <header className="navbar flex justify-between items-center relative">
-                    {/* Left: Empty or Breadcrumbs */}
-                    <div className="w-1/3">
-                        {/* Placeholder for left content if needed */}
+                    {/* Left: Realtor Name */}
+                    <div className="w-1/3 text-sm font-medium text-gray-500">
+                        {realtorName}
                     </div>
 
-                    {/* Center: Name & Date */}
+                    {/* Center: Date Only */}
                     <div className="text-sm font-medium text-gray-500 absolute left-1/2 transform -translate-x-1/2 text-center">
-                        {realtorName} • {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}
+                        {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}
                     </div>
 
                     {/* Right: User Avatar */}
