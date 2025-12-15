@@ -56,9 +56,8 @@ export default function DashboardLayout() {
             {/* Sidebar (Flow UI .sidebar class applied) */}
             <aside className="sidebar z-20">
                 <div className="h-16 flex items-center px-4 mb-2">
-                    <span className="text-xl font-bold tracking-tight text-gray-900">
-                        Flow<span className="text-primary">Realtor</span>
-                    </span>
+                    {/* Updated Logo to match Landing Page */}
+                    <img src="/logo.png" alt="FlowRealtors Logo" className="h-10 w-auto" />
                 </div>
 
                 <nav className="flex-1 space-y-0.5">
@@ -92,11 +91,19 @@ export default function DashboardLayout() {
             {/* Main Content Area */}
             <div className="flex-1 ml-[260px]">
                 {/* Navbar (Flow UI .navbar) */}
-                <header className="navbar">
-                    <div className="text-sm font-medium text-gray-500">
-                        {realtorName}'s Dashboard
+                <header className="navbar flex justify-between items-center relative">
+                    {/* Left: Empty or Breadcrumbs */}
+                    <div className="w-1/3">
+                        {/* Placeholder for left content if needed */}
                     </div>
-                    <div className="flex items-center gap-4">
+
+                    {/* Center: Name & Date */}
+                    <div className="text-sm font-medium text-gray-500 absolute left-1/2 transform -translate-x-1/2 text-center">
+                        {realtorName} • {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}
+                    </div>
+
+                    {/* Right: User Avatar */}
+                    <div className="flex items-center gap-4 w-1/3 justify-end">
                         <div className="w-8 h-8 bg-gray-200 rounded-full overflow-hidden border border-gray-200">
                             <img src="https://ui-avatars.com/api/?name=User&background=random" className="w-full h-full object-cover" />
                         </div>

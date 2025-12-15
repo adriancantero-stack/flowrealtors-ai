@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 export default function LoginPage() {
     const navigate = useNavigate();
@@ -108,12 +108,7 @@ export default function LoginPage() {
                 </form>
 
                 <div className="mt-6 text-center text-sm text-gray-500">
-                    Don't have an account? <a href="/register" className="text-blue-600 font-medium hover:underline">Get started</a>
-                </div>
-
-                {/* Debug Version Indicator */}
-                <div className="mt-4 text-center text-xs text-gray-300 font-mono">
-                    v2.40 (LOGIN_FIX)
+                    Don't have an account? <Link to="/register" className="text-blue-600 font-medium hover:underline">Get started</Link>
                 </div>
             </div>
         </div>
