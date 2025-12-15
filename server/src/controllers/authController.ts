@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../lib/prisma';
 import { User } from '../models/types'; // Keep for type reference if needed, though Prisma generates its own
-
-const prisma = new PrismaClient();
 
 export const register = async (req: Request, res: Response): Promise<void> => {
     try {

@@ -1,7 +1,10 @@
 import { PrismaClient } from '@prisma/client';
 import { AISettings, AILog } from '../models/aiTypes';
+import { prisma } from '../lib/prisma';
 
-const prisma = new PrismaClient();
+// ------------------------------------------------------------------
+// Types
+// ------------------------------------------------------------------';
 
 export class AISettingsService {
     static async getSettings(): Promise<AISettings> {
