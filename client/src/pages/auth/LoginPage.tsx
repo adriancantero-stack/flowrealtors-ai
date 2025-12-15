@@ -35,6 +35,11 @@ export default function LoginPage() {
                 localStorage.setItem('flow_realtor_slug', data.user.slug || '');
                 localStorage.setItem('flow_realtor_role', data.user.role || 'broker');
 
+                // Debug Alert
+                const targetSlug = data.user.slug || 'no-slug';
+                const targetUrl = `/${lang}/${targetSlug}/dashboard`;
+                alert(`Login Success!\nSlug: ${targetSlug}\nRedirecting to: ${targetUrl}`);
+
                 // Direct Redirect to Slug URL
                 if (data.user.role === 'admin') {
                     navigate(`/${lang}/admin/dashboard`);
