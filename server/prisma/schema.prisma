@@ -73,6 +73,15 @@ model User {
   default_lang  String   @default("pt") // en, es, pt
   role          String   @default("broker") // broker, admin
   status        String   @default("active") // active, inactive
+  
+  // Multi-Tenant / Slug Support
+  slug          String?  @unique // Nullable initially for backfill, but should be required later
+  
+  // WhatsApp Integration per Broker
+  whatsapp_phone_number_id     String?
+  whatsapp_business_account_id String?
+  whatsapp_provider            String?  @default("cloud-api")
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   

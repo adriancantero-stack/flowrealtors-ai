@@ -31,6 +31,7 @@ import FunnelThankYouPage from './pages/funnel/FunnelThankYouPage';
 import { LanguageProvider } from './i18n';
 import LanguageRedirector from './components/LanguageRedirector';
 import RouteAwareLanguageProvider from './layouts/RouteAwareLanguageProvider';
+import LegacyDashboardRedirector from './components/LegacyDashboardRedirector';
 
 function App() {
   return (
@@ -46,21 +47,13 @@ function App() {
             <Route path="login" element={<LoginPage />} />
             <Route path="onboarding" element={<OnboardingPage />} />
 
-            <Route path="dashboard" element={<DashboardLayout />}>
-              <Route index element={<DashboardHome />} />
-              <Route path="leads" element={<LeadsPage />} />
-              <Route path="leads/:id" element={<LeadDetailsPage />} />
-              <Route path="intergrations" element={<IntegrationsPage />} />
-              <Route path="automations" element={<AutomationsPage />} />
-              <Route path="funnel" element={<FunnelSettingsPage />} />
-              <Route path="settings" element={<SettingsPage />} />
-            </Route>
+            {/* Legacy Dashboard Redirect (/:lang/dashboard -> /:lang/:slug/dashboard) */}
+            <Route path="dashboard" element={<LegacyDashboardRedirector />} />
 
             <Route path="admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="brokers" element={<AdminBrokersPage />} />
-              <Route path="leads" element={<AdminLeadsPage />} />
               <Route path="leads" element={<AdminLeadsPage />} />
               <Route path="logs" element={<AdminLogsPage />} />
               <Route path="gemini" element={<AdminGeminiPage />} />
@@ -70,6 +63,19 @@ function App() {
               <Route path="users" element={<Navigate to="brokers" replace />} />
               <Route path="monitoring" element={<Navigate to="logs" replace />} />
               <Route path="settings" element={<Navigate to="gemini" replace />} />
+            </Route>
+
+            {/* Realtor Spaces: /:lang/:slug/... */}
+            {/* Placed AFTER admin to avoid catching "admin" as a slug */}
+            <Route path=":slug" element={<DashboardLayout />}>
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<DashboardHome />} />
+              <Route path="leads" element={<LeadsPage />} />
+              <Route path="leads/:id" element={<LeadDetailsPage />} />
+              <Route path="integrations" element={<IntegrationsPage />} />
+              <Route path="automations" element={<AutomationsPage />} />
+              <Route path="funnel" element={<FunnelSettingsPage />} />
+              <Route path="settings" element={<SettingsPage />} />
             </Route>
           </Route>
 

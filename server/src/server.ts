@@ -95,6 +95,8 @@ app.use('/api/automation', automationRoutes);
 app.use('/api/funnel', funnelRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/whatsapp', whatsappRoutes);
+import realtorRoutes from './routes/realtorRoutes';
+app.use('/api/realtors', realtorRoutes);
 
 import path from 'path';
 

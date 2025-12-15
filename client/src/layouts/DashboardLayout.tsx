@@ -1,22 +1,53 @@
-import { Outlet, NavLink, Link } from 'react-router-dom';
+import { Outlet, NavLink, Link, useParams, useNavigate } from 'react-router-dom';
 import {
     LayoutDashboard, Users,
     Settings, PlayCircle, Share2, LogOut, LayoutTemplate
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useTranslation } from '../i18n';
+import { useEffect, useState } from 'react';
 
 export default function DashboardLayout() {
     const { t } = useTranslation();
+    const { lang, slug } = useParams();
+    const navigate = useNavigate();
+    const [realtorName, setRealtorName] = useState('Realtor');
+
+    // Base URL for the current realtor
+    const baseUrl = `/${lang}/${slug}`;
 
     const navItems = [
-        { href: '/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard, end: true },
-        { href: '/dashboard/leads', label: t('nav.leads'), icon: Users },
-        { href: '/dashboard/automations', label: t('nav.automations'), icon: PlayCircle },
-        { href: '/dashboard/intergrations', label: t('nav.integrations'), icon: Share2 },
-        { href: '/dashboard/funnel', label: t('nav.funnel'), icon: LayoutTemplate },
-        { href: '/dashboard/settings', label: t('nav.settings'), icon: Settings },
+        { href: `${baseUrl}/dashboard`, label: t('nav.dashboard'), icon: LayoutDashboard, end: true },
+        { href: `${baseUrl}/leads`, label: t('nav.leads'), icon: Users },
+        { href: `${baseUrl}/automations`, label: t('nav.automations'), icon: PlayCircle },
+        { href: `${baseUrl}/integrations`, label: t('nav.integrations'), icon: Share2 },
+        { href: `${baseUrl}/funnel`, label: t('nav.funnel'), icon: LayoutTemplate },
+        { href: `${baseUrl}/settings`, label: t('nav.settings'), icon: Settings },
     ];
+
+    // Validate Slug & Fetch Info
+    useEffect(() => {
+        if (!slug) return;
+
+        let ENV_API = import.meta.env.VITE_API_URL;
+        if (ENV_API && !ENV_API.startsWith('http')) {
+            ENV_API = `https://${ENV_API}`;
+        }
+        const API_BASE = (ENV_API && ENV_API !== '') ? ENV_API : 'https://flowrealtors-ai-production.up.railway.app';
+
+        fetch(`${API_BASE}/api/realtors/${slug}/summary`)
+            .then(res => {
+                if (!res.ok) throw new Error('Invalid Realtor');
+                return res.json();
+            })
+            .then(data => {
+                setRealtorName(data.realtor.name);
+            })
+            .catch(err => {
+                console.error('Slug validation error:', err);
+                // navigate(`/${lang}/login`);
+            });
+    }, [slug, lang, navigate]);
 
     return (
         <div className="min-h-screen font-sans bg-gray-50 flex">
