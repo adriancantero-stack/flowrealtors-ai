@@ -87,6 +87,36 @@ router.post('/seed-users', async (req, res) => {
             } else {
                 results.push(`Skipped (Exists): ${u.name}`);
             }
+
+            // check for leads
+            const user = await prisma.user.findUnique({ where: { email: u.email } });
+            if (user) {
+                const leadCount = await prisma.lead.count({ where: { brokerId: user.id } });
+                if (leadCount === 0) {
+                    // Create sample lead
+                    await prisma.lead.create({
+                        data: {
+                            brokerId: user.id,
+                            name: 'Exemplo WhatsApp',
+                            phone: '+5511999999999',
+                            status: 'New',
+                            source: 'WhatsApp',
+                            messages: {
+                                create: [
+                                    {
+                                        role: 'user',
+                                        sender: 'lead',
+                                        direction: 'inbound',
+                                        content: 'Olá, gostaria de saber mais sobre o imóvel.',
+                                        timestamp: new Date()
+                                    }
+                                ]
+                            }
+                        }
+                    });
+                    results.push(`+ Added Sample Lead for ${u.name}`);
+                }
+            }
         }
         res.json({ success: true, results });
     } catch (error) {
