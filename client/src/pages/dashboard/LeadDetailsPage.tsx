@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import {
-    Phone, Mail, Tag, MessageSquare,
-    Send, Sparkles, MoreHorizontal, ArrowLeft, Save
+    Phone, Mail, MessageSquare,
+    Send, Sparkles, ArrowLeft, Save
 } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 
@@ -19,7 +19,6 @@ export default function LeadDetailsPage() {
     // Form State
     const [notes, setNotes] = useState('');
     const [status, setStatus] = useState('');
-    const [replyText, setReplyText] = useState('');
 
     useEffect(() => {
         if (!slug || !id) return;
@@ -260,7 +259,7 @@ export default function LeadDetailsPage() {
 
                     {/* Reply Box (Placeholder) */}
                     <div className="p-4 border-t bg-white">
-                        <div className="relative opacity-50 pointer-events-none">
+                        <div className="relative opacity-50 pointer-events-none mb-2">
                             <input
                                 type="text"
                                 disabled
@@ -269,6 +268,31 @@ export default function LeadDetailsPage() {
                             />
                             <button className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-gray-400 text-white rounded-lg">
                                 <Send className="h-4 w-4" />
+                            </button>
+                        </div>
+                        {/* Dev Tool */}
+                        <div className="text-center">
+                            <button
+                                onClick={async () => {
+                                    const text = prompt('Dev: Enter mock incoming message (simulates WhatsApp):');
+                                    if (!text) return;
+                                    try {
+                                        let ENV_API = import.meta.env.VITE_API_URL;
+                                        if (ENV_API && !ENV_API.startsWith('http')) ENV_API = `https://${ENV_API}`;
+                                        const API_BASE = (ENV_API && ENV_API !== '') ? ENV_API : 'https://flowrealtors-ai-production.up.railway.app';
+
+                                        await fetch(`${API_BASE}/api/dev/leads/${id}/mock-message`, {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ text, sender: 'lead', direction: 'inbound' })
+                                        });
+                                        // Refresh
+                                        fetchLeadData();
+                                    } catch (e) { alert('Err: ' + e); }
+                                }}
+                                className="text-xs text-gray-300 hover:text-red-500 underline"
+                            >
+                                [Dev] Simulate WhatsApp Message
                             </button>
                         </div>
                     </div>

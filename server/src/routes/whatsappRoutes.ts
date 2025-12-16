@@ -1,6 +1,7 @@
 import express from 'express';
 import { WhatsAppService } from '../services/whatsappService';
 import { AIService } from '../services/aiService';
+import { prisma } from '../lib/prisma';
 
 const router = express.Router();
 
@@ -62,22 +63,83 @@ router.post('/webhooks/inbound', async (req, res) => {
                 body.entry[0].changes[0].value.messages[0]
             ) {
                 const change = body.entry[0].changes[0].value;
+                const metadata = change.metadata; // contains phone_number_id
                 const message = change.messages[0];
-                const from = message.from; // Phone number
+                const from = message.from; // Phone number of the lead
                 const msgBody = message.text?.body;
 
-                if (msgBody) {
-                    console.log(`Received message from ${from}: ${msgBody}`);
+                if (msgBody && metadata?.phone_number_id) {
+                    console.log(`Received message from ${from} to ID ${metadata.phone_number_id}: ${msgBody}`);
 
-                    // 1. Generate AI Response
-                    // Since we don't have a Lead model fully hydrated here, we pass a partial/mock one or fetch it
-                    // For MVP, we treat it as a new interaction
-                    const mockLead: any = { status: 'new' };
-                    const aiResponse = await AIService.generateResponse(mockLead, msgBody);
+                    // 1. Identify Realtor
+                    const realtor = await prisma.user.findFirst({
+                        where: { whatsapp_phone_number_id: metadata.phone_number_id }
+                    });
 
-                    // 2. Send Response
-                    await WhatsAppService.sendMessage(from, aiResponse);
-                    console.log(`Sent AI response to ${from}`);
+                    if (realtor) {
+                        // 2. Find or Create Lead
+                        // Upsert by phone + brokerId (composite unique usually, but schema has unique phone global?
+                        // Schema has `phone String @unique`, so one phone = one lead global?
+                        // Ideally leads are scoped to realtors. 
+                        // Check schema again: `phone String @unique` means 1 phone = 1 lead in whole DB.
+                        // We will assume global uniqueness for now as per schema.
+
+                        let lead = await prisma.lead.findUnique({
+                            where: { phone: from }
+                        });
+
+                        if (!lead) {
+                            lead = await prisma.lead.create({
+                                data: {
+                                    phone: from,
+                                    name: 'WhatsApp Lead ' + from.slice(-4),
+                                    source: 'whatsapp',
+                                    status: 'new',
+                                    brokerId: realtor.id
+                                }
+                            });
+                            console.log(`Created new lead: ${lead.id}`);
+                        } else {
+                            // Optional: Update broker if lead was orphan, OR ensure correct ownership?
+                            // For now, simple access.
+                        }
+
+                        // 3. Save Inbound Message
+                        await prisma.leadMessage.create({
+                            data: {
+                                leadId: lead.id,
+                                role: 'user',
+                                sender: 'lead',
+                                direction: 'inbound',
+                                content: msgBody,
+                                channel: 'whatsapp',
+                                timestamp: new Date()
+                            }
+                        });
+
+                        // 4. Generate AI Response
+                        const aiResponse = await AIService.generateResponse(lead, msgBody);
+
+                        // 5. Save Outbound Message
+                        await prisma.leadMessage.create({
+                            data: {
+                                leadId: lead.id,
+                                role: 'assistant',
+                                sender: 'ai',
+                                direction: 'outbound',
+                                content: aiResponse,
+                                channel: 'whatsapp',
+                                timestamp: new Date()
+                            }
+                        });
+
+                        // 6. Send via WhatsApp
+                        await WhatsAppService.sendMessage(from, aiResponse);
+                        console.log(`Sent AI response to ${from}`);
+
+                    } else {
+                        console.warn(`No realtor found for phone_number_id: ${metadata.phone_number_id}`);
+                    }
                 }
             }
             res.status(200).send('EVENT_RECEIVED');

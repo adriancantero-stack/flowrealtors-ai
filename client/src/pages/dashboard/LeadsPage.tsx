@@ -174,16 +174,15 @@ export default function LeadsPage() {
                                         {lead.last_message_preview || new Date(lead.createdAt).toLocaleDateString()}
                                     </td>
                                     <td className="text-right">
-                                        <button className="text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100">
-                                            <button
-                                                className="text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    // Dropdown logic later
-                                                }}
-                                            >
-                                                <MoreHorizontal className="h-5 w-5" />
-                                            </button>
+                                        <button
+                                            className="text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                // Dropdown logic later
+                                            }}
+                                        >
+                                            <MoreHorizontal className="h-5 w-5" />
+                                        </button>
                                     </td>
                                 </tr>
                             ))}

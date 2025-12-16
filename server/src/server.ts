@@ -98,6 +98,9 @@ app.use('/api/whatsapp', whatsappRoutes);
 import realtorRoutes from './routes/realtorRoutes';
 app.use('/api/realtors', realtorRoutes);
 
+import devRoutes from './routes/devRoutes';
+app.use('/api/dev', devRoutes);
+
 import path from 'path';
 
 // Serve frontend static files

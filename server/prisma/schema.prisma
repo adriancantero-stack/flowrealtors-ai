@@ -40,7 +40,6 @@ model Lead {
   intent       String?
   source       String?  @default("whatsapp")
   budget       String?
-  budget       String?
   desired_city String?
   
   // Lead Details (Step C)
@@ -61,8 +60,12 @@ model LeadMessage {
   id        Int      @id @default(autoincrement())
   leadId    Int
   lead      Lead     @relation(fields: [leadId], references: [id])
-  role      String   // "user" | "assistant" | "system"
+  channel   String   @default("whatsapp")
+  direction String   // inbound, outbound
+  role      String   // kept for compatibility, map to sender usually
+  sender    String   // lead, ai, realtor, system
   content   String
+  meta      Json?
   timestamp DateTime @default(now())
 }
 

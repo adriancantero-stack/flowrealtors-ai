@@ -57,7 +57,6 @@ export const translations = {
         "leads.all_status": "All Status",
         "leads.export": "Export CSV",
         "leads.add": "Add Lead",
-        "leads.add": "Add Lead",
 
         "lead_details.back": "Back to Leads",
         "lead_details.chat_history": "Conversation History",
@@ -267,7 +266,6 @@ export const translations = {
         "leads.all_status": "Todos los Estados",
         "leads.export": "Exportar CSV",
         "leads.add": "Agregar Lead",
-        "leads.add": "Agregar Lead",
 
         "lead_details.back": "Volver a Leads",
         "lead_details.chat_history": "Historial de Conversación",
@@ -476,7 +474,6 @@ export const translations = {
         "leads.page_info": "Página {page} de {total}",
         "leads.all_status": "Todos os Status",
         "leads.export": "Exportar CSV",
-        "leads.add": "Adicionar Lead",
         "leads.add": "Adicionar Lead",
 
         "lead_details.back": "Voltar para Leads",

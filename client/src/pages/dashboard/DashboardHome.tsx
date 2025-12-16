@@ -179,24 +179,22 @@ export default function DashboardHome() {
                                         )}
                                     </td>
                                     <td className="text-right">
-                                        <button className="text-primary font-medium text-sm hover:underline opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <td className="text-right">
-                                                <button
-                                                    className="text-primary font-medium text-sm hover:underline opacity-0 group-hover:opacity-100 transition-opacity"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        navigate(`/${lang}/${slug}/leads/${lead.id}`);
-                                                    }}
-                                                >
-                                                    View
-                                                </button>
-                                            </td>
-                                        </tr>
+                                        <button
+                                            className="text-primary font-medium text-sm hover:underline opacity-0 group-hover:opacity-100 transition-opacity"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                navigate(`/${lang}/${slug}/leads/${lead.id}`);
+                                            }}
+                                        >
+                                            View
+                                        </button>
+                                    </td>
+                                </tr>
                             ))}
-                                    </tbody>
-                                </table>
-                </div>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            );
+        </div>
+    );
 }

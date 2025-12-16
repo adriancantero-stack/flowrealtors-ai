@@ -74,7 +74,7 @@ Return:
         }
     }
 
-    static async generateResponse(lead: Lead, message: string): Promise<string> {
+    static async generateResponse(lead: any, message: string): Promise<string> {
         const language = this.detectLanguage(message);
 
         const settings = await AISettingsService.getSettings();
