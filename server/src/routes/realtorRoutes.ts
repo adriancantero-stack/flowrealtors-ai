@@ -109,9 +109,14 @@ router.get('/:slug/leads/:id', async (req, res) => {
         const { slug, id } = req.params;
         const leadId = parseInt(id);
 
+        console.log(`[DEBUG] Fetching Lead: slug=${slug}, id=${id}, parsedId=${leadId}`);
+        // @ts-ignore
+        console.log(`[DEBUG] Current User: id=${req.user?.id}, slug=${req.user?.slug}, role=${req.user?.role}`);
+
         // Security Check 1: Verify slug belongs to logged user (or is admin)
         // @ts-ignore
         if (req.user.slug !== slug && req.user.role !== 'admin') {
+            console.warn(`[DEBUG] Slug Mismatch: param=${slug} != token=${req.user.slug}`);
             return res.status(403).json({ error: 'Unauthorized access to this realtor space' });
         }
 
@@ -126,12 +131,16 @@ router.get('/:slug/leads/:id', async (req, res) => {
         });
 
         if (!lead) {
+            console.warn(`[DEBUG] Lead NOT FOUND in DB: id=${leadId}`);
             return res.status(404).json({ error: 'Lead not found' });
         }
+
+        console.log(`[DEBUG] Lead Found: id=${lead.id}, brokerId=${lead.brokerId}`);
 
         // Security Check 2: Verify lead belongs to the realtor
         // @ts-ignore
         if (lead.brokerId !== req.user.id && req.user.role !== 'admin') {
+            console.warn(`[DEBUG] Ownership Fail: lead.brokerId=${lead.brokerId} != user.id=${req.user.id}`);
             return res.status(403).json({ error: 'Unauthorized access to this lead' });
         }
 
