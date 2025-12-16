@@ -56,7 +56,13 @@ export default function LeadsPage() {
             status: statusFilter
         });
 
-        fetch(`${API_BASE}/api/realtors/${slug}/leads?${query.toString()}`)
+        const token = localStorage.getItem('flow_realtor_token');
+        const headers = {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        };
+
+        fetch(`${API_BASE}/api/realtors/${slug}/leads?${query.toString()}`, { headers })
             .then(res => res.json())
             .then(data => {
                 setLeads(data.items || []);

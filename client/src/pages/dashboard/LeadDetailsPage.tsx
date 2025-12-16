@@ -35,9 +35,15 @@ export default function LeadDetailsPage() {
             }
             const API_BASE = (ENV_API && ENV_API !== '') ? ENV_API : 'https://flowrealtors-ai-production.up.railway.app';
 
+            const token = localStorage.getItem('flow_realtor_token');
+            const headers = {
+                'Content-Type': 'application/json',
+                ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+            };
+
             const [leadRes, msgsRes] = await Promise.all([
-                fetch(`${API_BASE}/api/realtors/${slug}/leads/${id}`),
-                fetch(`${API_BASE}/api/realtors/${slug}/leads/${id}/messages`)
+                fetch(`${API_BASE}/api/realtors/${slug}/leads/${id}`, { headers }),
+                fetch(`${API_BASE}/api/realtors/${slug}/leads/${id}/messages`, { headers })
             ]);
 
             if (leadRes.ok) {
@@ -47,6 +53,7 @@ export default function LeadDetailsPage() {
                 setStatus(leadData.status || 'New');
             } else {
                 const errText = await leadRes.text();
+                // If 403/401, maybe redirect to login? For now just show error
                 setErrorMsg(`Failed to load lead: ${leadRes.status} ${leadRes.statusText} - ${errText}`);
             }
 
@@ -72,9 +79,15 @@ export default function LeadDetailsPage() {
             }
             const API_BASE = (ENV_API && ENV_API !== '') ? ENV_API : 'https://flowrealtors-ai-production.up.railway.app';
 
+            const token = localStorage.getItem('flow_realtor_token');
+            const headers = {
+                'Content-Type': 'application/json',
+                ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+            };
+
             const res = await fetch(`${API_BASE}/api/realtors/${slug}/leads/${id}`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers,
                 body: JSON.stringify({
                     notes,
                     status
@@ -293,9 +306,15 @@ export default function LeadDetailsPage() {
                                         if (ENV_API && !ENV_API.startsWith('http')) ENV_API = `https://${ENV_API}`;
                                         const API_BASE = (ENV_API && ENV_API !== '') ? ENV_API : 'https://flowrealtors-ai-production.up.railway.app';
 
+                                        const token = localStorage.getItem('flow_realtor_token');
+                                        const headers = {
+                                            'Content-Type': 'application/json',
+                                            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                                        };
+
                                         await fetch(`${API_BASE}/api/dev/leads/${id}/mock-message`, {
                                             method: 'POST',
-                                            headers: { 'Content-Type': 'application/json' },
+                                            headers,
                                             body: JSON.stringify({ text, sender: 'lead', direction: 'inbound' })
                                         });
                                         // Refresh
