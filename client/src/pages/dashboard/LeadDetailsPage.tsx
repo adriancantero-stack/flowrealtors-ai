@@ -19,6 +19,7 @@ export default function LeadDetailsPage() {
     // Form State
     const [notes, setNotes] = useState('');
     const [status, setStatus] = useState('');
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     useEffect(() => {
         if (!slug || !id) return;
@@ -44,6 +45,9 @@ export default function LeadDetailsPage() {
                 setLead(leadData);
                 setNotes(leadData.notes || '');
                 setStatus(leadData.status || 'New');
+            } else {
+                const errText = await leadRes.text();
+                setErrorMsg(`Failed to load lead: ${leadRes.status} ${leadRes.statusText} - ${errText}`);
             }
 
             if (msgsRes.ok) {
@@ -99,7 +103,15 @@ export default function LeadDetailsPage() {
     }
 
     if (!lead) {
-        return <div className="p-8 text-center text-gray-500">Lead not found.</div>;
+        return (
+            <div className="p-8 text-center text-gray-500">
+                <h2 className="text-xl font-bold mb-2">Oops!</h2>
+                <p className="text-red-500 font-mono mb-4">{errorMsg || 'Lead not found (Unknown Error)'}</p>
+                <Link to={`/${lang}/${slug}/leads`} className="text-blue-500 underline">
+                    Back to Leads
+                </Link>
+            </div>
+        );
     }
 
     // Attempt to parse AI insights from intent or notes if structured

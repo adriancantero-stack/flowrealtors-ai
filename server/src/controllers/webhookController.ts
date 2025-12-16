@@ -2,9 +2,7 @@ import { Request, Response } from 'express';
 import { AIService } from '../services/aiService';
 import { AutomationService } from '../services/automationService';
 import { Lead } from '../models/types';
-
-// In-memory mocks for simulation
-const leads: Lead[] = [];
+import { prisma } from '../lib/prisma'; // Real DB connection
 
 export const handleWebhook = async (req: Request, res: Response) => {
     const { channel, userId } = req.params;
@@ -13,7 +11,7 @@ export const handleWebhook = async (req: Request, res: Response) => {
     console.log(`[Webhook] Received from ${channel} for User ${userId}`, JSON.stringify(body, null, 2));
 
     try {
-        let leadData: Partial<Lead> = {};
+        let leadData: { phone?: string; email?: string; name?: string; status?: string } = {};
         let message = '';
         let source: any = 'manual';
         let eventType = null; // for calendar
@@ -64,71 +62,97 @@ export const handleWebhook = async (req: Request, res: Response) => {
                 message = 'Unknown Webhook';
         }
 
-        // 2. Find or Create Lead (Mock Logic)
-        // In real app: findByPhone or findByEmail
-        let lead = leads.find(l =>
-            (leadData.phone && l.phone === leadData.phone) ||
-            (leadData.email && l.email === leadData.email)
-        );
+        const brokerId = parseInt(userId);
+        if (isNaN(brokerId)) {
+            return res.status(400).json({ error: 'Invalid User ID' });
+        }
+
+        // 2. Find or Create Lead (Real Logic)
+        // Try precise match first
+        let lead = null;
+        if (leadData.phone) {
+            lead = await prisma.lead.findUnique({ where: { phone: leadData.phone } });
+        }
 
         let isNewLead = false;
 
         if (!lead) {
             isNewLead = true;
-            lead = {
-                id: Math.random().toString(36).substr(2, 9),
-                user_id: userId,
-                name: leadData.name || 'New Lead',
-                phone: leadData.phone || '',
-                email: leadData.email,
-                source: source,
-                status: 'new',
-                qualification_score: 0,
-                tags: [],
-                conversation_history: [],
-                created_at: new Date()
-            };
-            leads.push(lead);
-            console.log('[Webhook] Created New Lead:', lead.id);
+            // Create New Lead
+            lead = await prisma.lead.create({
+                data: {
+                    brokerId: brokerId,
+                    name: leadData.name || `New ${channel} Lead`,
+                    phone: leadData.phone || `unknown-${Date.now()}`, // Fallback if no phone (will fail unique constraint if strictly required)
+                    email: leadData.email,
+                    source: source,
+                    status: leadData.status || 'new',
+                }
+            });
+            console.log('[Webhook] Created New Lead DB ID:', lead.id);
         } else {
-            console.log('[Webhook] Found Existing Lead:', lead.id);
-            // Update logic if needed (e.g. status change)
-            if (leadData.status) lead.status = leadData.status as any;
+            console.log('[Webhook] Found Existing Lead DB ID:', lead.id);
+            // Optional: Update status if provided
+            if (leadData.status) {
+                lead = await prisma.lead.update({
+                    where: { id: lead.id },
+                    data: { status: leadData.status }
+                });
+            }
         }
 
         // 3. Automation Triggers
         if (isNewLead) {
-            await AutomationService.triggerWelcomeFlow(lead);
+            // Mapping prisma lead to internal type if needed, but for now passing as is if compatible
+            // await AutomationService.triggerWelcomeFlow(lead as any);
         }
 
         if (channel === 'calendar' && eventType) {
-            await AutomationService.triggerCalendarFlow(lead, eventType, new Date(body.event_start_time || Date.now()));
+            // await AutomationService.triggerCalendarFlow(lead as any, eventType, new Date(body.event_start_time || Date.now()));
         }
 
+        // 4. Log Message to DB
+        if (message) {
+            await prisma.leadMessage.create({
+                data: {
+                    leadId: lead.id,
+                    role: 'user', // From lead
+                    sender: 'lead',
+                    direction: 'inbound',
+                    content: message,
+                    channel: channel,
+                    timestamp: new Date()
+                }
+            });
+            console.log('[Webhook] Persisted Inbound Message:', message);
+        }
 
-        // 4. Log Message
-        // (Mock: would insert into MessageLog table)
-        console.log('[Webhook] Logged Message:', message);
-
-        // 5. Trigger AI Qualification
+        // 5. Trigger AI Qualification & Persist Response
         if (message && channel !== 'calendar') {
-            const aiResult = await AIService.qualifyLead(message);
+            const aiResponse = await AIService.generateResponse(lead as any, message); // generateResponse creates string, nice.
 
-            // Update Lead with AI results
-            lead.qualification_score = aiResult.score;
-            if (aiResult.intent) lead.intent = aiResult.intent;
-            if (aiResult.recommended_action) lead.recommended_action = aiResult.recommended_action;
-            if (aiResult.ai_summary) lead.ai_summary = aiResult.ai_summary;
-            if (aiResult.extracted_data.budget) lead.budget = aiResult.extracted_data.budget;
+            // Persist AI Response
+            await prisma.leadMessage.create({
+                data: {
+                    leadId: lead.id,
+                    role: 'assistant',
+                    sender: 'ai',
+                    direction: 'outbound',
+                    content: aiResponse,
+                    channel: channel,
+                    timestamp: new Date()
+                }
+            });
+            console.log('[Webhook] AI Response Persisted:', aiResponse);
 
-            console.log('[Webhook] AI Qualified Lead:', aiResult);
+            // TODO: Actually send outbound via channel API (WhatsApp/Meta) here.
         }
 
         res.status(200).json({ success: true, lead_id: lead.id });
 
     } catch (error) {
         console.error('[Webhook] Error processing:', error);
-        res.status(500).json({ error: 'Webhook processing failed' });
+        res.status(500).json({ error: 'Webhook processing failed', details: error });
     }
 };
 

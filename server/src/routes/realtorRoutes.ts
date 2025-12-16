@@ -116,7 +116,7 @@ router.get('/:slug/leads/:id', async (req, res) => {
         // Security Check 1: Verify slug belongs to logged user (or is admin)
         // @ts-ignore
         if (req.user.slug !== slug && req.user.role !== 'admin') {
-            console.warn(`[DEBUG] Slug Mismatch: param=${slug} != token=${req.user.slug}`);
+            console.warn(`[DEBUG] Slug Mismatch: param=${slug} != token=${(req as any).user.slug}`);
             return res.status(403).json({ error: 'Unauthorized access to this realtor space' });
         }
 
@@ -140,7 +140,7 @@ router.get('/:slug/leads/:id', async (req, res) => {
         // Security Check 2: Verify lead belongs to the realtor
         // @ts-ignore
         if (lead.brokerId !== req.user.id && req.user.role !== 'admin') {
-            console.warn(`[DEBUG] Ownership Fail: lead.brokerId=${lead.brokerId} != user.id=${req.user.id}`);
+            console.warn(`[DEBUG] Ownership Fail: lead.brokerId=${lead.brokerId} != user.id=${(req as any).user.id}`);
             return res.status(403).json({ error: 'Unauthorized access to this lead' });
         }
 
