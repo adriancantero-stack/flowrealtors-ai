@@ -57,8 +57,8 @@ router.post('/leads/:leadId/mock-message', async (req, res) => {
 
 import bcrypt from 'bcryptjs';
 
-// Remote Seed Endpoint (Emergency Restore)
-router.post('/seed-users', async (req, res) => {
+// Remote Seed Endpoint (Emergency Restore) - GET for browser access
+router.get('/seed-users', async (req, res) => {
     try {
         const usersToRestore = [
             { name: 'Adrian Realtor', email: 'adrian@flowrealtors.com', slug: 'adrian-realtor' },
