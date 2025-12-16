@@ -55,4 +55,44 @@ router.post('/leads/:leadId/mock-message', async (req, res) => {
     }
 });
 
+import bcrypt from 'bcryptjs';
+
+// Remote Seed Endpoint (Emergency Restore)
+router.post('/seed-users', async (req, res) => {
+    try {
+        const usersToRestore = [
+            { name: 'Adrian Realtor', email: 'adrian@flowrealtors.com', slug: 'adrian-realtor' },
+            { name: 'Patricia Chahin', email: 'patricia@gmail.com', slug: 'patricia-chahin' },
+            { name: 'Admin User', email: 'admin@flowrealtors.com', slug: 'admin', role: 'admin' }
+        ];
+
+        const SALT_ROUNDS = 10;
+        const DEFAULT_HASH = await bcrypt.hash('123456', SALT_ROUNDS);
+        const results = [];
+
+        for (const u of usersToRestore) {
+            const existing = await prisma.user.findUnique({ where: { email: u.email } });
+            if (!existing) {
+                const newUser = await prisma.user.create({
+                    data: {
+                        name: u.name,
+                        email: u.email,
+                        slug: u.slug,
+                        role: u.role || 'realtor',
+                        status: 'active',
+                        password_hash: DEFAULT_HASH
+                    }
+                });
+                results.push(`Restored: ${u.name}`);
+            } else {
+                results.push(`Skipped (Exists): ${u.name}`);
+            }
+        }
+        res.json({ success: true, results });
+    } catch (error) {
+        console.error('Seed Error:', error);
+        res.status(500).json({ error: String(error) });
+    }
+});
+
 export default router;

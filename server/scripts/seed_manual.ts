@@ -1,31 +1,55 @@
 
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
     console.log('🌱 Starting manual seed...');
 
-    // 1. Find a Realtor User (ensure we have one)
+    // 0. Restore Specific Users (Remote Fix)
+    const usersToRestore = [
+        { name: 'Adrian Realtor', email: 'adrian@flowrealtors.com', slug: 'adrian-realtor' },
+        { name: 'Patricia Chahin', email: 'patricia@gmail.com', slug: 'patricia-chahin' },
+        { name: 'Admin User', email: 'admin@flowrealtors.com', slug: 'admin', role: 'admin' }
+    ];
+
+    const SALT_ROUNDS = 10;
+    // Default password for restored users: "123456"
+    const DEFAULT_HASH = await bcrypt.hash('123456', SALT_ROUNDS);
+
+    for (const u of usersToRestore) {
+        const existing = await prisma.user.findUnique({ where: { email: u.email } });
+        if (!existing) {
+            console.log(`🛠 Restoring user: ${u.name}...`);
+            await prisma.user.create({
+                data: {
+                    name: u.name,
+                    email: u.email,
+                    slug: u.slug,
+                    role: u.role || 'realtor',
+                    status: 'active',
+                    password_hash: DEFAULT_HASH
+                }
+            });
+        }
+    }
+
+    // 1. Find a Realtor User (ensure we have one for leads)
     let realtor = await prisma.user.findFirst({
         where: { role: 'realtor' }
     });
 
     if (!realtor) {
-        console.log('⚠️ No realtor found. Creating default "adrian-realtor"...');
-        realtor = await prisma.user.create({
-            data: {
-                name: 'Adrian Realtor',
-                email: 'adrian@flowrealtors.com',
-                slug: 'adrian-realtor',
-                password_hash: 'hashed_password_placeholder',
-                role: 'realtor',
-                status: 'active'
-            }
-        });
+        // Fallback (should be covered above)
+        realtor = await prisma.user.findFirst({ where: { email: 'adrian@flowrealtors.com' } });
     }
 
-    console.log(`✅ Found Realtor: ${realtor.name} (${realtor.email})`);
+    // Safety check if still null (unlikely)
+    if (!realtor) {
+        console.log('⚠️ Unexpected: No realtor found even after restore.');
+        process.exit(1);
+    }
 
     // 2. Define Mock Leads
     const leads = [
