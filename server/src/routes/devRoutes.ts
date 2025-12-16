@@ -94,27 +94,36 @@ router.get('/seed-users', async (req, res) => {
                 const leadCount = await prisma.lead.count({ where: { brokerId: user.id } });
                 if (leadCount === 0) {
                     // Create sample lead
-                    await prisma.lead.create({
-                        data: {
-                            brokerId: user.id,
-                            name: 'Exemplo WhatsApp',
-                            phone: '+5511999999999',
-                            status: 'New',
-                            source: 'WhatsApp',
-                            messages: {
-                                create: [
-                                    {
-                                        role: 'user',
-                                        sender: 'lead',
-                                        direction: 'inbound',
-                                        content: 'Olá, gostaria de saber mais sobre o imóvel.',
-                                        timestamp: new Date()
-                                    }
-                                ]
+                    const uniquePhone = `+551199999${user.id.toString().padStart(4, '0')}`;
+
+                    // Check if exists first to be safe
+                    const existingLead = await prisma.lead.findUnique({ where: { phone: uniquePhone } });
+
+                    if (!existingLead) {
+                        await prisma.lead.create({
+                            data: {
+                                brokerId: user.id,
+                                name: 'Exemplo WhatsApp',
+                                phone: uniquePhone,
+                                status: 'New',
+                                source: 'WhatsApp',
+                                messages: {
+                                    create: [
+                                        {
+                                            role: 'user',
+                                            sender: 'lead',
+                                            direction: 'inbound',
+                                            content: 'Olá, gostaria de saber mais sobre o imóvel.',
+                                            timestamp: new Date()
+                                        }
+                                    ]
+                                }
                             }
-                        }
-                    });
-                    results.push(`+ Added Sample Lead for ${u.name}`);
+                        });
+                        results.push(`+ Added Sample Lead for ${u.name}`);
+                    } else {
+                        results.push(`~ Sample Lead already exists for ${u.name}`);
+                    }
                 }
             }
         }
