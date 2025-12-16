@@ -118,7 +118,16 @@ router.post('/webhooks/inbound', async (req, res) => {
                         });
 
                         // 4. Generate AI Response
-                        const aiResponse = await AIService.generateResponse(lead, msgBody);
+                        const historyMessages = await prisma.leadMessage.findMany({
+                            where: { leadId: lead.id },
+                            orderBy: { timestamp: 'desc' },
+                            take: 10
+                        });
+                        const history = historyMessages.reverse().map(m =>
+                            `${m.role === 'assistant' ? 'AI' : 'User'}: ${m.content}`
+                        ).join('\n');
+
+                        const aiResponse = await AIService.generateResponse(lead, msgBody, history);
 
                         // 5. Save Outbound Message
                         await prisma.leadMessage.create({

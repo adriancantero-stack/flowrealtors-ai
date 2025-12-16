@@ -129,7 +129,20 @@ export const handleWebhook = async (req: Request, res: Response) => {
 
         // 5. Trigger AI Qualification & Persist Response
         if (message && channel !== 'calendar') {
-            const aiResponse = await AIService.generateResponse(lead as any, message); // generateResponse creates string, nice.
+
+            // Fetch Conversation History
+            const historyMessages = await prisma.leadMessage.findMany({
+                where: { leadId: lead.id },
+                orderBy: { timestamp: 'desc' },
+                take: 10
+            });
+
+            // Format history (reverse to chronological)
+            const history = historyMessages.reverse().map(m =>
+                `${m.role === 'assistant' ? 'AI' : 'User'}: ${m.content}`
+            ).join('\n');
+
+            const aiResponse = await AIService.generateResponse(lead as any, message, history);
 
             // Persist AI Response
             await prisma.leadMessage.create({
