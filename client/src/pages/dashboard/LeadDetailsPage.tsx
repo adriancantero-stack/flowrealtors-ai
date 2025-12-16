@@ -19,7 +19,52 @@ export default function LeadDetailsPage() {
     // Form State
     const [notes, setNotes] = useState('');
     const [status, setStatus] = useState('');
+    // Message Input State
+    const [messageText, setMessageText] = useState('');
+    const [sending, setSending] = useState(false);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+    // ... (fetchLeadData, handleSave existing)
+
+    const handleSendMessage = async () => {
+        if (!messageText.trim() || sending) return;
+        setSending(true);
+
+        try {
+            let ENV_API = import.meta.env.VITE_API_URL;
+            if (ENV_API && !ENV_API.startsWith('http')) ENV_API = `https://${ENV_API}`;
+            const API_BASE = (ENV_API && ENV_API !== '') ? ENV_API : 'https://flowrealtors-ai-production.up.railway.app';
+
+            const token = localStorage.getItem('flow_realtor_token');
+            const headers = {
+                'Content-Type': 'application/json',
+                ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+            };
+
+            const res = await fetch(`${API_BASE}/api/realtors/${slug}/leads/${id}/messages`, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify({ content: messageText })
+            });
+
+            if (res.ok) {
+                const newMsg = await res.json();
+                setMessages(prev => [...prev, newMsg]);
+                setMessageText('');
+                // Scroll to bottom (optional enhancement)
+            } else {
+                alert('Failed to send message');
+            }
+
+        } catch (err) {
+            console.error(err);
+            alert('Error sending message');
+        } finally {
+            setSending(false);
+        }
+    };
+
+    // ...
 
     useEffect(() => {
         if (!slug || !id) return;
@@ -53,7 +98,6 @@ export default function LeadDetailsPage() {
                 setStatus(leadData.status || 'New');
             } else {
                 const errText = await leadRes.text();
-                // If 403/401, maybe redirect to login? For now just show error
                 setErrorMsg(`Failed to load lead: ${leadRes.status} ${leadRes.statusText} - ${errText}`);
             }
 
@@ -282,19 +326,27 @@ export default function LeadDetailsPage() {
                         ))}
                     </div>
 
-                    {/* Reply Box (Placeholder) */}
+                    {/* Reply Box */}
                     <div className="p-4 border-t bg-white">
-                        <div className="relative opacity-50 pointer-events-none mb-2">
+                        <div className="relative mb-2">
                             <input
                                 type="text"
-                                disabled
-                                placeholder="Reply coming soon..."
-                                className="w-full pl-4 pr-12 py-3 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                                disabled={sending}
+                                value={messageText}
+                                onChange={(e) => setMessageText(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                                placeholder={t('lead_details.type_message') || "Type a message..."}
+                                className="w-full pl-4 pr-12 py-3 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none disabled:opacity-50"
                             />
-                            <button className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-gray-400 text-white rounded-lg">
+                            <button
+                                onClick={handleSendMessage}
+                                disabled={!messageText.trim() || sending}
+                                className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 transition-colors"
+                            >
                                 <Send className="h-4 w-4" />
                             </button>
                         </div>
+
                         {/* Dev Tool */}
                         <div className="text-center">
                             <button

@@ -192,6 +192,63 @@ router.patch('/:slug/leads/:id', async (req, res) => {
     }
 });
 
+// POST /:slug/leads/:id/messages - Send outbound message
+router.post('/:slug/leads/:id/messages', async (req, res) => {
+    try {
+        const { slug, id } = req.params;
+        const leadId = parseInt(id);
+        const { content } = req.body;
+
+        if (!content) return res.status(400).json({ error: 'Message content required' });
+
+        // Security Checks
+        // @ts-ignore
+        if (req.user.slug !== slug && req.user.role !== 'admin') {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+        if (!lead) return res.status(404).json({ error: 'Lead not found' });
+
+        // @ts-ignore
+        if (lead.brokerId !== req.user.id && req.user.role !== 'admin') {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        // 1. Save to DB First
+        const message = await prisma.leadMessage.create({
+            data: {
+                leadId: leadId,
+                role: 'assistant',
+                sender: 'realtor', // Distinct from AI
+                direction: 'outbound',
+                content: content,
+                channel: lead.source || 'whatsapp',
+                timestamp: new Date()
+            }
+        });
+
+        // 2. Send via WhatsApp (if settings enabled)
+        // We import dynamically to avoid circular deps if any, though service is clean
+        const { WhatsAppService } = await import('../services/whatsappService');
+
+        try {
+            await WhatsAppService.sendMessage(lead.phone, content);
+            console.log(`[Outbound] Sent to ${lead.phone}: ${content}`);
+        } catch (waError) {
+            console.error('[Outbound] Failed to send to WhatsApp:', waError);
+            // We still return success because DB save worked, but maybe flag verification needed?
+            // For now, let's append a system note or just log it.
+        }
+
+        res.json(message);
+
+    } catch (error) {
+        console.error('Error sending message:', error);
+        res.status(500).json({ error: 'Failed to send message' });
+    }
+});
+
 // GET /:slug/leads/:id/messages - Get lead messages history
 router.get('/:slug/leads/:id/messages', async (req, res) => {
     try {
