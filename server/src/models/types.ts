@@ -64,6 +64,10 @@ export interface AnalysisResult {
         email?: string;
         phone?: string;
         suggested_status?: string;
+        bedrooms?: string;
+        bathrooms?: string;
+        condition?: string;
+        location_priority?: string;
     };
     score: number;
     recommended_action: string;
