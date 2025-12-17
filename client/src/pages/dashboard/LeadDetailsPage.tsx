@@ -277,25 +277,51 @@ export default function LeadDetailsPage() {
                         <h3 className="text-lg font-bold text-gray-900">{t('lead_details.ai_summary')}</h3>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
                         <div className="bg-white/60 p-3 rounded-lg">
                             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('lead_details.intent')}</p>
-                            <p className="font-medium text-gray-900 mt-1">{aiData.intent}</p>
-                        </div>
-                        <div className="bg-white/60 p-3 rounded-lg">
-                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('lead_details.budget')}</p>
-                            <p className="font-medium text-gray-900 mt-1">{aiData.budget}</p>
+                            <p className="font-medium text-gray-900 mt-1 truncate">{aiData.intent}</p>
                         </div>
                         <div className="bg-white/60 p-3 rounded-lg">
                             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('lead_details.city')}</p>
-                            <p className="font-medium text-gray-900 mt-1">{aiData.city}</p>
+                            <p className="font-medium text-gray-900 mt-1 truncate">{aiData.city}</p>
+                        </div>
+                        <div className="bg-white/60 p-3 rounded-lg">
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('lead_details.budget')}</p>
+                            <p className="font-medium text-gray-900 mt-1 truncate">{aiData.budget}</p>
                         </div>
 
-                        {/* Placeholder for Next Action */}
-                        <div className="bg-white/60 p-3 rounded-lg border-l-4 border-blue-500">
-                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('lead_details.recommended_action')}</p>
-                            <p className="font-medium text-blue-900 mt-1">Review notes and contact.</p>
+                        {/* New Fields */}
+                        <div className="bg-white/60 p-3 rounded-lg">
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Type</p>
+                            <p className="font-medium text-gray-900 mt-1 truncate">{lead.property_type || '-'}</p>
                         </div>
+                        <div className="bg-white/60 p-3 rounded-lg">
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Bedrooms</p>
+                            <p className="font-medium text-gray-900 mt-1 truncate">{lead.bedrooms || '-'}</p>
+                        </div>
+                        <div className="bg-white/60 p-3 rounded-lg">
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Bathrooms</p>
+                            <p className="font-medium text-gray-900 mt-1 truncate">{lead.bathrooms || '-'}</p>
+                        </div>
+                        <div className="bg-white/60 p-3 rounded-lg">
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Condition</p>
+                            <p className="font-medium text-gray-900 mt-1 truncate">{lead.condition || '-'}</p>
+                        </div>
+                        <div className="bg-white/60 p-3 rounded-lg">
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Priority</p>
+                            <p className="font-medium text-gray-900 mt-1 truncate">{lead.location_priority || '-'}</p>
+                        </div>
+                        <div className="bg-white/60 p-3 rounded-lg">
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Payment</p>
+                            <p className="font-medium text-gray-900 mt-1 truncate">{lead.financing || '-'}</p>
+                        </div>
+                    </div>
+
+                    {/* Recommended Action */}
+                    <div className="bg-white/80 p-4 rounded-lg border-l-4 border-blue-500">
+                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('lead_details.recommended_action')}</p>
+                        <p className="font-medium text-blue-900 mt-1">{lead.next_action_at ? new Date(lead.next_action_at).toLocaleString() : 'Review notes and contact.'}</p>
                     </div>
                 </div>
 

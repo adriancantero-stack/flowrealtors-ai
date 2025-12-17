@@ -41,6 +41,14 @@ model Lead {
   source       String?  @default("whatsapp")
   budget       String?
   desired_city String?
+  property_type String?
+  bedrooms      String?
+  bathrooms     String?
+  timeline      String?
+  financing     String? // Cash, Mortgage
+  urgency       String? // High, Medium, Low
+  condition     String? // New, Resale, Fixer-upper
+  location_priority String? // Near schools, quiet street, etc.
   
   // Lead Details (Step C)
   notes        String?
