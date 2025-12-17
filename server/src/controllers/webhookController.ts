@@ -159,6 +159,28 @@ export const handleWebhook = async (req: Request, res: Response) => {
             console.log('[Webhook] AI Response Persisted:', aiResponse);
 
             // TODO: Actually send outbound via channel API (WhatsApp/Meta) here.
+
+            // 6. REAL-TIME QUALIFICATION (LaHaus Style)
+            try {
+                // We use the inbound 'message' for now. Ideally, we could pass history.
+                const analysis = await AIService.qualifyLead(message);
+                console.log('[Webhook] Lead Analysis:', JSON.stringify(analysis, null, 2));
+
+                if (analysis.score > 0) {
+                    await prisma.lead.update({
+                        where: { id: lead.id },
+                        data: {
+                            intent: analysis.intent,
+                            budget: analysis.extracted_data.budget || undefined,
+                            desired_city: analysis.extracted_data.location || undefined,
+                            score: analysis.score,
+                            // Optional: smart merge notes
+                        }
+                    });
+                }
+            } catch (err) {
+                console.error('[Webhook] Auto-qualification failed:', err);
+            }
         }
 
         res.status(200).json({ success: true, lead_id: lead.id });

@@ -142,9 +142,28 @@ router.post('/webhooks/inbound', async (req, res) => {
                             }
                         });
 
-                        // 6. Send via WhatsApp
                         await WhatsAppService.sendMessage(from, aiResponse);
                         console.log(`Sent AI response to ${from}`);
+
+                        // 7. REAL-TIME QUALIFICATION (LaHaus Style)
+                        try {
+                            const analysis = await AIService.qualifyLead(msgBody);
+                            console.log('[WhatsApp] Lead Analysis:', JSON.stringify(analysis, null, 2));
+
+                            if (analysis.score > 0) {
+                                await prisma.lead.update({
+                                    where: { id: lead.id },
+                                    data: {
+                                        intent: analysis.intent,
+                                        budget: analysis.extracted_data.budget || undefined,
+                                        desired_city: analysis.extracted_data.location || undefined,
+                                        score: analysis.score,
+                                    }
+                                });
+                            }
+                        } catch (err) {
+                            console.error('[WhatsApp] Auto-qualification failed:', err);
+                        }
 
                     } else {
                         console.warn(`No realtor found for phone_number_id: ${metadata.phone_number_id}`);

@@ -19,7 +19,7 @@ router.post('/leads/:leadId/mock-message', async (req, res) => {
         if (!lead) return res.status(404).json({ error: 'Lead not found' });
 
         // 1. Save Mock Message
-        const message = await prisma.leadMessage.create({
+        const savedMessage = await prisma.leadMessage.create({
             data: {
                 leadId: id,
                 content: text,
@@ -34,9 +34,10 @@ router.post('/leads/:leadId/mock-message', async (req, res) => {
         // 2. Trigger AI Response if requested (and if inbound)
         if (direction === 'inbound' && trigger_ai) {
 
-            // Fetch Conversation History
+            // 4. Generate AI Response
+            // Fetch History for Context
             const historyMessages = await prisma.leadMessage.findMany({
-                where: { leadId: lead.id },
+                where: { leadId: id }, // Use 'id' which is already parsed
                 orderBy: { timestamp: 'desc' },
                 take: 10
             });
@@ -45,21 +46,49 @@ router.post('/leads/:leadId/mock-message', async (req, res) => {
             ).join('\n');
 
             const aiResponse = await AIService.generateResponse(lead, text, history);
+
+            // 5. Save Outbound Message (AI)
             await prisma.leadMessage.create({
                 data: {
-                    leadId: id,
+                    leadId: id, // Use 'id' which is already parsed
                     role: 'assistant',
                     sender: 'ai',
                     direction: 'outbound',
                     content: aiResponse,
-                    channel: 'whatsapp_mock',
+                    channel: 'whatsapp_mock', // Preserve existing channel
                     timestamp: new Date()
                 }
             });
-            return res.json({ success: true, message, ai_response: aiResponse });
+
+            // 6. REAL-TIME QUALIFICATION (LaHaus Style)
+            // Analyze the user's message to extract insights
+            try {
+                const analysis = await AIService.qualifyLead(text);
+                console.log('[Dev] Lead Analysis:', JSON.stringify(analysis, null, 2));
+
+                // Update Lead with Insights
+                if (analysis.score > 0) {
+                    await prisma.lead.update({
+                        where: { id: id }, // Use 'id' which is already parsed
+                        data: {
+                            intent: analysis.intent,
+                            budget: analysis.extracted_data.budget || undefined,
+                            desired_city: analysis.extracted_data.location || undefined,
+                            score: analysis.score,
+                            // Append notes if useful? Or just overwrite? 
+                            // For now we keep "notes" for manual or main summary, 
+                            // maybe auto-update if empty?
+                        }
+                    });
+                }
+            } catch (err) {
+                console.error('[Dev] Auto-qualification failed:', err);
+            }
+
+            return res.json({ success: true, message: savedMessage, ai_response: aiResponse });
         }
 
-        res.json({ success: true, message });
+        res.json({ success: true, message: savedMessage });
     } catch (error) {
         console.error('Mock Message Error:', error);
         res.status(500).json({ error: 'Failed to insert mock message' });
