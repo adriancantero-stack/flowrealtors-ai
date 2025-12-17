@@ -287,7 +287,7 @@ export default function LeadDetailsPage() {
                             <p className="font-medium text-gray-900 mt-1">{aiData.budget}</p>
                         </div>
                         <div className="bg-white/60 p-3 rounded-lg">
-                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">City</p>
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('lead_details.city')}</p>
                             <p className="font-medium text-gray-900 mt-1">{aiData.city}</p>
                         </div>
 

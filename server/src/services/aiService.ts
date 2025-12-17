@@ -29,6 +29,8 @@ export class AIService {
     }
 
     static async qualifyLead(message: string, history: string = ''): Promise<AnalysisResult> {
+        const language = this.detectLanguage(message, { phone: null } as any); // Or pass lead if available, but message is primary signal here
+
         const prompt = `
 Analyze the real estate lead conversation below. Return STRICT JSON only.
 
@@ -37,18 +39,16 @@ ${history}
 
 New Message: "${message}"
 
+Target Language: ${language} (Output values in this language)
+
 Instructions:
 1. Extract insights based on the FULL conversation history.
 2. If the user provided their NAME, EMAIL or PHONE in the chat, extract it.
 3. Update specific real estate fields.
    - If the user changes their mind (e.g. was Rent, now Buy), OVERWRITE the old value.
    - If checking history, prioritize the LATEST information.
-4. Suggest a STATUS based on the conversation progress:
-   - "New": Just started, no real info yet.
-   - "In Qualification": User is answering questions.
-   - "Qualified": User has provided Budget AND Location AND Timeline.
-   - "Hot": User is very urgent or ready to buy/visit.
-   - "Not Interested": User said stop or not interested.
+4. Suggest a STATUS based on the conversation progress.
+5. CRITICAL: Returned values for 'intent', 'recommended_action' and 'notes' MUST be in ${language === 'es' ? 'SPANISH' : language === 'pt' ? 'PORTUGUESE' : 'ENGLISH'}.
 
 Return:
 {
@@ -57,14 +57,14 @@ Return:
     "email": "Email or null",
     "phone": "Phone or null"
   },
-  "intent": "Buying Interest | Rental Inquiry | Pricing Question | Low Intent | Highly Motivated",
+  "intent": "High/Medium/Low Intent (Translated to ${language})",
   "property_type": "House | Condo | Land | Unknown",
   "location_preference": "City/Area or Unknown",
   "budget": "Value or Unknown",
   "timeline": "ASAP | This Month | This Year | Unknown",
   "financing": "Cash | Mortgage | Unknown",
   "urgency": "High | Medium | Low",
-  "notes": "Short realtor-friendly summary of LATEST needs"
+  "notes": "Short realtor-friendly summary of LATEST needs in ${language}"
 }
 `;
         try {
@@ -107,7 +107,9 @@ Return:
                     suggested_status: status
                 },
                 score: score,
-                recommended_action: score > 80 ? 'Call Immediately' : 'Follow up',
+                recommended_action: score > 80
+                    ? (language === 'es' ? 'Llamar Inmediatamente' : language === 'pt' ? 'Ligar A agora' : 'Call Immediately')
+                    : (language === 'es' ? 'Hacer seguimiento' : language === 'pt' ? 'Acompanhar' : 'Follow up'),
                 ai_summary: data.notes || raw
             };
 
