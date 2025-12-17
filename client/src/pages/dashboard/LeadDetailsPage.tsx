@@ -293,27 +293,27 @@ export default function LeadDetailsPage() {
 
                         {/* New Fields */}
                         <div className="bg-white/60 p-3 rounded-lg">
-                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Type</p>
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('lead_details.property_type')}</p>
                             <p className="font-medium text-gray-900 mt-1 truncate">{lead.property_type || '-'}</p>
                         </div>
                         <div className="bg-white/60 p-3 rounded-lg">
-                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Bedrooms</p>
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('lead_details.bedrooms')}</p>
                             <p className="font-medium text-gray-900 mt-1 truncate">{lead.bedrooms || '-'}</p>
                         </div>
                         <div className="bg-white/60 p-3 rounded-lg">
-                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Bathrooms</p>
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('lead_details.bathrooms')}</p>
                             <p className="font-medium text-gray-900 mt-1 truncate">{lead.bathrooms || '-'}</p>
                         </div>
                         <div className="bg-white/60 p-3 rounded-lg">
-                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Condition</p>
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('lead_details.condition')}</p>
                             <p className="font-medium text-gray-900 mt-1 truncate">{lead.condition || '-'}</p>
                         </div>
                         <div className="bg-white/60 p-3 rounded-lg">
-                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Priority</p>
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('lead_details.location_priority')}</p>
                             <p className="font-medium text-gray-900 mt-1 truncate">{lead.location_priority || '-'}</p>
                         </div>
                         <div className="bg-white/60 p-3 rounded-lg">
-                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Payment</p>
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('lead_details.payment')}</p>
                             <p className="font-medium text-gray-900 mt-1 truncate">{lead.financing || '-'}</p>
                         </div>
                     </div>
