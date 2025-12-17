@@ -60,6 +60,10 @@ export interface AnalysisResult {
         location: string | null;
         financing: string | null;
         urgency_level: 'low' | 'medium' | 'high';
+        name?: string;
+        email?: string;
+        phone?: string;
+        suggested_status?: string;
     };
     score: number;
     recommended_action: string;

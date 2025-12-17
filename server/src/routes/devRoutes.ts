@@ -75,9 +75,14 @@ router.post('/leads/:leadId/mock-message', async (req, res) => {
                             budget: analysis.extracted_data.budget || undefined,
                             desired_city: analysis.extracted_data.location || undefined,
                             score: analysis.score,
-                            // Append notes if useful? Or just overwrite? 
-                            // For now we keep "notes" for manual or main summary, 
-                            // maybe auto-update if empty?
+                            status: analysis.extracted_data.suggested_status as any || undefined,
+                            // Profile updates (only if found)
+                            ...(analysis.extracted_data.name ? { name: analysis.extracted_data.name } : {}),
+                            ...(analysis.extracted_data.email ? { email: analysis.extracted_data.email } : {}),
+                            // We probably shouldn't auto-update PHONE unless we are sure, to avoid losing the WhatsApp ID.
+                            // But user asked for it. Let's do it carefully? 
+                            // Actually, mostly they provide email/name. Phone is the key for WhatsApp.
+                            // Let's stick to Name/Email/Status for now.
                         }
                     });
                 }

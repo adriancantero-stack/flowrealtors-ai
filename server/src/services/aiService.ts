@@ -39,12 +39,22 @@ New Message: "${message}"
 
 Instructions:
 1. Extract insights based on the FULL conversation history.
-2. If the user confirms a previous question (e.g. "Yes"), use the context to understand what they are confirming.
-3. Update the fields based on the latest info.
-4. Return JSON only.
+2. If the user provided their NAME, EMAIL or PHONE in the chat, extract it.
+3. Update specific real estate fields.
+4. Suggest a STATUS based on the conversation progress:
+   - "New": Just started, no real info yet.
+   - "In Qualification": User is answering questions.
+   - "Qualified": User has provided Budget AND Location AND Timeline.
+   - "Hot": User is very urgent or ready to buy/visit.
+   - "Not Interested": User said stop or not interested.
 
 Return:
 {
+  "extracted_contact": {
+    "name": "Full Name or null",
+    "email": "Email or null",
+    "phone": "Phone or null"
+  },
   "intent": "Buying Interest | Rental Inquiry | Pricing Question | Low Intent | Highly Motivated",
   "property_type": "House | Condo | Land | Unknown",
   "location_preference": "City/Area or Unknown",
@@ -64,7 +74,22 @@ Return:
             const cleanJson = raw.replace(/```json/g, '').replace(/```/g, '').trim();
             const data = JSON.parse(cleanJson);
 
-            // Map to AnalysisResult interface
+            // Calculate Score & Status
+            let score = 20; // Default started
+            if (data.location_preference !== 'Unknown' && data.location_preference !== 'City/Area or Unknown') score += 20;
+            if (data.budget !== 'Unknown' && data.budget !== 'Value or Unknown') score += 20;
+            if (data.timeline !== 'Unknown' && data.timeline !== 'ASAP | This Month | This Year | Unknown') score += 20;
+            if (data.urgency === 'High') score += 20;
+            if (data.intent?.includes('Buy') || data.intent?.includes('Motivated')) score += 10;
+            if (score > 100) score = 100;
+
+            let status = 'New';
+            if (score > 30) status = 'In Qualification';
+            if (score > 70) status = 'Qualified';
+            if (score > 90) status = 'Hot';
+            // Override if explicit negative
+            if (data.intent?.includes('Low Intent')) status = 'New';
+
             return {
                 intent: data.intent || 'General Inquiry',
                 extracted_data: {
@@ -73,10 +98,14 @@ Return:
                     property_type: data.property_type,
                     location: data.location_preference,
                     financing: data.financing,
-                    urgency_level: (data.urgency || 'medium').toLowerCase()
+                    urgency_level: (data.urgency || 'medium').toLowerCase(),
+                    name: data.extracted_contact?.name,
+                    email: data.extracted_contact?.email,
+                    phone: data.extracted_contact?.phone,
+                    suggested_status: status
                 },
-                score: data.urgency === 'High' ? 85 : data.urgency === 'Medium' ? 50 : 20,
-                recommended_action: data.urgency === 'High' ? 'Call Immediately' : 'Follow up',
+                score: score,
+                recommended_action: score > 80 ? 'Call Immediately' : 'Follow up',
                 ai_summary: data.notes || raw
             };
 
@@ -91,7 +120,8 @@ Return:
                     property_type: null,
                     location: null,
                     financing: null,
-                    urgency_level: 'low'
+                    urgency_level: 'low',
+                    suggested_status: 'New'
                 },
                 score: 0,
                 recommended_action: 'Manual Review',

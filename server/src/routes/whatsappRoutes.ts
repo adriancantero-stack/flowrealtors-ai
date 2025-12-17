@@ -158,6 +158,9 @@ router.post('/webhooks/inbound', async (req, res) => {
                                         budget: analysis.extracted_data.budget || undefined,
                                         desired_city: analysis.extracted_data.location || undefined,
                                         score: analysis.score,
+                                        status: analysis.extracted_data.suggested_status as any || undefined,
+                                        ...(analysis.extracted_data.name ? { name: analysis.extracted_data.name } : {}),
+                                        ...(analysis.extracted_data.email ? { email: analysis.extracted_data.email } : {}),
                                     }
                                 });
                             }
