@@ -5,7 +5,7 @@ import { prisma } from '../lib/prisma';
 export const listBrokers = async (req: Request, res: Response) => {
     try {
         const brokers = await prisma.user.findMany({
-            where: { role: 'broker' },
+            where: { role: { in: ['broker', 'admin'] } },
             orderBy: { createdAt: 'desc' },
             include: {
                 _count: {
