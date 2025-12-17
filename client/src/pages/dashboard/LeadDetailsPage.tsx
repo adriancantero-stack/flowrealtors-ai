@@ -51,7 +51,8 @@ export default function LeadDetailsPage() {
                 const newMsg = await res.json();
                 setMessages(prev => [...prev, newMsg]);
                 setMessageText('');
-                // Scroll to bottom (optional enhancement)
+                // Refresh lead data (insights might have updated)
+                fetchLeadData();
             } else {
                 alert('Failed to send message');
             }
