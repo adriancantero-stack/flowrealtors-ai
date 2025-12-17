@@ -1,6 +1,7 @@
 import { Navigate, useLocation, useParams } from 'react-router-dom';
+import React from 'react';
 
-export default function RequireAuth({ children, role }: { children: JSX.Element, role?: 'admin' | 'broker' }) {
+export default function RequireAuth({ children, role }: { children: React.ReactNode, role?: 'admin' | 'broker' }) {
     const location = useLocation();
     const { lang } = useParams();
     const currentLang = lang || 'en';
