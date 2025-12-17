@@ -8,8 +8,19 @@ import { exec } from 'child_process';
 const router = Router();
 
 // Middleware to check admin role (mocked for now, assuming all requests to /api/admin are authorized in dev)
-router.use((req, res, next) => {
+// Middleware to check admin role
+router.use((req: any, res, next) => {
     console.log(`[ADMIN ROUTER] ${req.method} ${req.url}`);
+
+    // Strict Auth Check
+    if (!req.user) {
+        return res.status(401).json({ error: 'Unauthorized: Login required' });
+    }
+
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Forbidden: Admin access only' });
+    }
+
     next();
 });
 

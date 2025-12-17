@@ -34,6 +34,8 @@ import LanguageRedirector from './components/LanguageRedirector';
 import RouteAwareLanguageProvider from './layouts/RouteAwareLanguageProvider';
 import LegacyDashboardRedirector from './components/LegacyDashboardRedirector';
 
+import RequireAuth from './components/RequireAuth';
+
 function App() {
   return (
     <LanguageProvider>
@@ -52,7 +54,13 @@ function App() {
             {/* Legacy Dashboard Redirect (/:lang/dashboard -> /:lang/:slug/dashboard) */}
             <Route path="dashboard" element={<LegacyDashboardRedirector />} />
 
-            <Route path="admin" element={<AdminLayout />}>
+            {/* ... */}
+
+            <Route path="admin" element={
+              <RequireAuth role="admin">
+                <AdminLayout />
+              </RequireAuth>
+            }>
               <Route index element={<AdminDashboard />} />
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="brokers" element={<AdminBrokersPage />} />
@@ -69,7 +77,11 @@ function App() {
 
             {/* Realtor Spaces: /:lang/:slug/... */}
             {/* Placed AFTER admin to avoid catching "admin" as a slug */}
-            <Route path=":slug" element={<DashboardLayout />}>
+            <Route path=":slug" element={
+              <RequireAuth>
+                <DashboardLayout />
+              </RequireAuth>
+            }>
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<DashboardHome />} />
               <Route path="leads" element={<LeadsPage />} />

@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 
 export default function LoginPage() {
     const navigate = useNavigate();
+    const location = useLocation();
     const [loading, setLoading] = useState(false);
 
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -49,7 +50,11 @@ export default function LoginPage() {
                 // alert(`Login Success!\nSlug: ${targetSlug}\nRedirecting to: ${targetUrl}`);
 
                 // Direct Redirect to Slug URL
-                if (data.user.role === 'admin') {
+                const from = (location.state as any)?.from?.pathname;
+
+                if (from) {
+                    navigate(from, { replace: true });
+                } else if (data.user.role === 'admin') {
                     navigate(`/${lang}/admin/dashboard`);
                 } else if (data.user.slug) {
                     navigate(`/${lang}/${data.user.slug}/dashboard`);

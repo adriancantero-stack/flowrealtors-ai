@@ -47,21 +47,13 @@ app.use(async (req: any, res, next) => {
         }
     }
 
-    // Fallback for verification if no header (Dev only)
+    // Fallback REMOVED for Security.
+    // Clients MUST send Authorization header now.
+    /*
     if (!req.user && req.path.includes('/leads') && process.env.NODE_ENV !== 'production') {
-        // Try to guess user from slug in path if available
-        // This is a "hack" to allow the existing frontend to work without headers for now
-        // A proper fix requires updating the Frontend to send headers.
-        const match = req.path.match(/\/realtors\/([^\/]+)\//);
-        if (match && match[1]) {
-            const slug = match[1];
-            const user = await import('./lib/prisma').then(m => m.prisma.user.findUnique({ where: { slug } }));
-            if (user) {
-                req.user = user; // Auto-auth as the owner of the slug
-                console.log(`[Auth] Auto-Auth by Slug: ${slug}`);
-            }
-        }
+        // ... (removed insecure logic)
     }
+    */
     next();
 });
 
