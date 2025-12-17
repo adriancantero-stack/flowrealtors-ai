@@ -33,7 +33,18 @@ router.post('/leads/:leadId/mock-message', async (req, res) => {
 
         // 2. Trigger AI Response if requested (and if inbound)
         if (direction === 'inbound' && trigger_ai) {
-            const aiResponse = await AIService.generateResponse(lead, text);
+
+            // Fetch Conversation History
+            const historyMessages = await prisma.leadMessage.findMany({
+                where: { leadId: lead.id },
+                orderBy: { timestamp: 'desc' },
+                take: 10
+            });
+            const history = historyMessages.reverse().map(m =>
+                `${m.role === 'assistant' ? 'AI' : 'User'}: ${m.content}`
+            ).join('\n');
+
+            const aiResponse = await AIService.generateResponse(lead, text, history);
             await prisma.leadMessage.create({
                 data: {
                     leadId: id,
