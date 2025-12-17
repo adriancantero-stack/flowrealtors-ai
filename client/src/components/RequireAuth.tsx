@@ -12,8 +12,18 @@ export default function RequireAuth({ children, role }: { children: JSX.Element,
         return <Navigate to={`/${currentLang}/login`} state={{ from: location }} replace />;
     }
 
-    // Role check could go here if we decoded the JWT or stored user role in localStorage
-    // For now, we trust the token existence for basic access, backend will verify role
+    // Role Check
+    const userRole = localStorage.getItem('flow_realtor_role');
+
+    if (role && role === 'admin' && userRole !== 'admin') {
+        // Logged in but not admin -> Redirect to their dashboard or home
+        // Could also show an Unauthorized page, but redirect is safer for now
+        const userSlug = localStorage.getItem('flow_realtor_slug');
+        if (userSlug) {
+            return <Navigate to={`/${currentLang}/${userSlug}/dashboard`} replace />;
+        }
+        return <Navigate to={`/${currentLang}/`} replace />;
+    }
 
     return children;
 }
