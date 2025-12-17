@@ -37,8 +37,8 @@ export class AISettingsService {
                 id: 'default',
                 provider: 'gemini',
                 api_key: '',
-                default_model: 'gemini-2.0-flash',
-                strong_model: 'gemini-2.0-flash',
+                default_model: 'gemini-2.0-flash-lite',
+                strong_model: 'gemini-2.0-flash-lite',
                 temperature: 0.7,
                 max_tokens: 1000,
                 system_prompt: "",
@@ -68,8 +68,8 @@ export class AISettingsService {
             updated = await prisma.aISettings.create({
                 data: {
                     api_key: newSettings.api_key || '',
-                    default_model: newSettings.default_model || 'gemini-2.0-flash',
-                    strong_model: newSettings.strong_model || 'gemini-2.0-flash',
+                    default_model: newSettings.default_model || 'gemini-2.0-flash-lite',
+                    strong_model: newSettings.strong_model || 'gemini-2.0-flash-lite',
                     temperature: newSettings.temperature || 0.7,
                     max_tokens: newSettings.max_tokens || 1000,
                     system_prompt: newSettings.system_prompt || ''
