@@ -162,8 +162,8 @@ export const handleWebhook = async (req: Request, res: Response) => {
 
             // 6. REAL-TIME QUALIFICATION (LaHaus Style)
             try {
-                // We use the inbound 'message' for now. Ideally, we could pass history.
-                const analysis = await AIService.qualifyLead(message);
+                // Pass history for better context
+                const analysis = await AIService.qualifyLead(message, history);
                 console.log('[Webhook] Lead Analysis:', JSON.stringify(analysis, null, 2));
 
                 if (analysis.score > 0) {

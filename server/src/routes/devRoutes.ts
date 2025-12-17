@@ -63,7 +63,7 @@ router.post('/leads/:leadId/mock-message', async (req, res) => {
             // 6. REAL-TIME QUALIFICATION (LaHaus Style)
             // Analyze the user's message to extract insights
             try {
-                const analysis = await AIService.qualifyLead(text);
+                const analysis = await AIService.qualifyLead(text, history);
                 console.log('[Dev] Lead Analysis:', JSON.stringify(analysis, null, 2));
 
                 // Update Lead with Insights

@@ -28,11 +28,20 @@ export class AIService {
         return 'en';
     }
 
-    static async qualifyLead(message: string): Promise<AnalysisResult> {
+    static async qualifyLead(message: string, history: string = ''): Promise<AnalysisResult> {
         const prompt = `
-Analyze the real estate lead message below. Return STRICT JSON only.
+Analyze the real estate lead conversation below. Return STRICT JSON only.
 
-Message: "${message}"
+Conversation History:
+${history}
+
+New Message: "${message}"
+
+Instructions:
+1. Extract insights based on the FULL conversation history.
+2. If the user confirms a previous question (e.g. "Yes"), use the context to understand what they are confirming.
+3. Update the fields based on the latest info.
+4. Return JSON only.
 
 Return:
 {

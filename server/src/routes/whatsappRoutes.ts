@@ -147,7 +147,7 @@ router.post('/webhooks/inbound', async (req, res) => {
 
                         // 7. REAL-TIME QUALIFICATION (LaHaus Style)
                         try {
-                            const analysis = await AIService.qualifyLead(msgBody);
+                            const analysis = await AIService.qualifyLead(msgBody, history);
                             console.log('[WhatsApp] Lead Analysis:', JSON.stringify(analysis, null, 2));
 
                             if (analysis.score > 0) {
