@@ -179,4 +179,33 @@ router.get('/seed-users', async (req, res) => {
     }
 });
 
+// Force Promote Admin (Fix for Production)
+router.post('/promote-admin', async (req, res) => {
+    try {
+        const { email } = req.body;
+        console.log(`[DEV] Promoting ${email} to admin...`);
+        const user = await prisma.user.update({
+            where: { email },
+            data: { role: 'admin' }
+        });
+        res.json({ success: true, user });
+    } catch (error: any) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+router.get('/check-admin', async (req, res) => {
+    try {
+        const email = req.query.email as string;
+        if (!email) return res.status(400).json({ error: 'Email required' });
+
+        const user = await prisma.user.findUnique({ where: { email } });
+        res.json({
+            user: user ? { id: user.id, email: user.email, role: user.role } : null
+        });
+    } catch (error: any) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 export default router;
