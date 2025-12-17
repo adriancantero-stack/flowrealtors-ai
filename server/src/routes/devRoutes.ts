@@ -221,21 +221,20 @@ router.post('/separate-roles', async (req, res) => {
         console.log('Demoted Adrian to broker');
 
         // 2. Ensure Super Admin exists & Reset Password
-        // Hash 'admin123'
-        const SALT_ROUNDS = 10;
-        const HASH = await bcrypt.hash('admin123', SALT_ROUNDS);
+        // PLAIN TEXT for MVP Match (authController expects plain text)
+        const PLAIN_PASS = 'admin123';
 
         const adminUser = await prisma.user.upsert({
             where: { email: 'admin@flowrealtors.com' },
             update: {
                 role: 'admin',
-                password_hash: HASH,
+                password_hash: PLAIN_PASS,
                 status: 'active'
             },
             create: {
                 name: 'Super Admin',
                 email: 'admin@flowrealtors.com',
-                password_hash: HASH,
+                password_hash: PLAIN_PASS,
                 role: 'admin',
                 slug: 'super-admin', // distinct slug
                 status: 'active'
