@@ -249,4 +249,33 @@ router.post('/separate-roles', async (req, res) => {
     }
 });
 
+// Debug Login (User still reporting invalid credentials)
+router.post('/debug-login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        console.log(`[DEV] Debug Login for ${email}`);
+
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user) {
+            return res.json({ success: false, reason: 'User not found' });
+        }
+
+        // Check exact password
+        const expected = user.password_hash;
+        if (expected !== password) {
+            return res.json({
+                success: false,
+                reason: 'Password Mismatch',
+                received: password,
+                stored: expected // Be careful with this in logs, returning for debug only
+            });
+        }
+
+        res.json({ success: true, message: 'Valid Credentials' });
+
+    } catch (error: any) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 export default router;
