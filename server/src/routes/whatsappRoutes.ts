@@ -150,7 +150,7 @@ router.post('/webhooks/inbound', async (req, res) => {
                             const analysis = await AIService.qualifyLead(msgBody, history);
                             console.log('[WhatsApp] Lead Analysis:', JSON.stringify(analysis, null, 2));
 
-                            if (analysis.score > 0) {
+                            if (analysis.intent !== 'Error Processing') {
                                 await prisma.lead.update({
                                     where: { id: lead.id },
                                     data: {

@@ -41,6 +41,8 @@ Instructions:
 1. Extract insights based on the FULL conversation history.
 2. If the user provided their NAME, EMAIL or PHONE in the chat, extract it.
 3. Update specific real estate fields.
+   - If the user changes their mind (e.g. was Rent, now Buy), OVERWRITE the old value.
+   - If checking history, prioritize the LATEST information.
 4. Suggest a STATUS based on the conversation progress:
    - "New": Just started, no real info yet.
    - "In Qualification": User is answering questions.
@@ -62,7 +64,7 @@ Return:
   "timeline": "ASAP | This Month | This Year | Unknown",
   "financing": "Cash | Mortgage | Unknown",
   "urgency": "High | Medium | Low",
-  "notes": "Short realtor-friendly summary"
+  "notes": "Short realtor-friendly summary of LATEST needs"
 }
 `;
         try {
@@ -162,9 +164,13 @@ Lead known data: ${JSON.stringify(lead)}
 
 Instructions:
 1. REVIEW the Conversation History.
-2. If this is a continuing conversation, DO NOT greet again (like "Hello" or "Olá"). Just continue the flow.
-3. If this is the VERY FIRST message, you can greet.
-4. Answer ONLY relevant questions or acknowledge the input.
+2. If this is a continuing conversation, DO NOT greet again.
+3. WE DO NOT HAVE A LIST OF PROPERTIES VISIBLE RIGHT NOW.
+   - If user asks for listings, say "I will check what we have available that matches your criteria".
+   - DO NOT invent specific property details unless they were already discussed.
+4. GOAL: Get them to agree to a MEETING or CALL to discuss details.
+   - "Shall we schedule a quick call to see the best options?"
+   - "I can filter the best ones for you, are you free for a visit?"
 5. Keep message short (under 200 chars).
 6. CRITICAL: Write the response in ${language} language ONLY.
 `;

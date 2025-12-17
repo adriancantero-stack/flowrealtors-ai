@@ -66,8 +66,8 @@ router.post('/leads/:leadId/mock-message', async (req, res) => {
                 const analysis = await AIService.qualifyLead(text, history);
                 console.log('[Dev] Lead Analysis:', JSON.stringify(analysis, null, 2));
 
-                // Update Lead with Insights
-                if (analysis.score > 0) {
+                // Update Lead with Insights (Even if score is low, we might have Name/Email)
+                if (analysis.intent !== 'Error Processing') {
                     await prisma.lead.update({
                         where: { id: id }, // Use 'id' which is already parsed
                         data: {

@@ -166,7 +166,7 @@ export const handleWebhook = async (req: Request, res: Response) => {
                 const analysis = await AIService.qualifyLead(message, history);
                 console.log('[Webhook] Lead Analysis:', JSON.stringify(analysis, null, 2));
 
-                if (analysis.score > 0) {
+                if (analysis.intent !== 'Error Processing') {
                     await prisma.lead.update({
                         where: { id: lead.id },
                         data: {
