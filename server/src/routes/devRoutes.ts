@@ -208,4 +208,46 @@ router.get('/check-admin', async (req, res) => {
     }
 });
 
+// Separate Roles (User Request: Adrian=Broker, Admin=SuperAdmin)
+router.post('/separate-roles', async (req, res) => {
+    try {
+        console.log('[DEV] Separating Roles...');
+
+        // 1. Demote Adrian
+        await prisma.user.update({
+            where: { email: 'adrian@flowrealtors.com' },
+            data: { role: 'broker' } // Back to broker
+        });
+        console.log('Demoted Adrian to broker');
+
+        // 2. Ensure Super Admin exists & Reset Password
+        // Hash 'admin123'
+        const SALT_ROUNDS = 10;
+        const HASH = await bcrypt.hash('admin123', SALT_ROUNDS);
+
+        const adminUser = await prisma.user.upsert({
+            where: { email: 'admin@flowrealtors.com' },
+            update: {
+                role: 'admin',
+                password_hash: HASH,
+                status: 'active'
+            },
+            create: {
+                name: 'Super Admin',
+                email: 'admin@flowrealtors.com',
+                password_hash: HASH,
+                role: 'admin',
+                slug: 'super-admin', // distinct slug
+                status: 'active'
+            }
+        });
+        console.log('Updated Super Admin');
+
+        res.json({ success: true, message: 'Roles separated. Adrian is Broker. Admin is SuperAdmin (admin123).' });
+    } catch (error: any) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 export default router;
