@@ -183,8 +183,25 @@ app.listen(Number(PORT), '0.0.0.0', () => {
                 if (stderr) console.error(`Migration Stderr: ${stderr}`);
                 console.log(`Migration Stdout: ${stdout}`);
             });
-        } catch (err) {
             console.error('Auto-migration CRITIAL ERROR (Server continues):', err);
         }
     }
+
+    // Log all registered routes for debugging 404s
+    console.log('--- Registered Routes ---');
+    if (app._router && app._router.stack) {
+        app._router.stack.forEach((r: any) => {
+            if (r.route && r.route.path) {
+                console.log(`${Object.keys(r.route.methods).join(',').toUpperCase()} ${r.route.path}`);
+            } else if (r.name === 'router' && r.handle && r.handle.stack) {
+                // Express router middleware
+                r.handle.stack.forEach((h: any) => {
+                    if (h.route && h.route.path) {
+                        console.log(`[Router] ${Object.keys(h.route.methods).join(',').toUpperCase()} ${h.route.path}`);
+                    }
+                });
+            }
+        });
+    }
+    console.log('-------------------------');
 });
