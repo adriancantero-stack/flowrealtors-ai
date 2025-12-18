@@ -43,18 +43,37 @@ export const updateProfile = async (req: Request, res: Response) => {
     const { userId } = req.params;
     const updates = req.body;
 
+    // Validate if userId is valid number
+    const id = parseInt(userId);
+    if (isNaN(id)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+    }
+
     try {
+        const existingUser = await prisma.user.findUnique({ where: { id } });
+        if (!existingUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const dataToUpdate: any = {
+            name: updates.name,
+            phone: updates.phone,
+            city: updates.city,
+            state: updates.state,
+            photo_url: updates.photo_url,
+            // Only update slug if it is provided and valid (non-empty)
+            ...(updates.slug ? { slug: updates.slug } : {})
+        };
+
+        // Only update role if explicitly requested (e.g. by admin or initial setup)
+        // Otherwise preserve existing role
+        if (updates.account_type) {
+            dataToUpdate.role = updates.account_type === 'realtor' ? 'broker' : 'admin';
+        }
+
         const updatedUser = await prisma.user.update({
-            where: { id: parseInt(userId) },
-            data: {
-                name: updates.name,
-                phone: updates.phone,
-                city: updates.city,
-                state: updates.state,
-                photo_url: updates.photo_url,
-                slug: updates.slug, // Allow updating slug manually if needed
-                role: updates.account_type === 'realtor' ? 'broker' : 'admin'
-            }
+            where: { id },
+            data: dataToUpdate
         });
 
         res.json({
@@ -62,6 +81,7 @@ export const updateProfile = async (req: Request, res: Response) => {
             user: updatedUser
         });
     } catch (error) {
+        console.error('Update Profile Error:', error);
         res.status(500).json({ message: 'Failed to update profile' });
     }
 };

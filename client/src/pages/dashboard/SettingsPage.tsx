@@ -3,7 +3,7 @@ import { Save, Globe } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import type { Language } from '../../i18n/locales';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export default function SettingsPage() {
     const { t, language, setLanguage } = useTranslation();
@@ -73,9 +73,40 @@ export default function SettingsPage() {
                     <Section title="Profile Information" description="Update your personal details for your public page.">
                         <div className="space-y-4">
                             <div className="flex items-center gap-4 mb-4">
-                                <img src={profile.photo_url || 'https://via.placeholder.com/100'} alt="Profile" className="w-16 h-16 rounded-full object-cover border" />
+                                <img src={profile.photo_url ? (profile.photo_url.startsWith('http') ? profile.photo_url : API_BASE + profile.photo_url) : 'https://via.placeholder.com/100'} alt="Profile" className="w-16 h-16 rounded-full object-cover border" />
                                 <div className="flex-1">
-                                    <Input label="Photo URL" name="photo_url" value={profile.photo_url || ''} onChange={handleChange} placeholder="https://..." />
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Photo</label>
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={async (e) => {
+                                                const file = e.target.files?.[0];
+                                                if (!file) return;
+
+                                                const formData = new FormData();
+                                                formData.append('file', file);
+
+                                                try {
+                                                    const res = await fetch(`${API_BASE}/api/upload`, {
+                                                        method: 'POST',
+                                                        body: formData
+                                                    });
+                                                    const data = await res.json();
+                                                    if (data.url) {
+                                                        setProfile(prev => ({ ...prev, photo_url: data.url }));
+                                                    }
+                                                } catch (err) {
+                                                    console.error('Upload failed', err);
+                                                    alert('Failed to upload image');
+                                                }
+                                            }}
+                                            className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                        />
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        Current: {profile.photo_url || 'None'}
+                                    </p>
                                 </div>
                             </div>
 
@@ -121,8 +152,8 @@ export default function SettingsPage() {
                         </form>
                     </Section>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }
 

@@ -128,6 +128,9 @@ app.use('/api/dev', devRoutes);
 
 import path from 'path';
 
+import uploadRoutes from './routes/uploadRoutes';
+app.use('/api/upload', uploadRoutes);
+
 // Serve frontend static files
 app.use(express.static(path.join(__dirname, '../public')));
 
