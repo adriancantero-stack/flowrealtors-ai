@@ -137,6 +137,7 @@ export default function ApplyPage() {
                                 ]}
                                 value={formData.motivation}
                                 onChange={(v: any) => handleChange('motivation', v)}
+                                activeColor={brandColor}
                             />
 
                             {/* TIMELINE */}
@@ -152,6 +153,7 @@ export default function ApplyPage() {
                                 ]}
                                 value={formData.timeline}
                                 onChange={(v: any) => handleChange('timeline', v)}
+                                activeColor={brandColor}
                             />
 
                             {/* BUDGET */}
@@ -167,6 +169,7 @@ export default function ApplyPage() {
                                 ]}
                                 value={formData.budget}
                                 onChange={(v: any) => handleChange('budget', v)}
+                                activeColor={brandColor}
                             />
 
                             {/* FINANCING */}
@@ -181,6 +184,7 @@ export default function ApplyPage() {
                                 ]}
                                 value={formData.financing}
                                 onChange={(v: any) => handleChange('financing', v)}
+                                activeColor={brandColor}
                             />
                         </div>
                     ) : (
@@ -233,6 +237,7 @@ export default function ApplyPage() {
                                     checked={formData.termsAccepted}
                                     onChange={(e) => handleChange('termsAccepted', e.target.checked)}
                                     className="mt-1 w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                    style={{ color: brandColor }}
                                 />
                                 <label htmlFor="terms" className="text-xs text-gray-500 leading-snug">
                                     {t('apply.consent.text')} <a href="#" className="underline">{t('apply.consent.privacy')}</a>.
@@ -292,7 +297,7 @@ export default function ApplyPage() {
 }
 
 // SUB-COMPONENT FOR SELECT
-function SelectGroup({ label, icon, options, value, onChange, placeholder }: any) {
+function SelectGroup({ label, icon, options, value, onChange, placeholder, activeColor }: any) {
     return (
         <div className="space-y-2">
             <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
@@ -303,7 +308,8 @@ function SelectGroup({ label, icon, options, value, onChange, placeholder }: any
                 <select
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
-                    className="w-full appearance-none p-4 pl-4 pr-10 bg-white border border-gray-200 rounded-xl text-gray-900 focus:ring-2 focus:ring-black outline-none transition-all cursor-pointer font-medium"
+                    className="w-full appearance-none p-4 pl-4 pr-10 bg-white border border-gray-200 rounded-xl text-gray-900 focus:ring-2 outline-none transition-all cursor-pointer font-medium"
+                    style={{ '--tw-ring-color': activeColor, borderColor: value ? activeColor : undefined } as any}
                 >
                     <option value="" disabled className="text-gray-400">{placeholder}</option>
                     {options.map((opt: any) => (
