@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Save, Eye, Video, Type, Layout, ExternalLink } from 'lucide-react';
+import { Save, Eye, Video, Type, Layout } from 'lucide-react';
 
 let API_BASE = import.meta.env.VITE_API_URL || 'https://flowrealtors-ai-production.up.railway.app';
 if (API_BASE && !API_BASE.startsWith('http')) {
