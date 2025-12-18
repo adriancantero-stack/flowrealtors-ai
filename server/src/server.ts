@@ -104,6 +104,24 @@ const systemFixHandler = async (req: Request, res: Response) => {
             console.log('[SYSTEM_FIX] Added calendly_link');
         } catch (e) { console.warn('SQL calendly_link:', e); }
 
+        // Add primary_market
+        try {
+            await prisma.$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "primary_market" TEXT;`);
+            console.log('[SYSTEM_FIX] Added primary_market');
+        } catch (e) { console.warn('SQL primary_market:', e); }
+
+        // Add service_areas
+        try {
+            await prisma.$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "service_areas" TEXT;`);
+            console.log('[SYSTEM_FIX] Added service_areas');
+        } catch (e) { console.warn('SQL service_areas:', e); }
+
+        // Add whatsapp_number
+        try {
+            await prisma.$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "whatsapp_number" TEXT;`);
+            console.log('[SYSTEM_FIX] Added whatsapp_number');
+        } catch (e) { console.warn('SQL whatsapp_number:', e); }
+
         const { exec } = require('child_process');
         const util = require('util');
         const execPromise = util.promisify(exec);

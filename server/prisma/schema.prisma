@@ -97,6 +97,9 @@ model User {
   // VSL Funnel Fields
   display_name  String? // For public profile
   region        String? // e.g., "Orlando, FL"
+  primary_market String? // e.g. "Florida" or "Central Florida"
+  service_areas String? // Comma-separated list for simplicity in MVP
+  whatsapp_number String? // Public facing WA number
   
   default_lang  String   @default("pt") // en, es, pt
   role          String   @default("broker") // broker, admin

@@ -94,6 +94,9 @@ export const getPublicFunnel = async (req: Request, res: Response) => {
                 // VSL Funnel Fields
                 display_name: user.display_name,
                 region: user.region,
+                primary_market: user.primary_market,
+                service_areas: user.service_areas,
+                whatsapp_number: user.whatsapp_number,
                 calendly_link: user.calendly_link // Fallback if landing page specific is empty
             },
             page: user.landingPage || {
