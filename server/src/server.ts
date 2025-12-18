@@ -155,13 +155,12 @@ app.listen(Number(PORT), '0.0.0.0', () => {
 
     // Auto-run migrations in production
     // TEMPORARILY DISABLED TO PREVENT CRASH LOOP
-    /*
     // Auto-run migrations in production (Safe Mode)
     if (process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT) {
         try {
             console.log('Attempting auto-migration...');
             const env = { ...process.env };
-            
+
             // Safe URL parsing
             if (env.DATABASE_URL && env.DATABASE_URL.startsWith('postgres')) {
                 try {
@@ -188,5 +187,4 @@ app.listen(Number(PORT), '0.0.0.0', () => {
             console.error('Auto-migration CRITIAL ERROR (Server continues):', err);
         }
     }
-    */
 });
