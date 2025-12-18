@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Save, Eye, Video, Type, Layout, FileText, Globe } from 'lucide-react';
+import { useParams } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
 
 let API_BASE = import.meta.env.VITE_API_URL || 'https://flowrealtors-ai-production.up.railway.app';
@@ -9,6 +10,7 @@ if (API_BASE && !API_BASE.startsWith('http')) {
 
 export default function FunnelSettingsPage() {
     const { t } = useTranslation();
+    const { lang } = useParams();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [user, setUser] = useState<any>(null);
@@ -80,7 +82,9 @@ export default function FunnelSettingsPage() {
 
     if (loading) return <div className="p-8">Loading...</div>;
 
-    const publicUrl = user ? `${window.location.origin}/${user.default_lang || 'en'}/${user.slug}` : '#';
+    // Use current route language, fallback to user default, then to 'en'
+    const currentLang = lang || user?.default_lang || 'en';
+    const publicUrl = user ? `${window.location.origin}/${currentLang}/${user.slug}` : '#';
 
     return (
         <div className="max-w-6xl mx-auto space-y-6 mb-20">
@@ -223,11 +227,11 @@ export default function FunnelSettingsPage() {
                             <Globe className="w-4 h-4" /> {t('funnel_builder.sidebar.public_links')}
                         </h3>
                         <div className="space-y-2">
-                            {['en', 'es', 'pt'].map(lang => (
-                                <div key={lang} className="flex justify-between items-center text-xs bg-white p-2 rounded border border-blue-200">
-                                    <span className="font-mono text-gray-500 uppercase w-6">{lang}</span>
-                                    <a href={`${window.location.origin}/${lang}/${user?.slug}`} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline truncate flex-1 ml-2">
-                                        .../{lang}/{user?.slug}
+                            {['en', 'es', 'pt'].map(langOption => (
+                                <div key={langOption} className="flex justify-between items-center text-xs bg-white p-2 rounded border border-blue-200">
+                                    <span className="font-mono text-gray-500 uppercase w-6">{langOption}</span>
+                                    <a href={`${window.location.origin}/${langOption}/${user?.slug}`} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline truncate flex-1 ml-2">
+                                        .../{langOption}/{user?.slug}
                                     </a>
                                 </div>
                             ))}
@@ -242,8 +246,8 @@ export default function FunnelSettingsPage() {
                             </h3>
                             <div className="flex justify-between items-center text-xs bg-white p-2 rounded border border-purple-200">
                                 <span className="font-mono text-gray-500 uppercase w-6">URL</span>
-                                <a href={`${window.location.origin}/${user?.default_lang || 'en'}/${user?.slug}/apply`} target="_blank" rel="noreferrer" className="text-purple-600 hover:underline truncate flex-1 ml-2">
-                                    .../{user?.default_lang || 'en'}/{user?.slug}/apply
+                                <a href={`${window.location.origin}/${currentLang}/${user?.slug}/apply`} target="_blank" rel="noreferrer" className="text-purple-600 hover:underline truncate flex-1 ml-2">
+                                    .../{currentLang}/{user?.slug}/apply
                                 </a>
                             </div>
                         </div>
