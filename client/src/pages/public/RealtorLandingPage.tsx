@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 
 // Constants
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_BASE = import.meta.env.VITE_API_URL || '';
 
 export default function RealtorLandingPage() {
     const { slug } = useParams();

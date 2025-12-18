@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Save, Eye, Video, Type, Layout, ExternalLink } from 'lucide-react';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_BASE = import.meta.env.VITE_API_URL || '';
 
 export default function FunnelSettingsPage() {
     const [loading, setLoading] = useState(true);
