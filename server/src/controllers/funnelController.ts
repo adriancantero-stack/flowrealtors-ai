@@ -1,137 +1,169 @@
 import { Request, Response } from 'express';
-import { FunnelSettings, Lead } from '../models/types';
+import { prisma } from '../lib/prisma';
 import { AIService } from '../services/aiService';
 import { AutomationService } from '../services/automationService';
 
-// Mock DB
-let funnelSettingsStore: FunnelSettings[] = [
-    {
-        id: '1',
-        user_id: 'user_123',
-        hero_title: 'Compra inteligente de casa en Florida, con ayuda de un Realtor experto.',
-        hero_subtitle: 'Te ayudamos a encontrar la casa ideal, entender el financiamiento y evitar errores caros al comprar en Estados Unidos.',
-        target_area: 'Ocala, Orlando, Tampa',
-        primary_language: 'es',
-        realtor_headline: 'Soy Patricia, Realtor en Florida especializada en ayudar familias latinas.',
-        realtor_bio_short: 'Más de 10 años de experiencia ayudando a primeros compradores a lograr el sueño americano.',
-        profile_photo_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200&h=200',
-        brand_color: '#0A84FF',
-        calendly_url: 'https://calendly.com/',
-        funnel_slug: 'patricia-chahin',
-        show_testimonials: false,
-        created_at: new Date()
-    }
-];
-
-// Mock Leads
-const leads: Lead[] = [];
-
+// Get Settings (Private - for Dashboard)
 export const getFunnelSettings = async (req: Request, res: Response) => {
-    const { userId } = req.params;
-    const settings = funnelSettingsStore.find(s => s.user_id === userId);
+    // req.user is set by middleware, but user might be requesting for a specific userId if admin?
+    // Assuming for now the route uses :userId param for multi-talent context or own profile
+    const userId = parseInt(req.params.userId);
 
-    if (!settings) {
-        // Return default if not exists
-        return res.json({
-            user_id: userId,
-            hero_title: 'Compra inteligente de casa en Florida',
-            hero_subtitle: 'Asesoría experta para compradores internacionales y locales.',
-            target_area: 'Florida',
-            primary_language: 'es',
-            realtor_headline: 'Tu aliado inmobiliario',
-            realtor_bio_short: 'Experto en bienes raíces.',
-            brand_color: '#000000',
-            funnel_slug: `realtor-${userId.substr(0, 5)}`,
-            calendly_url: '',
-            show_testimonials: false
+    try {
+        const landing = await prisma.landingPage.findUnique({
+            where: { userId }
         });
-    }
 
-    res.json(settings);
+        if (!landing) {
+            // Return defaults if not created yet
+            return res.json({
+                hero_headline: "Compra tu casa soñada en Florida",
+                hero_subheadline: "Asesoría experta para compradores internacionales.",
+                vsl_url: "",
+                cta_text: "Agendar Sesión",
+                primary_color: "#0A84FF",
+                calendly_url: "",
+                show_reviews: false
+            });
+        }
+        res.json(landing);
+    } catch (error) {
+        console.error('Error fetching funnel settings:', error);
+        res.status(500).json({ error: 'Failed' });
+    }
 };
 
+// Update Settings (Private - for Dashboard)
 export const updateFunnelSettings = async (req: Request, res: Response) => {
-    const { userId } = req.params;
-    const updates = req.body;
+    const userId = parseInt(req.params.userId);
+    const data = req.body;
 
-    let settings = funnelSettingsStore.find(s => s.user_id === userId);
-
-    if (settings) {
-        Object.assign(settings, updates);
-    } else {
-        settings = {
-            id: Math.random().toString(36).substr(2, 9),
-            user_id: userId,
-            created_at: new Date(),
-            ...updates
-        };
-        funnelSettingsStore.push(settings!);
+    try {
+        const landing = await prisma.landingPage.upsert({
+            where: { userId },
+            update: {
+                hero_headline: data.hero_headline,
+                hero_subheadline: data.hero_subheadline,
+                vsl_url: data.vsl_url,
+                cta_text: data.cta_text,
+                primary_color: data.primary_color,
+                calendly_url: data.calendly_url,
+                show_reviews: data.show_reviews
+            },
+            create: {
+                userId,
+                hero_headline: data.hero_headline,
+                hero_subheadline: data.hero_subheadline,
+                vsl_url: data.vsl_url,
+                cta_text: data.cta_text,
+                primary_color: data.primary_color,
+                calendly_url: data.calendly_url,
+                show_reviews: data.show_reviews
+            }
+        });
+        res.json(landing);
+    } catch (error) {
+        console.error('Error saving funnel settings:', error);
+        res.status(500).json({ error: 'Failed to save' });
     }
-
-    res.json(settings);
 };
 
+// Public Funnel Page Data
 export const getPublicFunnel = async (req: Request, res: Response) => {
     const { slug } = req.params;
-    const settings = funnelSettingsStore.find(s => s.funnel_slug === slug);
 
-    if (!settings) {
-        return res.status(404).json({ error: 'Funnel not found' });
+    try {
+        const user = await prisma.user.findUnique({
+            where: { slug },
+            include: { landingPage: true }
+        });
+
+        if (!user) {
+            return res.status(404).json({ error: 'Realtor not found' });
+        }
+
+        // Combine structure
+        const responseData = {
+            realtor: {
+                name: user.name,
+                email: user.email,
+                photo_url: user.photo_url,
+                phone: user.phone,
+                city: user.city,
+                state: user.state,
+                calendly_link: user.calendly_link // Fallback if landing page specific is empty
+            },
+            page: user.landingPage || {
+                hero_headline: "Compra tu casa soñada en Florida",
+                hero_subheadline: "Asesoría experta para compradores internacionales.",
+                cta_text: "Agendar Sesión",
+                primary_color: "#0A84FF"
+            }
+        };
+
+        res.json(responseData);
+
+    } catch (error) {
+        console.error('Error fetching public funnel:', error);
+        res.status(500).json({ error: 'System Error' });
     }
-
-    res.json(settings);
 };
 
+// Submit Form on Public Page
 export const submitFunnelForm = async (req: Request, res: Response) => {
     const { slug } = req.params;
     const formData = req.body;
 
-    console.log(`[Funnel] Submission for ${slug}:`, formData);
-
-    const settings = funnelSettingsStore.find(s => s.funnel_slug === slug);
-    if (!settings) {
-        return res.status(404).json({ error: 'Realtor not found' });
-    }
-
     try {
+        const user = await prisma.user.findUnique({ where: { slug } });
+        if (!user) return res.status(404).json({ error: 'Realtor not found' });
+
         // 1. Create Lead
-        const lead: Lead = {
-            id: Math.random().toString(36).substr(2, 9),
-            user_id: settings.user_id,
-            name: formData.name,
-            email: formData.email,
-            phone: formData.phone,
-            source: 'funnel_landing',
-            status: 'new',
-            language: settings.primary_language as 'en' | 'es' | 'pt' || 'es',
-            tags: ['funnel_form'],
-            qualification_score: 0,
-            conversation_history: [],
-            extracted_data: {
+        const lead = await prisma.lead.create({
+            data: {
+                brokerId: user.id,
+                name: formData.name,
+                email: formData.email,
+                phone: formData.phone,
+                status: 'new',
+                source: 'funnel_landing',
+                language: 'es', // TODO: Detect or pass from frontend param
                 budget: formData.budget,
-                timeline: formData.timeline
-            },
-            created_at: new Date()
-        };
+                desired_city: formData.city,
+                timeline: formData.timeline,
+                notes: `Concern: ${formData.concern}. Pre-approved: ${formData.preapproved}`
+            }
+        });
 
-        // 2. Log Message (Form Summary)
-        const summaryMsg = `Formulario Web\nCiudad: ${formData.city}\nPresupuesto: ${formData.budget}\nTiempo: ${formData.timeline}\nPre-aprobado: ${formData.preapproved}\nDuda: ${formData.concern}`;
-        console.log(`[Funnel] New Lead Created: ${lead.id}`);
+        // 2. AI Qualification & Notifications
+        const summaryMsg = `Formulario Web\nNome: ${formData.name}\nCidade: ${formData.city}\nOrçamento: ${formData.budget}\nTimeline: ${formData.timeline}\nPre-aprovado: ${formData.preapproved}\nDúvida: ${formData.concern}`;
 
-        // 3. AI Qualification
-        const aiResult = await AIService.qualifyLead(summaryMsg);
-        lead.qualification_score = aiResult.score;
-        lead.intent = aiResult.intent;
-        lead.recommended_action = aiResult.recommended_action;
-        lead.ai_summary = aiResult.ai_summary;
+        // Async processing (don't block response) (Ideal world)
+        // But for MVP we run it here
+        try {
+            const aiResult = await AIService.qualifyLead(summaryMsg);
 
-        // 4. Trigger Automation (Welcome Flow)
-        await AutomationService.triggerWelcomeFlow(lead);
+            await prisma.lead.update({
+                where: { id: lead.id },
+                data: {
+                    score: aiResult.score,
+                    intent: aiResult.intent,
+                    // recommended_action: aiResult.recommended_action, // Field missing in schema or mapped differently? Update schema later if needed.
+                    ai_summary: aiResult.ai_summary
+                }
+            });
 
-        res.json({ success: true, redirect: `/f/${slug}/thank-you` });
+            // Trigger Automations
+            await AutomationService.triggerWelcomeFlow(lead as any);
+        } catch (e) {
+            console.error('AI step failed:', e);
+        }
+
+        res.json({ success: true, leadId: lead.id, redirectUrl: user.calendly_link || '#' });
 
     } catch (error) {
         console.error('Funnel error:', error);
         res.status(500).json({ error: 'Processing failed' });
     }
 };
+

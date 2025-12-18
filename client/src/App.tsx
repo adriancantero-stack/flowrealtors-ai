@@ -28,6 +28,7 @@ import AdminWhatsAppPage from './pages/admin/WhatsAppSettingsPage';
 import PublicFunnelLayout from './layouts/PublicFunnelLayout';
 import FunnelLandingPage from './pages/funnel/FunnelLandingPage';
 import FunnelThankYouPage from './pages/funnel/FunnelThankYouPage';
+import RealtorLandingPage from './pages/public/RealtorLandingPage';
 
 import { LanguageProvider } from './i18n';
 import LanguageRedirector from './components/LanguageRedirector';
@@ -77,19 +78,26 @@ function App() {
 
             {/* Realtor Spaces: /:lang/:slug/... */}
             {/* Placed AFTER admin to avoid catching "admin" as a slug */}
-            <Route path=":slug" element={
-              <RequireAuth>
-                <DashboardLayout />
-              </RequireAuth>
-            }>
-              <Route index element={<Navigate to="dashboard" replace />} />
-              <Route path="dashboard" element={<DashboardHome />} />
-              <Route path="leads" element={<LeadsPage />} />
-              <Route path="leads/:id" element={<LeadDetailsPage />} />
-              <Route path="integrations" element={<IntegrationsPage />} />
-              <Route path="automations" element={<AutomationsPage />} />
-              <Route path="funnel" element={<FunnelSettingsPage />} />
-              <Route path="settings" element={<SettingsPage />} />
+            {/* Realtor Spaces: /:lang/:slug/... */}
+            {/* Placed AFTER admin to avoid catching "admin" as a slug */}
+            <Route path=":slug">
+              {/* PUBLIC LANDING PAGE (No Auth) */}
+              <Route index element={<RealtorLandingPage />} />
+
+              {/* PROTECTED DASHBOARD AREA */}
+              <Route element={
+                <RequireAuth>
+                  <DashboardLayout />
+                </RequireAuth>
+              }>
+                <Route path="dashboard" element={<DashboardHome />} />
+                <Route path="leads" element={<LeadsPage />} />
+                <Route path="leads/:id" element={<LeadDetailsPage />} />
+                <Route path="integrations" element={<IntegrationsPage />} />
+                <Route path="automations" element={<AutomationsPage />} />
+                <Route path="funnel" element={<FunnelSettingsPage />} />
+                <Route path="settings" element={<SettingsPage />} />
+              </Route>
             </Route>
           </Route>
 

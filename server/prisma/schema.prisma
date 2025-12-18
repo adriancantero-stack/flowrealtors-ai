@@ -103,6 +103,24 @@ model User {
   updatedAt     DateTime @updatedAt
   
   leads         Lead[]
+  landingPage   LandingPage?
+}
+
+model LandingPage {
+  id               Int      @id @default(autoincrement())
+  userId           Int      @unique
+  user             User     @relation(fields: [userId], references: [id])
+  
+  hero_headline    String?  @default("Compra tu casa soñada en Florida")
+  hero_subheadline String?  @default("Asesoría experta para compradores internacionales.")
+  vsl_url          String?  // YouTube/Vimeo URL
+  cta_text         String?  @default("Agendar Sesión")
+  primary_color    String?  @default("#0A84FF")
+  calendly_url     String?
+  show_reviews     Boolean  @default(false)
+  
+  updatedAt        DateTime @updatedAt
+  createdAt        DateTime @default(now())
 }
 
 model SaaSSettings {

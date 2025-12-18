@@ -181,20 +181,27 @@ export interface MessageLog {
 }
 
 export interface FunnelSettings {
-    id: string;
-    user_id: string;
-    hero_title: string;
-    hero_subtitle: string;
-    target_area: string;
-    primary_language: 'es' | 'en' | 'pt';
-    realtor_headline: string;
-    realtor_bio_short: string;
-    profile_photo_url?: string;
-    brand_color: string;
+    id: number;
+    user_id: number; // Changed to match Schema Int
+    hero_headline: string;
+    hero_subheadline: string;
+    vsl_url: string;
+    cta_text: string;
+    primary_color: string;
     calendly_url: string;
-    funnel_slug: string;
-    show_testimonials: boolean;
+    show_reviews: boolean;
     created_at: Date;
+    // Joined User Data
+    user?: {
+        name: string;
+        email: string;
+        phone: string;
+        photo_url: string;
+        slug: string;
+        city: string;
+        state: string;
+        default_lang: string;
+    }
 }
 
 export interface AIInteraction {
