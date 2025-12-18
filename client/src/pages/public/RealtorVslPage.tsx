@@ -33,8 +33,7 @@ export default function RealtorVslPage() {
 
     const { realtor, page } = data;
     const heroBg = page.primary_color || '#0A84FF';
-    const displayName = realtor.display_name || realtor.name;
-    const region = realtor.region || `${realtor.city || ''}, ${realtor.state || ''}`;
+
     const market = realtor.primary_market || "Florida";
 
     // Determine language label for badges
