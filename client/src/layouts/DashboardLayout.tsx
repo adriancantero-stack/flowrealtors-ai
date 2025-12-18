@@ -91,25 +91,29 @@ export default function DashboardLayout() {
             {/* Main Content Area */}
             <div className="flex-1 ml-[260px]">
                 {/* Navbar (Flow UI .navbar) */}
-                <header className="navbar flex justify-between items-center relative">
-                    {/* Left: Realtor Name */}
-                    <div className="w-1/3 text-sm font-medium text-gray-500">
-                        {realtorName}
+                <header className="navbar flex justify-between items-center px-8 py-4 bg-white border-b border-gray-100 mb-8 rounded-2xl shadow-sm mx-8 mt-6">
+                    {/* Left: Avatar + Name */}
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-sm ring-2 ring-blue-100">
+                            {realtorName.split(' ').map((n) => n[0]).join('').substring(0, 2).toUpperCase()}
+                        </div>
+                        <span className="text-gray-900 font-semibold text-base">
+                            {realtorName}
+                        </span>
                     </div>
 
-                    {/* Center: Date Only */}
-                    <div className="text-sm font-medium text-gray-500 absolute left-1/2 transform -translate-x-1/2 text-center">
+                    {/* Right: Full Date */}
+                    <div className="text-gray-500 font-medium text-sm">
                         {(() => {
-                            const dateStr = new Date().toLocaleDateString(lang === 'pt' ? 'pt-BR' : lang === 'es' ? 'es-ES' : 'en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+                            const dateStr = new Date().toLocaleDateString(lang === 'pt' ? 'pt-BR' : lang === 'es' ? 'es-ES' : 'en-US', {
+                                weekday: 'long',
+                                day: 'numeric',
+                                month: 'long',
+                                year: 'numeric'
+                            });
+                            // Capitalize first letter
                             return dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
                         })()}
-                    </div>
-
-                    {/* Right: User Avatar */}
-                    <div className="flex items-center gap-4 w-1/3 justify-end">
-                        <div className="w-8 h-8 bg-gray-200 rounded-full overflow-hidden border border-gray-200">
-                            <img src="https://ui-avatars.com/api/?name=User&background=random" className="w-full h-full object-cover" />
-                        </div>
                     </div>
                 </header>
 
