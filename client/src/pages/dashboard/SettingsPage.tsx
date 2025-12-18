@@ -189,7 +189,13 @@ export default function SettingsPage() {
                                 <Input label="Region / Market" name="region" value={(profile as any).region || ''} onChange={handleChange} placeholder="e.g. Orlando, FL" />
                             </div>
 
-                            <div className="grid grid-cols-1 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <Input label="Primary Market Label" name="primary_market" value={(profile as any).primary_market || ''} onChange={handleChange} placeholder="e.g. Florida" />
+                                <Input label="Service Areas (Comma separated)" name="service_areas" value={(profile as any).service_areas || ''} onChange={handleChange} placeholder="Orlando, Kissimmee, Winter Park" />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <Input label="WhatsApp Number (Public)" name="whatsapp_number" value={(profile as any).whatsapp_number || ''} onChange={handleChange} placeholder="e.g. +1 407 123 4567" />
                                 <Input label="Calendly Link (Default for Funnel)" name="calendly_link" value={(profile as any).calendly_link || ''} onChange={handleChange} placeholder="https://calendly.com/your-link" />
                             </div>
 
