@@ -67,6 +67,7 @@ Return:
   "budget": "Value or Unknown",
   "timeline": "ASAP | This Month | This Year | Unknown",
   "financing": "Cash | Mortgage | Unknown",
+  "pre_approved": "true | false | null",
   "urgency": "High | Medium | Low",
   "notes": "Short realtor-friendly summary of LATEST needs in ${language}"
 }
@@ -86,6 +87,7 @@ Return:
             if (data.budget !== 'Unknown' && data.budget !== 'Value or Unknown') score += 20;
             if (data.timeline !== 'Unknown' && data.timeline !== 'ASAP | This Month | This Year | Unknown') score += 20;
             if (data.urgency === 'High') score += 20;
+            if (data.pre_approved === 'true' || data.pre_approved === true) score += 10;
             if (data.intent?.includes('Buy') || data.intent?.includes('Motivated')) score += 10;
             if (score > 100) score = 100;
 
@@ -108,6 +110,7 @@ Return:
                     location_priority: data.location_priority,
                     location: data.location_preference,
                     financing: data.financing,
+                    pre_approved: data.pre_approved === 'true' || data.pre_approved === true,
                     urgency_level: (data.urgency || 'medium').toLowerCase(),
                     name: data.extracted_contact?.name,
                     email: data.extracted_contact?.email,

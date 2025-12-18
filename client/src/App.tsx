@@ -29,7 +29,7 @@ import PublicFunnelLayout from './layouts/PublicFunnelLayout';
 import FunnelLandingPage from './pages/funnel/FunnelLandingPage';
 import FunnelThankYouPage from './pages/funnel/FunnelThankYouPage';
 import RealtorVslPage from './pages/public/RealtorVslPage';
-import ApplicationPage from './pages/public/ApplicationPage';
+import ApplyPage from './pages/funnel/ApplyPage';
 
 import { LanguageProvider } from './i18n';
 import LanguageRedirector from './components/LanguageRedirector';
@@ -56,8 +56,6 @@ function App() {
             {/* Legacy Dashboard Redirect (/:lang/dashboard -> /:lang/:slug/dashboard) */}
             <Route path="dashboard" element={<LegacyDashboardRedirector />} />
 
-            {/* ... */}
-
             <Route path="admin" element={
               <RequireAuth role="admin">
                 <AdminLayout />
@@ -79,16 +77,11 @@ function App() {
 
             {/* Realtor Spaces: /:lang/:slug/... */}
             {/* Placed AFTER admin to avoid catching "admin" as a slug */}
-            {/* Realtor Spaces: /:lang/:slug/... */}
-            {/* Placed AFTER admin to avoid catching "admin" as a slug */}
-
-
-            // ...
 
             <Route path=":slug">
               {/* PUBLIC LANDING PAGE (No Auth) */}
               <Route index element={<RealtorVslPage />} />
-              <Route path="apply" element={<ApplicationPage />} />
+              <Route path="apply" element={<ApplyPage />} />
 
               {/* PROTECTED DASHBOARD AREA */}
               <Route element={

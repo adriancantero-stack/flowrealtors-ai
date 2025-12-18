@@ -30,6 +30,8 @@ export interface Lead {
     property_type?: string;
     urgency?: 'low' | 'medium' | 'high';
     recommended_action?: string;
+    pre_approved?: boolean;
+    concern?: string;
     ai_summary?: string;
     extracted_data?: {
         budget?: string;

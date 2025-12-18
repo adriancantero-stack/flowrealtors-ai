@@ -316,7 +316,21 @@ export default function LeadDetailsPage() {
                             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('lead_details.payment')}</p>
                             <p className="font-medium text-gray-900 mt-1 truncate">{lead.financing || '-'}</p>
                         </div>
+                        <div className="bg-white/60 p-3 rounded-lg">
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('lead_details.pre_approved')}</p>
+                            <p className={`font-medium mt-1 truncate ${lead.pre_approved ? 'text-green-600' : ''}`}>
+                                {lead.pre_approved ? 'Yes' : lead.pre_approved === false ? 'No' : '-'}
+                            </p>
+                        </div>
                     </div>
+
+                    {/* Concern / Requirements */}
+                    {lead.concern && (
+                        <div className="bg-white/60 p-3 rounded-lg mb-4 border border-blue-100">
+                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t('lead_details.concern')}</p>
+                            <p className="text-sm text-gray-900 mt-1 whitespace-pre-wrap">{lead.concern}</p>
+                        </div>
+                    )}
 
                     {/* Recommended Action */}
                     <div className="bg-white/80 p-4 rounded-lg border-l-4 border-blue-500">

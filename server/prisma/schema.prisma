@@ -50,6 +50,10 @@ model Lead {
   condition     String? // New, Resale, Fixer-upper
   location_priority String? // Near schools, quiet street, etc.
   
+  // New Qualification Fields
+  pre_approved  Boolean  @default(false)
+  concern       String?
+  
   // Lead Details (Step C)
   notes        String?
   score        Int?

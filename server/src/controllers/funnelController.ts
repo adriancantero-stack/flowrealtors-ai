@@ -136,13 +136,16 @@ export const submitFunnelForm = async (req: Request, res: Response) => {
                 name: formData.name,
                 email: formData.email,
                 phone: formData.phone,
-                status: 'new',
-                source: 'funnel_landing',
-                language: 'es', // TODO: Detect or pass from frontend param
+                status: 'qualified', // User requested "qualified" for this form
+                source: 'funnel_apply',
+                language: 'es', // TODO: Detect from header/body
                 budget: formData.budget,
-                desired_city: formData.city,
+                intent: formData.motivation,
                 timeline: formData.timeline,
-                notes: `Concern: ${formData.concern}. Pre-approved: ${formData.preapproved}`
+                financing: formData.financing,
+                pre_approved: formData.preapproval === 'yes' || formData.preapproval === 'pre_approved',
+                concern: formData.concern,
+                notes: `Goal: ${formData.goal || ''}`
             }
         });
 
