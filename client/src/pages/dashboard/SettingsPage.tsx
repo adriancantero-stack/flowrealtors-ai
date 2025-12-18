@@ -16,13 +16,20 @@ export default function SettingsPage() {
     });
 
     useEffect(() => {
+        console.log('Fetching profile...');
         fetch(`${API_BASE}/api/auth/me`, {
             headers: { 'Authorization': `Bearer ${localStorage.getItem('flow_realtor_token')}` }
         })
             .then(res => res.json())
             .then(data => {
-                if (data && !data.error) setProfile(prev => ({ ...prev, ...data }));
+                console.log('Profile fetched:', data);
+                if (data && !data.error) {
+                    setProfile(prev => ({ ...prev, ...data }));
+                } else {
+                    console.error('Profile fetch error:', data);
+                }
             })
+            .catch(err => console.error('Fetch failed:', err))
             .finally(() => setLoading(false));
     }, []);
 
@@ -33,8 +40,9 @@ export default function SettingsPage() {
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSaving(true);
+        console.log('Saving profile:', profile);
         try {
-            await fetch(`${API_BASE}/api/auth/profile/${profile.id}`, {
+            const res = await fetch(`${API_BASE}/api/auth/profile/${profile.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -42,8 +50,16 @@ export default function SettingsPage() {
                 },
                 body: JSON.stringify(profile)
             });
-            alert('Settings Saved');
+            const data = await res.json();
+            console.log('Save response:', data);
+
+            if (res.ok) {
+                alert('Settings Saved');
+            } else {
+                alert('Error saving: ' + (data.message || 'Unknown error'));
+            }
         } catch (error) {
+            console.error('Save exception:', error);
             alert('Error saving settings');
         } finally {
             setIsSaving(false);

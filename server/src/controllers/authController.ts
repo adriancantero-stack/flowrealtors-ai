@@ -50,8 +50,11 @@ export const updateProfile = async (req: Request, res: Response) => {
     }
 
     try {
+        console.log(`[UpdateProfile] ID: ${id}, Updates:`, updates);
+
         const existingUser = await prisma.user.findUnique({ where: { id } });
         if (!existingUser) {
+            console.warn(`[UpdateProfile] User ${id} not found`);
             return res.status(404).json({ message: 'User not found' });
         }
 
@@ -71,11 +74,14 @@ export const updateProfile = async (req: Request, res: Response) => {
             dataToUpdate.role = updates.account_type === 'realtor' ? 'broker' : 'admin';
         }
 
+        console.log('[UpdateProfile] Prisma Data:', dataToUpdate);
+
         const updatedUser = await prisma.user.update({
             where: { id },
             data: dataToUpdate
         });
 
+        console.log('[UpdateProfile] Success:', updatedUser.id);
         res.json({
             message: 'Profile updated successfully',
             user: updatedUser
