@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Play, Check, MapPin, Calendar, ArrowRight } from 'lucide-react';
-import { useTranslation } from 'react-i18next'; // Ensure this exists or use context
+import { useParams } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
+
 // Constants
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export default function RealtorLandingPage() {
-    const { locale, slug } = useParams();
-    const navigate = useNavigate();
+    const { slug } = useParams();
+    // const navigate = useNavigate(); // Unused
     const [data, setData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [form, setForm] = useState({
