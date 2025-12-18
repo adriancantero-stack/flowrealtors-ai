@@ -3,7 +3,7 @@ import { Save, Globe } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import type { Language } from '../../i18n/locales';
 
-const API_BASE = import.meta.env.VITE_API_URL || '';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://flowrealtors-ai-production.up.railway.app';
 
 export default function SettingsPage() {
     const { t, language, setLanguage } = useTranslation();
