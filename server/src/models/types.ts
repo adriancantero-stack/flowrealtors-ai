@@ -70,6 +70,7 @@ export interface AnalysisResult {
         bathrooms?: string;
         condition?: string;
         location_priority?: string;
+        pre_approved?: boolean;
     };
     score: number;
     recommended_action: string;
