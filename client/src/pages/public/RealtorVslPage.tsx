@@ -43,21 +43,7 @@ export default function RealtorVslPage() {
     return (
         <div className="min-h-screen bg-white text-gray-900 font-sans selection:bg-blue-100">
             {/* 1. Navbar */}
-            <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
-                <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-                    <div className="font-bold text-xl tracking-tight text-gray-900 flex items-center gap-2">
-                        <img src="/logo-full.png" alt="FlowRealtors" className="h-8" />
-                        <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full text-gray-500 font-medium tracking-wide">VERIFIED</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <div className="text-right hidden sm:block leading-tight">
-                            <div className="text-sm font-bold text-gray-900">{displayName}</div>
-                            <div className="text-xs text-gray-500">{region}</div>
-                        </div>
-                        <img src={realtor.photo_url ? (realtor.photo_url.startsWith('http') ? realtor.photo_url : API_BASE + realtor.photo_url) : 'https://via.placeholder.com/40'} className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm" />
-                    </div>
-                </div>
-            </header>
+            {/* 1. Navbar Removed per user request to focus on VSL */}
 
             <main className="max-w-3xl mx-auto px-4 py-8 md:py-12 space-y-10">
 
