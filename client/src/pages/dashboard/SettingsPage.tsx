@@ -138,9 +138,9 @@ export default function SettingsPage() {
 
             <div className="grid grid-cols-1 gap-6">
 
-                {/* Profile Settings (NEW) */}
+                {/* Perfil do Corretor */}
                 <div className="card">
-                    <Section title={t('settings.section.profile.title')} description={t('settings.section.profile.desc')}>
+                    <Section title="Perfil do Corretor" description="Seus dados pessoais e de contato interno.">
                         <div className="space-y-4">
                             <div className="flex items-center gap-4 mb-4">
                                 <img src={profile.photo_url ? (profile.photo_url.startsWith('http') ? profile.photo_url : API_BASE + profile.photo_url) : 'https://via.placeholder.com/100'} alt="Profile" className="w-16 h-16 rounded-full object-cover border" />
@@ -181,31 +181,44 @@ export default function SettingsPage() {
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <Input label={t('settings.form.fullname')} name="name" value={profile.name} onChange={handleChange} />
-                                <Input label={t('auth.email')} value={profile.email} disabled className="bg-gray-100" />
-                                <Input label={t('settings.form.phone_wa')} name="phone" value={profile.phone || ''} onChange={handleChange} placeholder="+1 ..." />
-                                <Input label={t('settings.form.slug')} name="slug" value={profile.slug || ''} onChange={handleChange} placeholder="adrian-realtor" />
+                                <Input label="Nome Completo" name="name" value={profile.name} onChange={handleChange} />
+                                <Input label="Correio Eletrónico" value={profile.email} disabled className="bg-gray-100" />
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <Input label={t('settings.form.display_name')} name="display_name" value={(profile as any).display_name || ''} onChange={handleChange} placeholder="e.g. Adrian C. @ FlowRealtors" />
-                                <Input label={t('settings.form.region')} name="region" value={(profile as any).region || ''} onChange={handleChange} placeholder="e.g. Orlando, FL" />
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <Input label={t('settings.form.primary_market')} name="primary_market" value={(profile as any).primary_market || ''} onChange={handleChange} placeholder="e.g. Florida" />
-                                <Input label={t('settings.form.service_areas')} name="service_areas" value={(profile as any).service_areas || ''} onChange={handleChange} placeholder="Orlando, Kissimmee, Winter Park" />
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <Input label={t('settings.form.whatsapp_public')} name="whatsapp_number" value={(profile as any).whatsapp_number || ''} onChange={handleChange} placeholder="e.g. +1 407 123 4567" />
-                                <Input label={t('settings.form.calendly')} name="calendly_link" value={(profile as any).calendly_link || ''} onChange={handleChange} placeholder="https://calendly.com/your-link" />
+                                <Input label="Telefone (Whatsapp)" name="phone" value={profile.phone || ''} onChange={handleChange} placeholder="+1 ..." />
+                                {/* Placeholder for nice alignment if needed, or just let it flow */}
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
-                                <Input label={t('settings.form.city')} name="city" value={profile.city || ''} onChange={handleChange} />
-                                <Input label={t('settings.form.state')} name="state" value={profile.state || ''} onChange={handleChange} />
+                                <Input label="Ciudad" name="city" value={profile.city || ''} onChange={handleChange} />
+                                <Input label="Estado/Provincia" name="state" value={profile.state || ''} onChange={handleChange} />
                             </div>
+                        </div>
+                    </Section>
+                </div>
+
+                {/* Para a Pagina Publica */}
+                <div className="card">
+                    <Section title="Para a Pagina Publica" description="Informações que aparecerão no seu site público e funil.">
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <Input label="Slug (Identificador URL)" name="slug" value={profile.slug || ''} onChange={handleChange} placeholder="adrian-cantero" />
+                                <Input label="Região / Mercado" name="region" value={(profile as any).region || ''} onChange={handleChange} placeholder="e.g. Orlando, FL" />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <Input label="Número WhatsApp (Público)" name="whatsapp_number" value={(profile as any).whatsapp_number || ''} onChange={handleChange} placeholder="e.g. +1 407 123 4567" />
+                                <Input label="Link de Calendly (Defecto para Embudo)" name="calendly_link" value={(profile as any).calendly_link || ''} onChange={handleChange} placeholder="https://calendly.com/your-link" />
+                            </div>
+
+                            {/* Optional Fields that weren't explicitly requested but might be good to keep accessible maybe hidden or less prominent? 
+                                 User said "preciso de todos esses dados aqui, ou da para deixar o esencial so?" -> "esencial so" implies cutting clutter.
+                                 I'll hide the explicit ones he didn't ask for (Service Areas, Primary Market Label, Display Name if covered by Name).
+                                 Wait, "Display Name" is often different from "Full Name". 
+                                 But user list didn't include it. I will follow his list exactly to be clean.
+                                 If he needs them back, I can restore.
+                             */}
                         </div>
                     </Section>
                 </div>
