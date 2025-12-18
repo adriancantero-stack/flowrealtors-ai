@@ -54,17 +54,27 @@ export default function SettingsPage() {
                 },
                 body: JSON.stringify(profile)
             });
-            const data = await res.json();
+
+            let data;
+            const contentType = res.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                data = await res.json();
+            } else {
+                const text = await res.text();
+                console.error('Non-JSON response:', text);
+                throw new Error('Server returned non-JSON response: ' + text.substring(0, 100));
+            }
+
             console.log('Save response:', data);
 
             if (res.ok) {
                 alert('Settings Saved');
             } else {
-                alert('Error saving: ' + (data.message || 'Unknown error'));
+                alert('Error from server: ' + (data.message || data.error || JSON.stringify(data)));
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Save exception:', error);
-            alert('Error saving settings');
+            alert('Save failed: ' + error.message);
         } finally {
             setIsSaving(false);
         }

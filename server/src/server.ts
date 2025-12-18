@@ -161,9 +161,11 @@ app.listen(Number(PORT), '0.0.0.0', () => {
 
         // Fix for "prepared statement s0 already exists" with PgBouncer
         const env = { ...process.env };
-        if (env.DATABASE_URL && !env.DATABASE_URL.includes('pgbouncer=true')) {
-            console.log('Appending pgbouncer=true to DATABASE_URL for migration...');
-            env.DATABASE_URL += (env.DATABASE_URL.includes('?') ? '&' : '?') + 'pgbouncer=true';
+        if (env.DATABASE_URL) {
+            const urlObj = new URL(env.DATABASE_URL);
+            urlObj.searchParams.set('pgbouncer', 'true');
+            urlObj.searchParams.set('statement_cache_size', '0');
+            env.DATABASE_URL = urlObj.toString();
         }
 
         // Using exec to run the command
