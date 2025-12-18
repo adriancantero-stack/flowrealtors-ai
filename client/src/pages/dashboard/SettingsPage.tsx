@@ -3,7 +3,11 @@ import { Save, Globe } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import type { Language } from '../../i18n/locales';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'https://flowrealtors-ai-production.up.railway.app';
+// Ensure protocol is present
+let API_BASE = import.meta.env.VITE_API_URL || 'https://flowrealtors-ai-production.up.railway.app';
+if (API_BASE && !API_BASE.startsWith('http')) {
+    API_BASE = `https://${API_BASE}`;
+}
 
 export default function SettingsPage() {
     const { t, language, setLanguage } = useTranslation();
@@ -16,8 +20,6 @@ export default function SettingsPage() {
     });
 
     useEffect(() => {
-        // DEBUG: Verify connection in production
-        alert(`Debug Config:\nAPI: ${API_BASE}\nToken: ${localStorage.getItem('flow_realtor_token')?.slice(0, 10)}...`);
         console.log('Fetching profile...');
         fetch(`${API_BASE}/api/auth/me`, {
             headers: { 'Authorization': `Bearer ${localStorage.getItem('flow_realtor_token')}` }

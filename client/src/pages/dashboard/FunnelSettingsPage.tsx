@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Save, Eye, Video, Type, Layout, ExternalLink } from 'lucide-react';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'https://flowrealtors-ai-production.up.railway.app';
+let API_BASE = import.meta.env.VITE_API_URL || 'https://flowrealtors-ai-production.up.railway.app';
+if (API_BASE && !API_BASE.startsWith('http')) {
+    API_BASE = `https://${API_BASE}`;
+}
 
 export default function FunnelSettingsPage() {
     const [loading, setLoading] = useState(true);
