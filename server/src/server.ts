@@ -249,3 +249,15 @@ app.listen(Number(PORT), '0.0.0.0', () => {
     }
     console.log('-------------------------');
 });
+
+// Global Error Handler (JSON Force)
+app.use((err: any, req: Request, res: Response, next: Function) => {
+    console.error('Global Error:', err);
+    if (!res.headersSent) {
+        res.status(500).json({
+            error: 'Internal Server Error',
+            message: err.message || 'Unknown Error',
+            path: req.path
+        });
+    }
+});
