@@ -46,7 +46,8 @@ export default function RealtorVslPage() {
             <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
                 <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
                     <div className="font-bold text-xl tracking-tight text-gray-900 flex items-center gap-2">
-                        <span style={{ color: heroBg }}>Flow</span>Realtors <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full text-gray-500 font-medium tracking-wide">VERIFIED</span>
+                        <img src="/logo-full.png" alt="FlowRealtors" className="h-8" />
+                        <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full text-gray-500 font-medium tracking-wide">VERIFIED</span>
                     </div>
                     <div className="flex items-center gap-3">
                         <div className="text-right hidden sm:block leading-tight">
