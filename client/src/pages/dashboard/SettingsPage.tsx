@@ -122,7 +122,10 @@ export default function SettingsPage() {
     return (
         <div className="space-y-6 max-w-4xl animate-in fade-in duration-500 mb-20">
             <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-900">{t('settings.title')}</h2>
+                <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                    {t('settings.title')}
+                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">v2.1</span>
+                </h2>
                 <button
                     onClick={handleSave}
                     disabled={isSaving}
