@@ -45,8 +45,10 @@ export default function BrokersPage() {
 
     const fetchBrokers = async () => {
         try {
-            // Use API_BASE
-            const res = await fetch(`${API_BASE}/api/admin/brokers`);
+            const token = localStorage.getItem('flow_realtor_token');
+            const res = await fetch(`${API_BASE}/api/admin/brokers`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             if (res.ok) {
                 const data = await res.json();
                 setBrokers(data);
@@ -65,11 +67,15 @@ export default function BrokersPage() {
             ? `${API_BASE}/api/admin/brokers/${editingBroker.id}`
             : `${API_BASE}/api/admin/brokers`;
         const method = editingBroker ? 'PUT' : 'POST';
+        const token = localStorage.getItem('flow_realtor_token');
 
         try {
             const res = await fetch(url, {
                 method,
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify(formData)
             });
 
@@ -98,8 +104,11 @@ export default function BrokersPage() {
     const handleDelete = async (id: number) => {
         if (!confirm('Are you sure you want to delete this broker?')) return;
         try {
-            // FIXED: Use API_BASE
-            await fetch(`${API_BASE}/api/admin/brokers/${id}`, { method: 'DELETE' });
+            const token = localStorage.getItem('flow_realtor_token');
+            await fetch(`${API_BASE}/api/admin/brokers/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             fetchBrokers();
         } catch (error) {
             console.error('Delete failed', error);
