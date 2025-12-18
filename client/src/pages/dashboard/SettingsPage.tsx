@@ -140,12 +140,12 @@ export default function SettingsPage() {
 
                 {/* Profile Settings (NEW) */}
                 <div className="card">
-                    <Section title="Profile Information" description="Update your personal details for your public page.">
+                    <Section title={t('settings.section.profile.title')} description={t('settings.section.profile.desc')}>
                         <div className="space-y-4">
                             <div className="flex items-center gap-4 mb-4">
                                 <img src={profile.photo_url ? (profile.photo_url.startsWith('http') ? profile.photo_url : API_BASE + profile.photo_url) : 'https://via.placeholder.com/100'} alt="Profile" className="w-16 h-16 rounded-full object-cover border" />
                                 <div className="flex-1">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Photo</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('settings.form.photo')}</label>
                                     <div className="flex gap-2">
                                         <input
                                             type="file"
@@ -175,36 +175,36 @@ export default function SettingsPage() {
                                         />
                                     </div>
                                     <p className="text-xs text-gray-500 mt-1">
-                                        Current: {profile.photo_url || 'None'}
+                                        {t('settings.form.photo_current')} {profile.photo_url || 'None'}
                                     </p>
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <Input label="Full Name" name="name" value={profile.name} onChange={handleChange} />
-                                <Input label="Email" value={profile.email} disabled className="bg-gray-100" />
-                                <Input label="Phone (WhatsApp)" name="phone" value={profile.phone || ''} onChange={handleChange} placeholder="+1 ..." />
-                                <Input label="Slug (URL Identifier)" name="slug" value={profile.slug || ''} onChange={handleChange} placeholder="adrian-realtor" />
+                                <Input label={t('settings.form.fullname')} name="name" value={profile.name} onChange={handleChange} />
+                                <Input label={t('auth.email')} value={profile.email} disabled className="bg-gray-100" />
+                                <Input label={t('settings.form.phone_wa')} name="phone" value={profile.phone || ''} onChange={handleChange} placeholder="+1 ..." />
+                                <Input label={t('settings.form.slug')} name="slug" value={profile.slug || ''} onChange={handleChange} placeholder="adrian-realtor" />
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <Input label="Display Name (Public)" name="display_name" value={(profile as any).display_name || ''} onChange={handleChange} placeholder="e.g. Adrian C. @ FlowRealtors" />
-                                <Input label="Region / Market" name="region" value={(profile as any).region || ''} onChange={handleChange} placeholder="e.g. Orlando, FL" />
+                                <Input label={t('settings.form.display_name')} name="display_name" value={(profile as any).display_name || ''} onChange={handleChange} placeholder="e.g. Adrian C. @ FlowRealtors" />
+                                <Input label={t('settings.form.region')} name="region" value={(profile as any).region || ''} onChange={handleChange} placeholder="e.g. Orlando, FL" />
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <Input label="Primary Market Label" name="primary_market" value={(profile as any).primary_market || ''} onChange={handleChange} placeholder="e.g. Florida" />
-                                <Input label="Service Areas (Comma separated)" name="service_areas" value={(profile as any).service_areas || ''} onChange={handleChange} placeholder="Orlando, Kissimmee, Winter Park" />
+                                <Input label={t('settings.form.primary_market')} name="primary_market" value={(profile as any).primary_market || ''} onChange={handleChange} placeholder="e.g. Florida" />
+                                <Input label={t('settings.form.service_areas')} name="service_areas" value={(profile as any).service_areas || ''} onChange={handleChange} placeholder="Orlando, Kissimmee, Winter Park" />
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <Input label="WhatsApp Number (Public)" name="whatsapp_number" value={(profile as any).whatsapp_number || ''} onChange={handleChange} placeholder="e.g. +1 407 123 4567" />
-                                <Input label="Calendly Link (Default for Funnel)" name="calendly_link" value={(profile as any).calendly_link || ''} onChange={handleChange} placeholder="https://calendly.com/your-link" />
+                                <Input label={t('settings.form.whatsapp_public')} name="whatsapp_number" value={(profile as any).whatsapp_number || ''} onChange={handleChange} placeholder="e.g. +1 407 123 4567" />
+                                <Input label={t('settings.form.calendly')} name="calendly_link" value={(profile as any).calendly_link || ''} onChange={handleChange} placeholder="https://calendly.com/your-link" />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
-                                <Input label="City" name="city" value={profile.city || ''} onChange={handleChange} />
-                                <Input label="State" name="state" value={profile.state || ''} onChange={handleChange} />
+                                <Input label={t('settings.form.city')} name="city" value={profile.city || ''} onChange={handleChange} />
+                                <Input label={t('settings.form.state')} name="state" value={profile.state || ''} onChange={handleChange} />
                             </div>
                         </div>
                     </Section>
@@ -232,8 +232,8 @@ export default function SettingsPage() {
                 <div className="card">
                     <Section title={t('settings.integrations')} description={t('settings.integrations_desc')}>
                         <form className="space-y-4">
-                            <Input label="WhatsApp API Key (360dialog/Gupshup)" placeholder="wa_..." />
-                            <Input label="Meta Access Token" type="password" placeholder="EAA..." />
+                            <Input label={t('settings.form.wa_api_key')} placeholder="wa_..." />
+                            <Input label={t('settings.form.meta_token')} type="password" placeholder="EAA..." />
                         </form>
                     </Section>
                 </div>
