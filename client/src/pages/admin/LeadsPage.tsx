@@ -34,7 +34,10 @@ export default function LeadsPage() {
             const query = new URLSearchParams();
             if (filterStatus) query.append('status', filterStatus);
 
-            const res = await fetch(`${API_BASE}/api/admin/leads?${query.toString()}`);
+            const token = localStorage.getItem('flow_realtor_token');
+            const res = await fetch(`${API_BASE}/api/admin/leads?${query.toString()}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             const data = await res.json();
             setLeads(data);
         } catch (error) {
