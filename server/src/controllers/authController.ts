@@ -86,3 +86,31 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         res.status(500).json({ message: 'Server error: ' + (error.message || JSON.stringify(error)), error });
     }
 };
+
+
+export const getProfile = async (req: Request, res: Response) => {
+    // req.user is populated by middleware
+    const user = (req as any).user;
+
+    if (!user) {
+        return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    try {
+        let dbUser = await prisma.user.findUnique({ where: { id: user.id } });
+
+        // Auto-generate slug if missing
+        if (dbUser && !dbUser.slug) {
+            const slugBase = dbUser.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+            const slug = `${slugBase}-${dbUser.id}`; // Simple unique slug
+            dbUser = await prisma.user.update({
+                where: { id: user.id },
+                data: { slug }
+            });
+        }
+
+        res.json(dbUser);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch profile' });
+    }
+};

@@ -24,7 +24,7 @@ export default function FunnelSettingsPage() {
     const loadData = async () => {
         try {
             // Get User Profile for ID and Slug
-            const profileRes = await fetch(`${API_BASE}/api/realtor/profile`, {
+            const profileRes = await fetch(`${API_BASE}/api/auth/me`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('flow_realtor_token')}` }
             });
             const profile = await profileRes.json();
