@@ -141,13 +141,13 @@ export default function RealtorVslPage() {
                     </div>
                     <div className="space-y-4 opacity-75">
                         <h3 className="font-bold text-gray-500 flex items-center gap-2">
-                            <XCircle className="w-5 h-5 text-gray-400" />
+                            <XCircle className="w-5 h-5 text-red-500" />
                             {t('vsl.section.not_for_you.title')}
                         </h3>
                         <ul className="space-y-3 text-sm text-gray-500">
                             {[1, 2, 3].map(i => (
                                 <li key={i} className="flex gap-2">
-                                    <span className="mt-1 w-1.5 h-1.5 rounded-full bg-gray-300 shrink-0" />
+                                    <span className="mt-1 w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
                                     {t(`vsl.section.not_for_you.${i}` as any)}
                                 </li>
                             ))}
