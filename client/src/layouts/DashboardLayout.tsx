@@ -111,7 +111,10 @@ export default function DashboardLayout() {
                         <span className="text-gray-900 font-semibold text-base">
                             {realtorName}
                         </span>
-                        <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-sm ring-2 ring-blue-100">
+                        <div
+                            className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm ring-2 ring-blue-100"
+                            style={{ backgroundColor: '#0A84FF' }}
+                        >
                             {realtorName.split(' ').map((n) => n[0]).join('').substring(0, 2).toUpperCase()}
                         </div>
                     </div>
