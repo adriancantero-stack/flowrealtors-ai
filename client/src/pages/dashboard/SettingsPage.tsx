@@ -21,11 +21,25 @@ export default function SettingsPage() {
 
     useEffect(() => {
         console.log('Fetching profile...');
+        const token = localStorage.getItem('flow_realtor_token');
+        if (!token) {
+            window.location.href = '/login';
+            return;
+        }
+
         fetch(`${API_BASE}/api/auth/me`, {
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('flow_realtor_token')}` }
+            headers: { 'Authorization': `Bearer ${token}` }
         })
-            .then(res => res.json())
+            .then(async res => {
+                if (res.status === 401) {
+                    localStorage.removeItem('flow_realtor_token');
+                    window.location.href = '/login';
+                    return null;
+                }
+                return res.json();
+            })
             .then(data => {
+                if (!data) return; // Redirected
                 console.log('Profile fetched:', data);
                 if (data && !data.error) {
                     setProfile(prev => ({ ...prev, ...data }));
@@ -43,6 +57,13 @@ export default function SettingsPage() {
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!profile.id || profile.id === 0) {
+            alert('Session invalid or profile not loaded. Please log in again.');
+            window.location.href = '/login';
+            return;
+        }
+
         setIsSaving(true);
         console.log('Saving profile:', profile);
         try {
