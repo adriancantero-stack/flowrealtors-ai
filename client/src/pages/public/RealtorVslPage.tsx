@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { ArrowRight, CheckCircle2, XCircle, PlayCircle, ShieldCheck, MessageSquare } from 'lucide-react';
+import { ArrowRight, CheckCircle2, XCircle, ShieldCheck, MessageSquare } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 
 // Constants
