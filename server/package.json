@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node dist/server.js",
     "dev": "nodemon src/server.ts",
-    "build": "npx prisma generate && npx tsc",
+    "prebuild": "npx prisma generate --schema=./prisma/schema.prisma",
+    "build": "npx prisma generate --schema=./prisma/schema.prisma && npx tsc",
     "postinstall": "npx prisma generate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
