@@ -183,6 +183,7 @@ app.listen(Number(PORT), '0.0.0.0', () => {
                 if (stderr) console.error(`Migration Stderr: ${stderr}`);
                 console.log(`Migration Stdout: ${stdout}`);
             });
+        } catch (err) {
             console.error('Auto-migration CRITIAL ERROR (Server continues):', err);
         }
     }
