@@ -17,7 +17,7 @@ export default function SettingsPage() {
 
     useEffect(() => {
         // DEBUG: Verify connection in production
-        // alert(`Debug Config:\nAPI: ${API_BASE}\nToken: ${localStorage.getItem('flow_realtor_token')?.slice(0, 10)}...`);
+        alert(`Debug Config:\nAPI: ${API_BASE}\nToken: ${localStorage.getItem('flow_realtor_token')?.slice(0, 10)}...`);
         console.log('Fetching profile...');
         fetch(`${API_BASE}/api/auth/me`, {
             headers: { 'Authorization': `Bearer ${localStorage.getItem('flow_realtor_token')}` }
