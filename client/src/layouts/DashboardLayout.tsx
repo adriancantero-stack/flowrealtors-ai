@@ -92,17 +92,7 @@ export default function DashboardLayout() {
             <div className="flex-1 ml-[260px]">
                 {/* Navbar (Flow UI .navbar) */}
                 <header className="navbar flex justify-between items-center px-8 py-4 bg-white border-b border-gray-100 mb-8 rounded-2xl shadow-sm mx-8 mt-6">
-                    {/* Left: Avatar + Name */}
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-sm ring-2 ring-blue-100">
-                            {realtorName.split(' ').map((n) => n[0]).join('').substring(0, 2).toUpperCase()}
-                        </div>
-                        <span className="text-gray-900 font-semibold text-base">
-                            {realtorName}
-                        </span>
-                    </div>
-
-                    {/* Right: Full Date */}
+                    {/* Left: Full Date */}
                     <div className="text-gray-500 font-medium text-sm">
                         {(() => {
                             const dateStr = new Date().toLocaleDateString(lang === 'pt' ? 'pt-BR' : lang === 'es' ? 'es-ES' : 'en-US', {
@@ -114,6 +104,16 @@ export default function DashboardLayout() {
                             // Capitalize first letter
                             return dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
                         })()}
+                    </div>
+
+                    {/* Right: Avatar + Name */}
+                    <div className="flex items-center gap-3">
+                        <span className="text-gray-900 font-semibold text-base">
+                            {realtorName}
+                        </span>
+                        <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-sm ring-2 ring-blue-100">
+                            {realtorName.split(' ').map((n) => n[0]).join('').substring(0, 2).toUpperCase()}
+                        </div>
                     </div>
                 </header>
 
