@@ -61,7 +61,13 @@ model Lead {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   
+  // Duplicates Removed
+
+
   messages     LeadMessage[]
+  
+  // AI Fields
+  ai_summary   String? // Summary of qualification
 }
 
 model LeadMessage {
