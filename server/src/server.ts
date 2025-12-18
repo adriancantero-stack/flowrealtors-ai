@@ -156,29 +156,37 @@ app.listen(Number(PORT), '0.0.0.0', () => {
     // Auto-run migrations in production
     // TEMPORARILY DISABLED TO PREVENT CRASH LOOP
     /*
+    // Auto-run migrations in production (Safe Mode)
     if (process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT) {
-        console.log('Running database migrations...');
-
-        // Fix for "prepared statement s0 already exists" with PgBouncer
-        const env = { ...process.env };
-        if (env.DATABASE_URL) {
-            const urlObj = new URL(env.DATABASE_URL);
-            urlObj.searchParams.set('pgbouncer', 'true');
-            urlObj.searchParams.set('statement_cache_size', '0');
-            env.DATABASE_URL = urlObj.toString();
-        }
-
-        // Using exec to run the command
-        const { exec } = require('child_process');
-        exec('npx prisma db push --accept-data-loss', { env }, (error: any, stdout: any, stderr: any) => {
-            if (error) {
-                console.error(`Migration Error: ${error.message}`);
-                return;
+        try {
+            console.log('Attempting auto-migration...');
+            const env = { ...process.env };
+            
+            // Safe URL parsing
+            if (env.DATABASE_URL && env.DATABASE_URL.startsWith('postgres')) {
+                try {
+                    const urlObj = new URL(env.DATABASE_URL);
+                    urlObj.searchParams.set('pgbouncer', 'true');
+                    urlObj.searchParams.set('statement_cache_size', '0');
+                    env.DATABASE_URL = urlObj.toString();
+                } catch (urlErr) {
+                    console.error('Migration URL Parse Error (Skipping PgBouncer fix):', urlErr);
+                }
             }
-            if (stderr) console.error(`Migration Stderr: ${stderr}`);
-            console.log(`Migration Stdout: ${stdout}`);
-            console.log('Database migration completed successfully.');
-        });
+
+            // Using exec to run the command
+            const { exec } = require('child_process');
+            exec('npx prisma db push --accept-data-loss', { env }, (error: any, stdout: any, stderr: any) => {
+                if (error) {
+                    console.error(`Migration Failed (Non-fatal): ${error.message}`);
+                    return;
+                }
+                if (stderr) console.error(`Migration Stderr: ${stderr}`);
+                console.log(`Migration Stdout: ${stdout}`);
+            });
+        } catch (err) {
+            console.error('Auto-migration CRITIAL ERROR (Server continues):', err);
+        }
     }
     */
 });
