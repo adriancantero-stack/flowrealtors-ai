@@ -1,41 +1,36 @@
-
 import { Router } from 'express';
 import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const router = Router();
 
-// Configure Multer Storage
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const uploadDir = path.join(__dirname, '../../public/uploads');
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
-        // Ensure directory exists
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
+// Configure Multer Storage with Cloudinary
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'flowrealtors/profiles',
+        allowed_formats: ['jpg', 'png', 'jpeg', 'webp'],
+        public_id: (req: any, file: any) => {
+            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+            return `profile-${uniqueSuffix}`;
         }
-
-        cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-        // Generate unique filename: timestamp-random-originalName
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        const ext = path.extname(file.originalname);
-        cb(null, 'profile-' + uniqueSuffix + ext);
-    }
+    } as any // Cast to any to avoid strict typing issues with multer-storage-cloudinary options
 });
 
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
-    fileFilter: (req, file, cb) => {
-        if (file.mimetype.startsWith('image/')) {
-            cb(null, true);
-        } else {
-            cb(new Error('Only images are allowed'));
-        }
-    }
+    limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
 });
 
 // Route: POST /api/upload
@@ -44,13 +39,9 @@ router.post('/', upload.single('file'), (req, res) => {
         return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    // Construct Public URL
-    // Assuming server serves 'public' folder at root or specific path
-    // In server.ts: app.use(express.static(path.join(__dirname, '../public')));
-    const publicUrl = `/uploads/${req.file.filename}`;
-
+    // Cloudinary returns the URL in file.path
     res.json({
-        url: publicUrl,
+        url: req.file.path,
         filename: req.file.filename
     });
 });
