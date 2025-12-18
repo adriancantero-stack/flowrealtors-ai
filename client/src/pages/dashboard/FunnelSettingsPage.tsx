@@ -243,7 +243,7 @@ export default function FunnelSettingsPage() {
                             <div className="flex justify-between items-center text-xs bg-white p-2 rounded border border-purple-200">
                                 <span className="font-mono text-gray-500 uppercase w-6">URL</span>
                                 <a href={`${window.location.origin}/${user?.default_lang || 'en'}/${user?.slug}/apply`} target="_blank" rel="noreferrer" className="text-purple-600 hover:underline truncate flex-1 ml-2">
-                                    .../{user?.slug}/apply
+                                    .../{user?.default_lang || 'en'}/{user?.slug}/apply
                                 </a>
                             </div>
                         </div>

@@ -4,6 +4,12 @@ import { useTranslation } from '../../i18n';
 import type { Language } from '../../i18n/locales';
 import { ArrowRight, Check, Lock, ChevronLeft, CreditCard, Calendar, Home, DollarSign } from 'lucide-react';
 
+// Define API_BASE
+let API_BASE = import.meta.env.VITE_API_URL || 'https://flowrealtors-ai-production.up.railway.app';
+if (API_BASE && !API_BASE.startsWith('http')) {
+    API_BASE = `https://${API_BASE}`;
+}
+
 export default function ApplyPage() {
     const { slug } = useParams();
     const { t, setLanguage, language } = useTranslation();
@@ -30,7 +36,7 @@ export default function ApplyPage() {
     });
 
     useEffect(() => {
-        fetch(`http://localhost:3000/api/funnel/public/${slug}`)
+        fetch(`${API_BASE}/api/funnel/public/${slug}`)
             .then(res => {
                 if (!res.ok) throw new Error("Not Found");
                 return res.json();
@@ -62,7 +68,7 @@ export default function ApplyPage() {
         setSubmitting(true);
 
         try {
-            const res = await fetch(`http://localhost:3000/api/funnel/public/${slug}/apply`, {
+            const res = await fetch(`${API_BASE}/api/funnel/public/${slug}/apply`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...formData, language })
