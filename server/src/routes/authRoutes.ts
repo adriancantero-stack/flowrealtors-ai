@@ -6,6 +6,7 @@ const router = Router();
 router.post('/register', register);
 router.post('/login', login);
 router.put('/profile/:userId', updateProfile);
+router.post('/profile/:userId', updateProfile); // Alias for firewalls/proxies blocking PUT
 router.get('/me', getProfile); // Fetch own profile
 
 export default router;
