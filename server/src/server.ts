@@ -82,13 +82,35 @@ const systemFixHandler = async (req: Request, res: Response) => {
     }
 
     try {
+        // EMERGENCY SQL FIX (Bypass Migration Toolchain)
+        console.log('[SYSTEM_FIX] Running Raw SQL Patch for missing columns...');
+        const { prisma } = await import('./lib/prisma');
+
+        // Add display_name
+        try {
+            await prisma.$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "display_name" TEXT;`);
+            console.log('[SYSTEM_FIX] Added display_name');
+        } catch (e) { console.warn('SQL display_name:', e); }
+
+        // Add region
+        try {
+            await prisma.$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "region" TEXT;`);
+            console.log('[SYSTEM_FIX] Added region');
+        } catch (e) { console.warn('SQL region:', e); }
+
+        // Add calendly_link (safeguard)
+        try {
+            await prisma.$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "calendly_link" TEXT;`);
+            console.log('[SYSTEM_FIX] Added calendly_link');
+        } catch (e) { console.warn('SQL calendly_link:', e); }
+
         const { exec } = require('child_process');
         const util = require('util');
         const execPromise = util.promisify(exec);
 
         const { stdout, stderr } = await execPromise('npx prisma db push --accept-data-loss', { env });
         console.log('[SYSTEM_FIX] Success:', stdout);
-        res.json({ success: true, output: stdout });
+        res.json({ success: true, output: stdout, sql_patched: true });
     } catch (error: any) {
         console.error('[SYSTEM_FIX] Error:', error);
         res.status(500).json({ success: false, error: error.message });
