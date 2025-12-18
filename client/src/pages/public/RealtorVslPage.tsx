@@ -8,15 +8,14 @@ if (API_BASE && !API_BASE.startsWith('http')) {
     API_BASE = `https://${API_BASE}`;
 }
 
-export default function RealtorLandingPage() {
+export default function RealtorVslPage() {
     const { slug, lang } = useParams();
-    // const navigate = useNavigate(); // Unused
     const [data, setData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Fetch Realtor Data
-        fetch(`${API_BASE}/api/funnel/public/${slug}`)
+        // Fetch Realtor Data using Spec Endpoint
+        fetch(`${API_BASE}/api/public/realtors/${slug}`)
             .then(res => res.json())
             .then(data => {
                 if (data.error) throw new Error(data.error);
@@ -28,8 +27,6 @@ export default function RealtorLandingPage() {
             })
             .finally(() => setLoading(false));
     }, [slug]);
-
-
 
     if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
     if (!data) return <div className="min-h-screen flex items-center justify-center">Realtor not found</div>;

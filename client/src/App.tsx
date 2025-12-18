@@ -28,7 +28,7 @@ import AdminWhatsAppPage from './pages/admin/WhatsAppSettingsPage';
 import PublicFunnelLayout from './layouts/PublicFunnelLayout';
 import FunnelLandingPage from './pages/funnel/FunnelLandingPage';
 import FunnelThankYouPage from './pages/funnel/FunnelThankYouPage';
-import RealtorLandingPage from './pages/public/RealtorLandingPage';
+import RealtorVslPage from './pages/public/RealtorVslPage';
 import ApplicationPage from './pages/public/ApplicationPage';
 
 import { LanguageProvider } from './i18n';
@@ -87,7 +87,7 @@ function App() {
 
             <Route path=":slug">
               {/* PUBLIC LANDING PAGE (No Auth) */}
-              <Route index element={<RealtorLandingPage />} />
+              <Route index element={<RealtorVslPage />} />
               <Route path="apply" element={<ApplicationPage />} />
 
               {/* PROTECTED DASHBOARD AREA */}
