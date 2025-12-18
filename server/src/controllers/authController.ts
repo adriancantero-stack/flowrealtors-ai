@@ -48,6 +48,11 @@ export const updateProfile = async (req: Request, res: Response) => {
             where: { id: parseInt(userId) },
             data: {
                 name: updates.name,
+                phone: updates.phone,
+                city: updates.city,
+                state: updates.state,
+                photo_url: updates.photo_url,
+                slug: updates.slug, // Allow updating slug manually if needed
                 role: updates.account_type === 'realtor' ? 'broker' : 'admin'
             }
         });

@@ -1,26 +1,65 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Save, Globe } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 import type { Language } from '../../i18n/locales';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function SettingsPage() {
     const { t, language, setLanguage } = useTranslation();
     const [isSaving, setIsSaving] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [profile, setProfile] = useState({
+        id: 0,
+        name: '', email: '', phone: '', city: '', state: '',
+        slug: '', photo_url: ''
+    });
 
-    const handleSave = (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsSaving(true);
-        setTimeout(() => setIsSaving(false), 1000);
+    useEffect(() => {
+        fetch(`${API_BASE}/api/auth/me`, {
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('flow_realtor_token')}` }
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data && !data.error) setProfile(prev => ({ ...prev, ...data }));
+            })
+            .finally(() => setLoading(false));
+    }, []);
+
+    const handleChange = (e: any) => {
+        setProfile({ ...profile, [e.target.name]: e.target.value });
     };
 
+    const handleSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSaving(true);
+        try {
+            await fetch(`${API_BASE}/api/auth/profile/${profile.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('flow_realtor_token')}`
+                },
+                body: JSON.stringify(profile)
+            });
+            alert('Settings Saved');
+        } catch (error) {
+            alert('Error saving settings');
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    if (loading) return <div>Loading...</div>;
+
     return (
-        <div className="space-y-6 max-w-4xl animate-in fade-in duration-500">
+        <div className="space-y-6 max-w-4xl animate-in fade-in duration-500 mb-20">
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-gray-900">{t('settings.title')}</h2>
                 <button
-                    onClick={handleSave} // Simplified for this context, normally form submit
+                    onClick={handleSave}
                     disabled={isSaving}
-                    className="btn btn-primary"
+                    className="btn btn-primary flex items-center gap-2"
                 >
                     <Save className="h-4 w-4" />
                     {isSaving ? 'Saving...' : t('settings.save')}
@@ -28,6 +67,32 @@ export default function SettingsPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-6">
+
+                {/* Profile Settings (NEW) */}
+                <div className="card">
+                    <Section title="Profile Information" description="Update your personal details for your public page.">
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-4 mb-4">
+                                <img src={profile.photo_url || 'https://via.placeholder.com/100'} alt="Profile" className="w-16 h-16 rounded-full object-cover border" />
+                                <div className="flex-1">
+                                    <Input label="Photo URL" name="photo_url" value={profile.photo_url || ''} onChange={handleChange} placeholder="https://..." />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <Input label="Full Name" name="name" value={profile.name} onChange={handleChange} />
+                                <Input label="Email" value={profile.email} disabled className="bg-gray-100" />
+                                <Input label="Phone (WhatsApp)" name="phone" value={profile.phone || ''} onChange={handleChange} placeholder="+1 ..." />
+                                <Input label="Slug (URL Identifier)" name="slug" value={profile.slug || ''} onChange={handleChange} placeholder="adrian-realtor" />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <Input label="City" name="city" value={profile.city || ''} onChange={handleChange} />
+                                <Input label="State" name="state" value={profile.state || ''} onChange={handleChange} />
+                            </div>
+                        </div>
+                    </Section>
+                </div>
 
                 {/* Language Settings */}
                 <div className="card">
@@ -50,59 +115,10 @@ export default function SettingsPage() {
 
                 <div className="card">
                     <Section title={t('settings.integrations')} description={t('settings.integrations_desc')}>
-                        <form onSubmit={handleSave} className="space-y-4">
+                        <form className="space-y-4">
                             <Input label="WhatsApp API Key (360dialog/Gupshup)" placeholder="wa_..." />
-                            <Input label="Meta Access Token (Facebook/Instagram)" type="password" placeholder="EAA..." />
-                            <Input label="TikTok Access Token" type="password" placeholder="tk_..." />
+                            <Input label="Meta Access Token" type="password" placeholder="EAA..." />
                         </form>
-                    </Section>
-                </div>
-
-                <div className="card">
-                    <Section title={t('settings.ai_config')} description={t('settings.ai_config_desc')}>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="label">{t('settings.agent_tone')}</label>
-                                <select className="select">
-                                    <option>Professional & Formal</option>
-                                    <option>Friendly & Casual</option>
-                                    <option>Aggressive Sales</option>
-                                </select>
-                            </div>
-                            <Input label={t('settings.business_name')} placeholder="e.g. Dream Homes Realty" />
-                        </div>
-                    </Section>
-                </div>
-
-                <div className="card">
-                    <Section title={t('settings.profile')} description={t('settings.profile_desc')}>
-                        <div className="space-y-4">
-                            <div className="bg-blue-50 p-4 rounded-xl flex justify-between items-center border border-blue-100">
-                                <div>
-                                    <p className="font-bold text-blue-900">{t('settings.pro_plan')}</p>
-                                    <p className="text-sm text-blue-700">$99/month</p>
-                                </div>
-                                <button className="text-sm font-medium text-blue-700 hover:text-blue-900 underline">{t('settings.manage')}</button>
-                            </div>
-                            <Input label={t('settings.account_email')} defaultValue="realtor@example.com" disabled />
-                        </div>
-                    </Section>
-                </div>
-
-                <div className="card">
-                    <Section title={t('settings.onboarding_setup')} description={t('settings.onboarding_desc')}>
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="font-medium text-gray-900">{t('settings.setup_wizard')}</p>
-                                <p className="text-sm text-gray-500">{t('settings.setup_wizard_desc')}</p>
-                            </div>
-                            <a
-                                href="/onboarding"
-                                className="btn btn-secondary"
-                            >
-                                {t('settings.restart_onboarding')}
-                            </a>
-                        </div>
                     </Section>
                 </div>
             </div>
