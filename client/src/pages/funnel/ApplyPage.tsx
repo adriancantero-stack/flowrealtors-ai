@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from '../../i18n';
 import type { Language } from '../../i18n/locales';
-import { ArrowRight, Check, Lock, ChevronLeft, CreditCard, Calendar, Home, DollarSign } from 'lucide-react';
+import { ArrowRight, Lock, ChevronLeft, CreditCard, Calendar, Home, DollarSign, ChevronDown } from 'lucide-react';
 
 // Define API_BASE
 let API_BASE = import.meta.env.VITE_API_URL || 'https://flowrealtors-ai-production.up.railway.app';
@@ -126,9 +126,10 @@ export default function ApplyPage() {
                     {step === 1 ? (
                         <div className="space-y-6 animate-in slide-in-from-right duration-500">
                             {/* MOTIVATION */}
-                            <QuestionGroup
+                            <SelectGroup
                                 label={t('apply.q.motivation')}
                                 icon={<Home className="w-4 h-4" />}
+                                placeholder={t('apply.placeholder.motivation') || "Select your goal..."}
                                 options={[
                                     { value: 'investment', label: t('apply.opt.investment') },
                                     { value: 'living', label: t('apply.opt.living') },
@@ -136,13 +137,13 @@ export default function ApplyPage() {
                                 ]}
                                 value={formData.motivation}
                                 onChange={(v: any) => handleChange('motivation', v)}
-                                activeColor={brandColor}
                             />
 
                             {/* TIMELINE */}
-                            <QuestionGroup
+                            <SelectGroup
                                 label={t('apply.q.timeline')}
                                 icon={<Calendar className="w-4 h-4" />}
+                                placeholder={t('apply.placeholder.timeline') || "When do you plan to buy?"}
                                 options={[
                                     { value: 'asap', label: t('apply.opt.asap') },
                                     { value: '1-3_months', label: '1 - 3 Months' },
@@ -151,13 +152,13 @@ export default function ApplyPage() {
                                 ]}
                                 value={formData.timeline}
                                 onChange={(v: any) => handleChange('timeline', v)}
-                                activeColor={brandColor}
                             />
 
                             {/* BUDGET */}
-                            <QuestionGroup
+                            <SelectGroup
                                 label={t('apply.q.budget')}
                                 icon={<DollarSign className="w-4 h-4" />}
+                                placeholder={t('apply.placeholder.budget') || "Estimated Budget..."}
                                 options={[
                                     { value: 'under_300k', label: '< $300k' },
                                     { value: '300k-500k', label: '$300k - $500k' },
@@ -166,13 +167,13 @@ export default function ApplyPage() {
                                 ]}
                                 value={formData.budget}
                                 onChange={(v: any) => handleChange('budget', v)}
-                                activeColor={brandColor}
                             />
 
                             {/* FINANCING */}
-                            <QuestionGroup
+                            <SelectGroup
                                 label={t('apply.q.financing')}
                                 icon={<CreditCard className="w-4 h-4" />}
+                                placeholder={t('apply.placeholder.financing') || "How will you pay?"}
                                 options={[
                                     { value: 'cash', label: t('apply.opt.cash') },
                                     { value: 'mortgage', label: t('apply.opt.mortgage') },
@@ -180,7 +181,6 @@ export default function ApplyPage() {
                                 ]}
                                 value={formData.financing}
                                 onChange={(v: any) => handleChange('financing', v)}
-                                activeColor={brandColor}
                             />
                         </div>
                     ) : (
@@ -291,35 +291,30 @@ export default function ApplyPage() {
     );
 }
 
-// SUB-COMPONENT FOR OPTIONS
-function QuestionGroup({ label, icon, options, value, onChange, activeColor }: any) {
+// SUB-COMPONENT FOR SELECT
+function SelectGroup({ label, icon, options, value, onChange, placeholder }: any) {
     return (
-        <div className="space-y-3">
+        <div className="space-y-2">
             <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
                 <span className="p-1.5 bg-gray-100 rounded-md text-gray-500">{icon}</span>
                 {label}
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {options.map((opt: any) => {
-                    const isSelected = value === opt.value;
-                    return (
-                        <button
-                            key={opt.value}
-                            onClick={() => onChange(opt.value)}
-                            className={`p-3 rounded-lg text-sm font-medium transition-all text-left border-2 relative
-                                ${isSelected ? 'border-current bg-opacity-5' : 'border-transparent bg-white hover:bg-gray-100/80 text-gray-600'}
-                            `}
-                            style={{
-                                borderColor: isSelected ? activeColor : undefined,
-                                color: isSelected ? activeColor : undefined,
-                                backgroundColor: isSelected ? `${activeColor}10` : undefined
-                            }}
-                        >
+            <div className="relative">
+                <select
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
+                    className="w-full appearance-none p-4 pl-4 pr-10 bg-white border border-gray-200 rounded-xl text-gray-900 focus:ring-2 focus:ring-black outline-none transition-all cursor-pointer font-medium"
+                >
+                    <option value="" disabled className="text-gray-400">{placeholder}</option>
+                    {options.map((opt: any) => (
+                        <option key={opt.value} value={opt.value}>
                             {opt.label}
-                            {isSelected && <Check className="w-4 h-4 absolute right-3 top-3" />}
-                        </button>
-                    )
-                })}
+                        </option>
+                    ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
+                    <ChevronDown className="w-5 h-5" />
+                </div>
             </div>
         </div>
     );
