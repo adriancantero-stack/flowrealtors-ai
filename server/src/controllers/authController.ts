@@ -64,6 +64,11 @@ export const updateProfile = async (req: Request, res: Response) => {
             city: updates.city,
             state: updates.state,
             photo_url: updates.photo_url,
+            // VSL Funnel Fields
+            display_name: updates.display_name,
+            region: updates.region,
+            calendly_link: updates.calendly_link,
+
             // Only update slug if it is provided and valid (non-empty)
             ...(updates.slug ? { slug: updates.slug } : {})
         };

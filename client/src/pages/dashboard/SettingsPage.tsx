@@ -137,6 +137,15 @@ export default function SettingsPage() {
                                 <Input label="Slug (URL Identifier)" name="slug" value={profile.slug || ''} onChange={handleChange} placeholder="adrian-realtor" />
                             </div>
 
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <Input label="Display Name (Public)" name="display_name" value={(profile as any).display_name || ''} onChange={handleChange} placeholder="e.g. Adrian C. @ FlowRealtors" />
+                                <Input label="Region / Market" name="region" value={(profile as any).region || ''} onChange={handleChange} placeholder="e.g. Orlando, FL" />
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-4">
+                                <Input label="Calendly Link (Default for Funnel)" name="calendly_link" value={(profile as any).calendly_link || ''} onChange={handleChange} placeholder="https://calendly.com/your-link" />
+                            </div>
+
                             <div className="grid grid-cols-2 gap-4">
                                 <Input label="City" name="city" value={profile.city || ''} onChange={handleChange} />
                                 <Input label="State" name="state" value={profile.state || ''} onChange={handleChange} />

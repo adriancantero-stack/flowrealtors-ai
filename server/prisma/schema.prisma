@@ -93,6 +93,11 @@ model User {
   state         String?
   photo_url     String?
   calendly_link String?
+  
+  // VSL Funnel Fields
+  display_name  String? // For public profile
+  region        String? // e.g., "Orlando, FL"
+  
   default_lang  String   @default("pt") // en, es, pt
   role          String   @default("broker") // broker, admin
   status        String   @default("active") // active, inactive

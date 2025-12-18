@@ -29,6 +29,7 @@ import PublicFunnelLayout from './layouts/PublicFunnelLayout';
 import FunnelLandingPage from './pages/funnel/FunnelLandingPage';
 import FunnelThankYouPage from './pages/funnel/FunnelThankYouPage';
 import RealtorLandingPage from './pages/public/RealtorLandingPage';
+import ApplicationPage from './pages/public/ApplicationPage';
 
 import { LanguageProvider } from './i18n';
 import LanguageRedirector from './components/LanguageRedirector';
@@ -80,9 +81,14 @@ function App() {
             {/* Placed AFTER admin to avoid catching "admin" as a slug */}
             {/* Realtor Spaces: /:lang/:slug/... */}
             {/* Placed AFTER admin to avoid catching "admin" as a slug */}
+
+
+            // ...
+
             <Route path=":slug">
               {/* PUBLIC LANDING PAGE (No Auth) */}
               <Route index element={<RealtorLandingPage />} />
+              <Route path="apply" element={<ApplicationPage />} />
 
               {/* PROTECTED DASHBOARD AREA */}
               <Route element={

@@ -91,6 +91,9 @@ export const getPublicFunnel = async (req: Request, res: Response) => {
                 phone: user.phone,
                 city: user.city,
                 state: user.state,
+                // VSL Funnel Fields
+                display_name: user.display_name,
+                region: user.region,
                 calendly_link: user.calendly_link // Fallback if landing page specific is empty
             },
             page: user.landingPage || {
@@ -115,8 +118,13 @@ export const submitFunnelForm = async (req: Request, res: Response) => {
     const formData = req.body;
 
     try {
-        const user = await prisma.user.findUnique({ where: { slug } });
+        const user = await prisma.user.findUnique({
+            where: { slug },
+            include: { landingPage: true }
+        });
         if (!user) return res.status(404).json({ error: 'Realtor not found' });
+
+        const redirectUrl = user.landingPage?.calendly_url || user.calendly_link || '#';
 
         // 1. Create Lead
         const lead = await prisma.lead.create({
@@ -159,7 +167,7 @@ export const submitFunnelForm = async (req: Request, res: Response) => {
             console.error('AI step failed:', e);
         }
 
-        res.json({ success: true, leadId: lead.id, redirectUrl: user.calendly_link || '#' });
+        res.json({ success: true, leadId: lead.id, redirectUrl });
 
     } catch (error) {
         console.error('Funnel error:', error);

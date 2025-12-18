@@ -168,13 +168,17 @@ export default function FunnelSettingsPage() {
                 <div className="space-y-6">
                     {/* STATUS CARD */}
                     <div className="card bg-blue-50 border-blue-100">
-                        <h3 className="font-bold text-blue-900 mb-2">Your Public Link</h3>
-                        <div className="bg-white p-3 rounded border border-blue-200 text-sm overflow-hidden text-ellipsis whitespace-nowrap text-gray-600 mb-2">
-                            {publicUrl}
+                        <h3 className="font-bold text-blue-900 mb-2">Your Public Links</h3>
+                        <div className="space-y-2">
+                            {['en', 'es', 'pt'].map(lang => (
+                                <div key={lang} className="flex justify-between items-center text-xs bg-white p-2 rounded border border-blue-200">
+                                    <span className="font-mono text-gray-500 uppercase w-6">{lang}</span>
+                                    <a href={`${window.location.origin}/${lang}/${user?.slug}`} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline truncate flex-1 ml-2">
+                                        {window.location.origin}/{lang}/{user?.slug}
+                                    </a>
+                                </div>
+                            ))}
                         </div>
-                        <a href={publicUrl} target="_blank" rel="noreferrer" className="text-blue-600 text-sm font-medium hover:underline flex items-center gap-1">
-                            Test Link in new tab <ExternalLink className="w-3 h-3" />
-                        </a>
                     </div>
 
                     <div className="card">
