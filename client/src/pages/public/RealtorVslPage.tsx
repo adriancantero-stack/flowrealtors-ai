@@ -43,7 +43,7 @@ export default function RealtorVslPage() {
                 <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
                     <div className="font-bold text-xl tracking-tight text-gray-900">FlowRealtors Verified</div>
                     <div className="flex items-center gap-2">
-                        <img src={realtor.photo_url || 'https://via.placeholder.com/40'} className="w-8 h-8 rounded-full" />
+                        <img src={realtor.photo_url ? (realtor.photo_url.startsWith('http') ? realtor.photo_url : API_BASE + realtor.photo_url) : 'https://via.placeholder.com/40'} className="w-8 h-8 rounded-full object-cover" />
                         <div className="flex flex-col leading-tight">
                             <span className="text-sm font-medium">{displayName}</span>
                             {region && <span className="text-xs text-gray-500">{region}</span>}
